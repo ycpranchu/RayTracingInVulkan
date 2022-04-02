@@ -50,7 +50,10 @@ RayTracingPipeline::RayTracingPipeline(
 		{8, static_cast<uint32_t>(scene.TextureSamplers().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
 
 		// The Procedural buffer.
-		{9, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
+		{9, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR},
+
+		// Box Procedural buffer.
+		{10, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
 	};
 
 	descriptorSetManager_.reset(new DescriptorSetManager(device, descriptorBindings, uniformBuffers.size()));
@@ -137,6 +140,17 @@ RayTracingPipeline::RayTracingPipeline(
 			descriptorWrites.push_back(descriptorSets.Bind(i, 9, proceduralBufferInfo));
 		}
 
+		// Procedural Cube buffer (optional)
+		VkDescriptorBufferInfo proceduralCubeBufferInfo = {};
+
+		if (scene.HasProceduralCubes())
+		{
+			proceduralCubeBufferInfo.buffer = scene.ProceduralCubeBuffer().Handle();
+			proceduralCubeBufferInfo.range = VK_WHOLE_SIZE;
+
+			descriptorWrites.push_back(descriptorSets.Bind(i, 10, proceduralCubeBufferInfo));
+		}
+
 		descriptorSets.UpdateDescriptors(i, descriptorWrites);
 	}
 
@@ -148,6 +162,8 @@ RayTracingPipeline::RayTracingPipeline(
 	const ShaderModule closestHitShader(device, "../assets/shaders/RayTracing.rchit.spv");
 	const ShaderModule proceduralClosestHitShader(device, "../assets/shaders/RayTracing.Procedural.rchit.spv");
 	const ShaderModule proceduralIntersectionShader(device, "../assets/shaders/RayTracing.Procedural.rint.spv");
+	const ShaderModule proceduralCubeClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCube.rchit.spv");
+	const ShaderModule proceduralCubeIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCube.rint.spv");
 
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 	{
@@ -155,7 +171,9 @@ RayTracingPipeline::RayTracingPipeline(
 		missShader.CreateShaderStage(VK_SHADER_STAGE_MISS_BIT_KHR),
 		closestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
-		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
+		proceduralCubeClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
+		proceduralCubeIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
 	};
 
 	// Shader groups
@@ -196,8 +214,18 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralHitGroupInfo.closestHitShader = 3;
 	proceduralHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralHitGroupInfo.intersectionShader = 4;
+	proceduralHitGroupInfo.intersectionShader = 5;
 	proceduralHitGroupIndex_ = 3;
+
+	VkRayTracingShaderGroupCreateInfoKHR proceduralCubeHitGroupInfo = {};
+	proceduralCubeHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+	proceduralCubeHitGroupInfo.pNext = nullptr;
+	proceduralCubeHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
+	proceduralCubeHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
+	proceduralCubeHitGroupInfo.closestHitShader = 4;
+	proceduralCubeHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
+	proceduralCubeHitGroupInfo.intersectionShader = 6;
+	proceduralCubeHitGroupIndex_ = 4;
 
 	std::vector<VkRayTracingShaderGroupCreateInfoKHR> groups =
 	{
@@ -205,6 +233,7 @@ RayTracingPipeline::RayTracingPipeline(
 		missGroupInfo, 
 		triangleHitGroupInfo, 
 		proceduralHitGroupInfo,
+		proceduralCubeHitGroupInfo
 	};
 
 	// Create graphic pipeline

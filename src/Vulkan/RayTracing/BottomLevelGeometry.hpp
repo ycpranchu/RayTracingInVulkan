@@ -35,6 +35,12 @@ namespace Vulkan::RayTracing
 			uint32_t aabbCount,
 			bool isOpaque);
 
+		void AddGeometryCubeAabb(
+			const Assets::Scene& scene,
+			uint32_t aabbOffset,
+			uint32_t aabbCount,
+			bool isOpaque);
+
 	private:
 
 		// The geometry to build, addresses of vertices and indices.

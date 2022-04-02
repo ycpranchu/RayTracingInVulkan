@@ -21,7 +21,9 @@ Scene::Scene(Vulkan::CommandPool& commandPool, std::vector<Model>&& models, std:
 	std::vector<uint32_t> indices;
 	std::vector<Material> materials;
 	std::vector<glm::vec4> procedurals;
+	std::vector<glm::vec4> proceduralCubes;
 	std::vector<VkAabbPositionsKHR> aabbs;
+	std::vector<VkAabbPositionsKHR> aabbcubes;
 	std::vector<glm::uvec2> offsets;
 
 	for (const auto& model : models_)
@@ -57,6 +59,20 @@ Scene::Scene(Vulkan::CommandPool& commandPool, std::vector<Model>&& models, std:
 			aabbs.emplace_back();
 			procedurals.emplace_back();
 		}
+
+		// Add optional Cube procedurals.
+		const auto* const cube = dynamic_cast<const Cube*>(model.ProceduralCube());
+		if (cube != nullptr)
+		{
+			const auto aabb = cube->BoundingBox();
+			aabbcubes.push_back({ aabb.first.x, aabb.first.y, aabb.first.z, aabb.second.x, aabb.second.y, aabb.second.z });
+			proceduralCubes.emplace_back(cube->Center, cube->Radius);
+		}
+		else
+		{
+			aabbcubes.emplace_back();
+			proceduralCubes.emplace_back();
+		}
 	}
 
 	constexpr auto flags = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
@@ -68,6 +84,9 @@ Scene::Scene(Vulkan::CommandPool& commandPool, std::vector<Model>&& models, std:
 
 	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "AABBs", VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | flags, aabbs, aabbBuffer_, aabbBufferMemory_);
 	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "Procedurals", flags, procedurals, proceduralBuffer_, proceduralBufferMemory_);
+
+	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "CubeAABBs", VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | flags, aabbcubes, aabbCubeBuffer_, aabbCubeBufferMemory_);
+	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "ProceduralCubes", flags, proceduralCubes, proceduralCubeBuffer_, proceduralCubeBufferMemory_);
 
 	
 	// Upload all textures
@@ -90,8 +109,12 @@ Scene::~Scene()
 	textureImages_.clear();
 	proceduralBuffer_.reset();
 	proceduralBufferMemory_.reset(); // release memory after bound buffer has been destroyed
+	proceduralCubeBuffer_.reset();
+	proceduralCubeBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	aabbBuffer_.reset();
 	aabbBufferMemory_.reset(); // release memory after bound buffer has been destroyed
+	aabbCubeBuffer_.reset();
+	aabbCubeBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	offsetBuffer_.reset();
 	offsetBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	materialBuffer_.reset();

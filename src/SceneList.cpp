@@ -56,6 +56,46 @@ namespace
 				}
 			}
 		}
+
+		// Procedural Cubes
+		for (int i = -30; i < 30; ++i)
+		{
+			for (int j = -30; j < 30; ++j)
+			{
+				if (abs(i) <= 11 && abs(j) <= 11)
+					continue;
+
+				const float chooseMat = random();
+				const float center_y = static_cast<float>(j) + 0.9f * random();
+				const float center_x = static_cast<float>(i) + 0.9f * random();
+				const vec3 center(center_x, 0.2f, center_y);
+
+				if (length(center - vec3(4, 0.2f, 0)) > 0.9f)
+				{
+					if (chooseMat < 0.8f) // Diffuse
+					{
+						const float b = random() * random();
+						const float g = random() * random();
+						const float r = random() * random();
+
+						models.push_back(Model::CreateCube(center, 0.2f, Material::Lambertian(vec3(r, g, b)), isProc));
+					}
+					else if (chooseMat < 0.95f) // Metal
+					{
+						const float fuzziness = 0.5f * random();
+						const float b = 0.5f * (1 + random());
+						const float g = 0.5f * (1 + random());
+						const float r = 0.5f * (1 + random());
+
+						models.push_back(Model::CreateCube(center, 0.2f, Material::Metallic(vec3(r, g, b), fuzziness), isProc));
+					}
+					else // Glass
+					{
+						models.push_back(Model::CreateCube(center, 0.2f, Material::Dielectric(1.5f), isProc));
+					}
+				}
+			}
+		}
 	}
 
 }

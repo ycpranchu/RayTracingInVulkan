@@ -49,8 +49,8 @@ Device::Device(
 
 	// Find the graphics queue.
 	const auto graphicsFamily = FindQueue(queueFamilies, "graphics", VK_QUEUE_GRAPHICS_BIT, 0);
-	const auto computeFamily = FindQueue(queueFamilies, "compute", VK_QUEUE_COMPUTE_BIT, VK_QUEUE_GRAPHICS_BIT);
-	const auto transferFamily = FindQueue(queueFamilies, "transfer", VK_QUEUE_TRANSFER_BIT, VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT);
+	//const auto computeFamily = FindQueue(queueFamilies, "compute", VK_QUEUE_COMPUTE_BIT, VK_QUEUE_GRAPHICS_BIT);
+	//const auto transferFamily = FindQueue(queueFamilies, "transfer", VK_QUEUE_TRANSFER_BIT, VK_QUEUE_GRAPHICS_BIT | VK_QUEUE_COMPUTE_BIT);
 
 	// Find the presentation queue (usually the same as graphics queue).
 	const auto presentFamily = std::find_if(queueFamilies.begin(), queueFamilies.end(), [&](const VkQueueFamilyProperties& queueFamily)
@@ -67,17 +67,17 @@ Device::Device(
 	}
 
 	graphicsFamilyIndex_ = static_cast<uint32_t>(graphicsFamily - queueFamilies.begin());
-	computeFamilyIndex_ = static_cast<uint32_t>(computeFamily - queueFamilies.begin());
+	//computeFamilyIndex_ = static_cast<uint32_t>(computeFamily - queueFamilies.begin());
 	presentFamilyIndex_ = static_cast<uint32_t>(presentFamily - queueFamilies.begin());
-	transferFamilyIndex_ = static_cast<uint32_t>(transferFamily - queueFamilies.begin());
+	//transferFamilyIndex_ = static_cast<uint32_t>(transferFamily - queueFamilies.begin());
 
 	// Queues can be the same
 	const std::set<uint32_t> uniqueQueueFamilies =
 	{
 		graphicsFamilyIndex_,
-		computeFamilyIndex_,
+		//computeFamilyIndex_,
 		presentFamilyIndex_,
-		transferFamilyIndex_
+		//transferFamilyIndex_
 	};
 
 	// Create queues
@@ -113,9 +113,9 @@ Device::Device(
 	debugUtils_.SetDevice(device_);
 
 	vkGetDeviceQueue(device_, graphicsFamilyIndex_, 0, &graphicsQueue_);
-	vkGetDeviceQueue(device_, computeFamilyIndex_, 0, &computeQueue_);
+	//vkGetDeviceQueue(device_, computeFamilyIndex_, 0, &computeQueue_);
 	vkGetDeviceQueue(device_, presentFamilyIndex_, 0, &presentQueue_);
-	vkGetDeviceQueue(device_, transferFamilyIndex_, 0, &transferQueue_);
+	//vkGetDeviceQueue(device_, transferFamilyIndex_, 0, &transferQueue_);
 }
 
 Device::~Device()

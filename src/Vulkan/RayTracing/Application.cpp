@@ -65,7 +65,8 @@ void Application::SetPhysicalDevice(
 	{	
 		VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
 		VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
-		VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME
+		VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
+		//"VK_KHR_shader_non_semantic_info"
 	});
 
 	// Required device features.
@@ -147,7 +148,7 @@ void Application::CreateSwapChain()
 
 	const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {rayTracingPipeline_->RayGenShaderIndex(), {}} };
 	const std::vector<ShaderBindingTable::Entry> missPrograms = { {rayTracingPipeline_->MissShaderIndex(), {}} };
-	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralHitGroupIndex(), {}} };
+	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCubeHitGroupIndex(), {}} };
 
 	shaderBindingTable_.reset(new ShaderBindingTable(*deviceProcedures_, *rayTracingPipeline_, *rayTracingProperties_, rayGenPrograms, missPrograms, hitGroups));
 }
@@ -254,9 +255,16 @@ void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 		const auto indexCount = static_cast<uint32_t>(model.NumberOfIndices());
 		BottomLevelGeometry geometries;
 		
-		model.Procedural()
+		if (model.Procedural())
+			geometries.AddGeometryAabb(scene, aabbOffset, 1, true);
+		else if (model.ProceduralCube())
+			geometries.AddGeometryCubeAabb(scene, aabbOffset, 1, true);
+		else
+			geometries.AddGeometryTriangles(scene, vertexOffset, vertexCount, indexOffset, indexCount, true);
+
+		/*model.Procedural()
 			? geometries.AddGeometryAabb(scene, aabbOffset, 1, true)
-			: geometries.AddGeometryTriangles(scene, vertexOffset, vertexCount, indexOffset, indexCount, true);
+			: geometries.AddGeometryTriangles(scene, vertexOffset, vertexCount, indexOffset, indexCount, true);*/
 
 		bottomAs_.emplace_back(*deviceProcedures_, *rayTracingProperties_, geometries);
 
@@ -303,12 +311,25 @@ void Application::CreateTopLevelStructures(VkCommandBuffer commandBuffer)
 
 	// Hit group 0: triangles
 	// Hit group 1: procedurals
+	// Hit group 2: proceduralCubes
+
 	uint32_t instanceId = 0;
 
 	for (const auto& model : scene.Models())
 	{
+		int hitGroupID;
+		if (model.Procedural())
+			hitGroupID = 1;
+		else if (model.ProceduralCube())
+			hitGroupID = 2;
+		else
+			hitGroupID = 0;
+
 		instances.push_back(TopLevelAccelerationStructure::CreateInstance(
-			bottomAs_[instanceId], glm::mat4(1), instanceId, model.Procedural() ? 1 : 0));
+			bottomAs_[instanceId], glm::mat4(1), instanceId, hitGroupID));
+
+		/*instances.push_back(TopLevelAccelerationStructure::CreateInstance(
+			bottomAs_[instanceId], glm::mat4(1), instanceId, model.Procedural() ? 1 : 0));*/
 		instanceId++;
 	}
 
