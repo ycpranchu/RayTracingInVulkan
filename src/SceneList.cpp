@@ -361,7 +361,7 @@ SceneAssets SceneList::CylinderAndCommonScene(CameraInitialSate& camera)
 
 	// AddRayTracingInOneWeekendCommonScene(models, isProc, random);
 
-	// Procedural Cubes
+	// Procedural Cylinder
 	for (int i = -30; i < 30; ++i)
 	{
 		for (int j = -30; j < 30; ++j)
@@ -395,10 +395,6 @@ SceneAssets SceneList::CylinderAndCommonScene(CameraInitialSate& camera)
 			}
 		}
 	}
-
-	// models.push_back(Model::CreateSphere(vec3(0, 1, 0), 1.0f, Material::Dielectric(1.5f), isProc));
-	// models.push_back(Model::CreateSphere(vec3(-4, 1, 0), 1.0f, Material::Lambertian(vec3(0.4f, 0.2f, 0.1f)), isProc));
-	// models.push_back(Model::CreateSphere(vec3(4, 1, 0), 1.0f, Material::Metallic(vec3(0.7f, 0.6f, 0.5f), 0.0f), isProc));
 
 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
 }

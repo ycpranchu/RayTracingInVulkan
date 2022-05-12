@@ -511,6 +511,8 @@ Model Model::CreateCylinder(const vec3& center, float radius, const Material& ma
 		std::move(vertices),
 		std::move(indices),
 		std::vector<Material>{material},
+		nullptr,
+		nullptr,
 		isProcedural ? new Cylinder(center, radius) : nullptr);
 }
 
