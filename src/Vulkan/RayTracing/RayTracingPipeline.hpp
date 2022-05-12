@@ -44,6 +44,7 @@ namespace Vulkan::RayTracing
 		uint32_t TriangleHitGroupIndex() const { return triangleHitGroupIndex_; }
 		uint32_t ProceduralHitGroupIndex() const { return proceduralHitGroupIndex_; }
 		uint32_t ProceduralCubeHitGroupIndex() const { return proceduralCubeHitGroupIndex_; }
+		uint32_t ProceduralCylinderHitGroupIndex() const { return proceduralCylinderHitGroupIndex_; }
 
 		VkDescriptorSet DescriptorSet(uint32_t index) const;
 		const class PipelineLayout& PipelineLayout() const { return *pipelineLayout_; }
@@ -62,6 +63,7 @@ namespace Vulkan::RayTracing
 		uint32_t triangleHitGroupIndex_;
 		uint32_t proceduralHitGroupIndex_;
 		uint32_t proceduralCubeHitGroupIndex_;
+		uint32_t proceduralCylinderHitGroupIndex_;
 	};
 
 }

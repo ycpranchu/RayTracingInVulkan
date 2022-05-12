@@ -148,7 +148,7 @@ void Application::CreateSwapChain()
 
 	const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {rayTracingPipeline_->RayGenShaderIndex(), {}} };
 	const std::vector<ShaderBindingTable::Entry> missPrograms = { {rayTracingPipeline_->MissShaderIndex(), {}} };
-	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCubeHitGroupIndex(), {}} };
+	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCubeHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCylinderHitGroupIndex(), {}} };
 
 	shaderBindingTable_.reset(new ShaderBindingTable(*deviceProcedures_, *rayTracingPipeline_, *rayTracingProperties_, rayGenPrograms, missPrograms, hitGroups));
 }
@@ -259,6 +259,8 @@ void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 			geometries.AddGeometryAabb(scene, aabbOffset, 1, true);
 		else if (model.ProceduralCube())
 			geometries.AddGeometryCubeAabb(scene, aabbOffset, 1, true);
+		else if (model.ProceduralCylinder())
+			geometries.AddGeometryCylinderAabb(scene, aabbOffset, 1, true);
 		else
 			geometries.AddGeometryTriangles(scene, vertexOffset, vertexCount, indexOffset, indexCount, true);
 
@@ -312,6 +314,7 @@ void Application::CreateTopLevelStructures(VkCommandBuffer commandBuffer)
 	// Hit group 0: triangles
 	// Hit group 1: procedurals
 	// Hit group 2: proceduralCubes
+	// Hit group 2: proceduralCylinder
 
 	uint32_t instanceId = 0;
 
@@ -322,6 +325,8 @@ void Application::CreateTopLevelStructures(VkCommandBuffer commandBuffer)
 			hitGroupID = 1;
 		else if (model.ProceduralCube())
 			hitGroupID = 2;
+		else if (model.ProceduralCylinder())
+			hitGroupID = 3;
 		else
 			hitGroupID = 0;
 

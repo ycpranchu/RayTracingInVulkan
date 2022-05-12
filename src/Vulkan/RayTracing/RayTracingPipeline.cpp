@@ -53,7 +53,10 @@ RayTracingPipeline::RayTracingPipeline(
 		{9, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR},
 
 		// Box Procedural buffer.
-		{10, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
+		{10, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR},
+
+		// Cylinder Procedural buffer.
+		{11, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
 	};
 
 	descriptorSetManager_.reset(new DescriptorSetManager(device, descriptorBindings, uniformBuffers.size()));
@@ -151,6 +154,17 @@ RayTracingPipeline::RayTracingPipeline(
 			descriptorWrites.push_back(descriptorSets.Bind(i, 10, proceduralCubeBufferInfo));
 		}
 
+		// Procedural Cylinder buffer (optional)
+		VkDescriptorBufferInfo proceduralCylinderBufferInfo = {};
+
+		if (scene.HasProceduralCylinder())
+		{
+			proceduralCylinderBufferInfo.buffer = scene.ProceduralCylinderBuffer().Handle();
+			proceduralCylinderBufferInfo.range = VK_WHOLE_SIZE;
+
+			descriptorWrites.push_back(descriptorSets.Bind(i, 11, proceduralCylinderBufferInfo));
+		}
+
 		descriptorSets.UpdateDescriptors(i, descriptorWrites);
 	}
 
@@ -164,6 +178,8 @@ RayTracingPipeline::RayTracingPipeline(
 	const ShaderModule proceduralIntersectionShader(device, "../assets/shaders/RayTracing.Procedural.rint.spv");
 	const ShaderModule proceduralCubeClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCube.rchit.spv");
 	const ShaderModule proceduralCubeIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCube.rint.spv");
+	const ShaderModule proceduralCylinderClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rchit.spv");
+	const ShaderModule proceduralCylinderIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rint.spv");
 
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 	{
@@ -172,8 +188,10 @@ RayTracingPipeline::RayTracingPipeline(
 		closestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralCubeClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+		proceduralCylinderClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
-		proceduralCubeIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
+		proceduralCubeIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
+		proceduralCylinderIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 	};
 
 	// Shader groups
@@ -214,7 +232,7 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralHitGroupInfo.closestHitShader = 3;
 	proceduralHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralHitGroupInfo.intersectionShader = 5;
+	proceduralHitGroupInfo.intersectionShader = 6;
 	proceduralHitGroupIndex_ = 3;
 
 	VkRayTracingShaderGroupCreateInfoKHR proceduralCubeHitGroupInfo = {};
@@ -224,8 +242,18 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralCubeHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralCubeHitGroupInfo.closestHitShader = 4;
 	proceduralCubeHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralCubeHitGroupInfo.intersectionShader = 6;
+	proceduralCubeHitGroupInfo.intersectionShader = 7;
 	proceduralCubeHitGroupIndex_ = 4;
+
+	VkRayTracingShaderGroupCreateInfoKHR proceduralCylinderHitGroupInfo = {};
+	proceduralCylinderHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+	proceduralCylinderHitGroupInfo.pNext = nullptr;
+	proceduralCylinderHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
+	proceduralCylinderHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
+	proceduralCylinderHitGroupInfo.closestHitShader = 5;
+	proceduralCylinderHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
+	proceduralCylinderHitGroupInfo.intersectionShader = 8;
+	proceduralCylinderHitGroupIndex_ = 5;
 
 	std::vector<VkRayTracingShaderGroupCreateInfoKHR> groups =
 	{
@@ -233,7 +261,8 @@ RayTracingPipeline::RayTracingPipeline(
 		missGroupInfo, 
 		triangleHitGroupInfo, 
 		proceduralHitGroupInfo,
-		proceduralCubeHitGroupInfo
+		proceduralCubeHitGroupInfo,
+		proceduralCylinderHitGroupInfo
 	};
 
 	// Create graphic pipeline

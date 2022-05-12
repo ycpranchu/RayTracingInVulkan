@@ -68,7 +68,9 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Lucy In One Weekend", LucyInOneWeekend},
 	{"Cornell Box", CornellBox},
 	{"Cornell Box & Lucy", CornellBoxLucy},
-	{"Cubes and Common Scene", CubesAndCommonScene}
+	{"Cubes and Common Scene", CubesAndCommonScene},
+	{"Cylinder and Common Scene", CylinderAndCommonScene}
+	
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -327,6 +329,68 @@ SceneAssets SceneList::CubesAndCommonScene(CameraInitialSate& camera)
 				else // Glass
 				{
 					models.push_back(Model::CreateCube(center, 0.2f, Material::Dielectric(1.5f), isProc));
+				}
+			}
+		}
+	}
+
+	// models.push_back(Model::CreateSphere(vec3(0, 1, 0), 1.0f, Material::Dielectric(1.5f), isProc));
+	// models.push_back(Model::CreateSphere(vec3(-4, 1, 0), 1.0f, Material::Lambertian(vec3(0.4f, 0.2f, 0.1f)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(4, 1, 0), 1.0f, Material::Metallic(vec3(0.7f, 0.6f, 0.5f), 0.0f), isProc));
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+
+SceneAssets SceneList::CylinderAndCommonScene(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 20;
+	camera.Aperture = 0.1f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+	// AddRayTracingInOneWeekendCommonScene(models, isProc, random);
+
+	// Procedural Cubes
+	for (int i = -30; i < 30; ++i)
+	{
+		for (int j = -30; j < 30; ++j)
+		{
+			// if (abs(i) <= 11 && abs(j) <= 11)
+			// 	continue;
+
+			const float chooseMat = random();
+			const float center_y = static_cast<float>(j) + 0.9f * random();
+			const float center_x = static_cast<float>(i) + 0.9f * random();
+			const vec3 center(center_x, 0.2f, center_y);
+
+			if (length(center - vec3(4, 0.2f, 0)) > 0.9f)
+			{
+				if (chooseMat < 0.8f)
+				{
+					const float b = random() * random();
+					const float g = random() * random();
+					const float r = random() * random();
+
+					models.push_back(Model::CreateCylinder(center, 0.2f, Material::DiffuseLight(vec3(r, g, b)), isProc));
+				}
+				else
+				{
+					const float b = 0.5f * (1 + random());
+					const float g = 0.5f * (1 + random());
+					const float r = 0.5f * (1 + random());
+
+					models.push_back(Model::CreateCylinder(center, 0.2f, Material::DiffuseLight(vec3(r, g, b)), isProc));
 				}
 			}
 		}

@@ -18,6 +18,7 @@ namespace Assets
 		static Model CreateBox(const glm::vec3& p0, const glm::vec3& p1, const Material& material);
 		static Model CreateSphere(const glm::vec3& center, float radius, const Material& material, bool isProcedural);
 		static Model CreateCube(const glm::vec3& center, float radius, const Material& material, bool isProcedural);
+		static Model CreateCylinder(const glm::vec3& center, float radius, const Material& material, bool isProcedural);
 		
 		Model& operator = (const Model&) = delete;
 		Model& operator = (Model&&) = delete;
@@ -36,6 +37,7 @@ namespace Assets
 
 		const class Procedural* Procedural() const { return procedural_.get(); }
 		const class Procedural* ProceduralCube() const { return proceduralCube_.get(); }
+		const class Procedural* ProceduralCylinder() const { return proceduralCylinder_.get(); }
 
 		uint32_t NumberOfVertices() const { return static_cast<uint32_t>(vertices_.size()); }
 		uint32_t NumberOfIndices() const { return static_cast<uint32_t>(indices_.size()); }
@@ -45,12 +47,14 @@ namespace Assets
 
 		Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, const class Procedural* procedural);
 		Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, const class Procedural* procedural, const class Procedural* proceduralCube);
+		Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, const class Procedural* procedural, const class Procedural* proceduralCube, const class Procedural* proceduralCylinder);
 
 		std::vector<Vertex> vertices_;
 		std::vector<uint32_t> indices_;
 		std::vector<Material> materials_;
 		std::shared_ptr<const class Procedural> procedural_;
 		std::shared_ptr<const class Procedural> proceduralCube_;
+		std::shared_ptr<const class Procedural> proceduralCylinder_;
 	};
 
 }

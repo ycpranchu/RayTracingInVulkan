@@ -22,8 +22,10 @@ Scene::Scene(Vulkan::CommandPool& commandPool, std::vector<Model>&& models, std:
 	std::vector<Material> materials;
 	std::vector<glm::vec4> procedurals;
 	std::vector<glm::vec4> proceduralCubes;
+	std::vector<glm::vec4> proceduralCylinder;
 	std::vector<VkAabbPositionsKHR> aabbs;
 	std::vector<VkAabbPositionsKHR> aabbcubes;
+	std::vector<VkAabbPositionsKHR> aabbCylinder;
 	std::vector<glm::uvec2> offsets;
 
 	for (const auto& model : models_)
@@ -73,6 +75,20 @@ Scene::Scene(Vulkan::CommandPool& commandPool, std::vector<Model>&& models, std:
 			aabbcubes.emplace_back();
 			proceduralCubes.emplace_back();
 		}
+
+		// Add optional Cylinder procedurals.
+		const auto* const cylinder = dynamic_cast<const Cylinder*>(model.ProceduralCylinder());
+		if (cylinder != nullptr)
+		{
+			const auto aabb = cylinder->BoundingBox();
+			aabbCylinder.push_back({ aabb.first.x, aabb.first.y, aabb.first.z, aabb.second.x, aabb.second.y, aabb.second.z });
+			proceduralCylinder.emplace_back(cylinder->Center, cylinder->Radius);
+		}
+		else
+		{
+			aabbCylinder.emplace_back();
+			proceduralCylinder.emplace_back();
+		}
 	}
 
 	constexpr auto flags = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
@@ -87,6 +103,9 @@ Scene::Scene(Vulkan::CommandPool& commandPool, std::vector<Model>&& models, std:
 
 	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "CubeAABBs", VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | flags, aabbcubes, aabbCubeBuffer_, aabbCubeBufferMemory_);
 	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "ProceduralCubes", flags, proceduralCubes, proceduralCubeBuffer_, proceduralCubeBufferMemory_);
+
+	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "CylinderAABBs", VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | flags, aabbCylinder, aabbCylinderBuffer_, aabbCylinderBufferMemory_);
+	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "ProceduralCylinders", flags, proceduralCylinder, proceduralCylinderBuffer_, proceduralCylinderBufferMemory_);
 
 	
 	// Upload all textures
@@ -111,10 +130,14 @@ Scene::~Scene()
 	proceduralBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	proceduralCubeBuffer_.reset();
 	proceduralCubeBufferMemory_.reset(); // release memory after bound buffer has been destroyed
+	proceduralCylinderBuffer_.reset();
+	proceduralCylinderBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	aabbBuffer_.reset();
 	aabbBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	aabbCubeBuffer_.reset();
 	aabbCubeBufferMemory_.reset(); // release memory after bound buffer has been destroyed
+	aabbCylinderBuffer_.reset();
+	aabbCylinderBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	offsetBuffer_.reset();
 	offsetBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	materialBuffer_.reset();

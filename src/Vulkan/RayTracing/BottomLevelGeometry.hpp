@@ -40,6 +40,12 @@ namespace Vulkan::RayTracing
 			uint32_t aabbOffset,
 			uint32_t aabbCount,
 			bool isOpaque);
+		
+		void AddGeometryCylinderAabb(
+			const Assets::Scene& scene,
+			uint32_t aabbOffset,
+			uint32_t aabbCount,
+			bool isOpaque);
 
 	private:
 
