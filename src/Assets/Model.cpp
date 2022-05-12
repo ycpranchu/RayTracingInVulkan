@@ -446,6 +446,7 @@ Model Model::CreateSphere(const vec3& center, float radius, const Material& mate
 
 Model Model::CreateCylinder(const vec3& center, float radius, const Material& material, const bool isProcedural)
 {
+	//This crates wrong vertices and normals (copied from spheres). Only DiffuseLight material is supported as a result
 	const int slices = 32;
 	const int stacks = 16;
 	
