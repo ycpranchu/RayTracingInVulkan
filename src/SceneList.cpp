@@ -74,12 +74,14 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Cornell Box & Lucy", CornellBoxLucy},
 	{"Cubes and Common Scene", CubesAndCommonScene},
 	{"Cylinder and Common Scene", CylinderCubesCommonScene},
-	// {"Test Scene", TestScene},
 	{"TreesAndGrass", TreesAndGrass},
-	{"blender_3_0", blender_2_78},
-	{"blender_3_2", blender_3_2},
-	// {"blender_3_3", blender_3_3},
-	
+	{"blender_2_78 Procedural", blender_2_78},
+	{"blender_3_2 White Lands", blender_3_2},
+	{"blender_2_77 Racing Car", blender_2_77},
+	{"blender_2_80 Spring", blender_2_80},
+	{"blender_2_83 PartyTug", blender_2_83},
+	{"blender_2_90 Splash Fox", blender_2_90},
+	{"blender_2_91 Red Autumn Forest", blender_2_91},
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -667,6 +669,268 @@ SceneAssets SceneList::blender_3_2(CameraInitialSate& camera)
 			models.push_back(model);
 		}
 	}
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_2_77(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(24.5407, -6.05775, -8.10281), vec3(1.74147, 2.4026, 1.04626), vec3(0, 1, 0));
+	camera.FieldOfView = 30;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+
+	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(1.0, 0.0, 0.0)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(3.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(0.0, 1.0, 0.0)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 3.0), 1.0f, Material::Lambertian(vec3(0.0, 0.0, 1.0)), isProc));
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_2.77";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+			models.push_back(model);
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_2_80(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(-2.40336, -0.290645, 5.15517), vec3(-3.54456, 0.632684, 1.72994), vec3(0, 1, 0));
+	camera.FieldOfView = 20;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+
+	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(1.0, 0.0, 0.0)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(3.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(0.0, 1.0, 0.0)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 3.0), 1.0f, Material::Lambertian(vec3(0.0, 0.0, 1.0)), isProc));
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_2.80";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+			models.push_back(model);
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_2_83(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(-63.8804, 4.68381, 59.8617), vec3(16.7533, 7.33571, -15.7229), vec3(0, 1, 0));
+	camera.FieldOfView = 20;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+	// models.push_back(Model::CreateSphere(vec3(0, -1010, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_2.83";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+			models.push_back(model);
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_2_90(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(3.83184, 2.85771, 10.6313), vec3(-1.0, 4.94832, 0.0), vec3(0, 1, 0));
+	camera.FieldOfView = 30;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+	// models.push_back(Model::CreateSphere(vec3(0, -1010, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_2.90";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+			models.push_back(model);
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_2_91(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(-25.9075, 2.54455, 61.7621), vec3(-16.8204, 3.49817, 29.8268), vec3(0, 1, 0));
+	camera.FieldOfView = 30;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+	// models.push_back(Model::CreateSphere(vec3(0, -1010, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_2.91";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+
+			if(entry.path().string().find("Character2_Shirt") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(156.0 / 256, 74.0 / 256, 61.0 / 256)));
+			}
+			else if(entry.path().string().find("Character_Hair") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(119.0 / 256, 74.0 / 256, 55.0 / 256)));
+			}
+			else if(entry.path().string().find("Character_Pants") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(131.0 / 256, 115.0 / 256, 160.0 / 256)));
+			}
+			else if(entry.path().string().find("Character_Hair") != std::string::npos || entry.path().string().find("Character_hair_2") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(121.0 / 256, 74.0 / 256, 56.0 / 256)));
+			}
+			else if(entry.path().string().find("Character_watch") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(163.0 / 256, 73.0 / 256, 78.0 / 256)));
+			}
+			else if(entry.path().string().find("Character") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(223.0 / 256, 187.0 / 256, 161.0 / 256)));
+			}
+
+			else if(entry.path().string().find("backpackStraps") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(104.0 / 256, 66.0 / 256, 64.0 / 256)));
+			}
+			else if(entry.path().string().find("BackPackDec") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(108.0 / 256, 191.0 / 256, 210.0 / 256)));
+			}
+			else if(entry.path().string().find("BackPack") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(97.0 / 256, 85.0 / 256, 85.0 / 256)));
+			}
+
+			else if(entry.path().string().find("ForeGround_terrain") != std::string::npos)
+			{
+				model.SetMaterial(Material::Lambertian(vec3(212.0 / 256, 207.0 / 256, 207.0 / 256)), 0);
+				model.SetMaterial(Material::Lambertian(vec3(212.0 / 256, 207.0 / 256, 207.0 / 256)), 1);
+				model.SetMaterial(Material::Lambertian(vec3(220.0 / 256, 139.0 / 256, 27.0 / 256)), 2);
+			}
+			else if(entry.path().string().find("MidGround") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(232.0 / 256, 189.0 / 256, 26.0 / 256)));
+			}
+
+			else if(entry.path().string().find("FlowerParticles") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(212.0 / 256, 207.0 / 256, 207.0 / 256)));
+			}
+
+			else if(entry.path().string().find("Mesh") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(142.0 / 256, 85.0 / 256, 47.0 / 256)));
+			}
+			else if(entry.path().string().find("bush") != std::string::npos)
+			{
+				float chooseColor = random();
+				if(chooseColor < 0.3)
+					model.SetAllMaterial(Material::Lambertian(vec3(175.0 / 256, 195.0 / 256, 62.0 / 256)));
+				else if(chooseColor < 0.6)
+					model.SetAllMaterial(Material::Lambertian(vec3(224.0 / 256, 70.0 / 256, 45.0 / 256)));
+				else
+					model.SetAllMaterial(Material::Lambertian(vec3(236.0 / 256, 186.0 / 256, 85.0 / 256)));
+			}
+			
+
+			models.push_back(model);
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
 
 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
 }

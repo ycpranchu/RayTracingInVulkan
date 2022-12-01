@@ -40,6 +40,11 @@ public:
 	static SceneAssets TreesAndGrass(CameraInitialSate& camera);
 	static SceneAssets blender_2_78(CameraInitialSate& camera);
 	static SceneAssets blender_3_2(CameraInitialSate& camera);
+	static SceneAssets blender_2_77(CameraInitialSate& camera);
+	static SceneAssets blender_2_80(CameraInitialSate& camera);
+	static SceneAssets blender_2_83(CameraInitialSate& camera);
+	static SceneAssets blender_2_90(CameraInitialSate& camera);
+	static SceneAssets blender_2_91(CameraInitialSate& camera);
 	// static SceneAssets blender_3_3(CameraInitialSate& camera);
 
 	static const std::vector<std::pair<std::string, std::function<SceneAssets (CameraInitialSate&)>>> AllScenes;

@@ -29,6 +29,7 @@ namespace Assets
 		~Model() = default;
 
 		void SetMaterial(const Material& material);
+		void SetMaterial(const Material& material, int index);
 		void SetAllMaterial(const Material& material);
 		void Transform(const glm::mat4& transform);
 

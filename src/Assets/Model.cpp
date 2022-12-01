@@ -527,6 +527,12 @@ void Model::SetMaterial(const Material& material)
 	materials_[0] = material;
 }
 
+void Model::SetMaterial(const Material& material, int index)
+{
+	assert(materials_.size() > index);
+	materials_[index] = material;
+}
+
 void Model::SetAllMaterial(const Material& material)
 {
 	for(int i = 0; i < materials_.size(); i++)
