@@ -527,6 +527,12 @@ void Model::SetMaterial(const Material& material)
 	materials_[0] = material;
 }
 
+void Model::SetAllMaterial(const Material& material)
+{
+	for(int i = 0; i < materials_.size(); i++)
+		materials_[i] = material;
+}
+
 void Model::Transform(const mat4& transform)
 {
 	const auto transformIT = inverseTranspose(transform);

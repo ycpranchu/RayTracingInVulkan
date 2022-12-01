@@ -29,6 +29,7 @@ namespace Assets
 		~Model() = default;
 
 		void SetMaterial(const Material& material);
+		void SetAllMaterial(const Material& material);
 		void Transform(const glm::mat4& transform);
 
 		const std::vector<Vertex>& Vertices() const { return vertices_; }

@@ -4,11 +4,15 @@
 #include "Assets/Texture.hpp"
 #include <functional>
 #include <random>
+#include <filesystem>
+#include <iostream>
 
 using namespace glm;
 using Assets::Material;
 using Assets::Model;
 using Assets::Texture;
+
+namespace fs = std::filesystem;
 
 namespace
 {
@@ -69,7 +73,12 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Cornell Box", CornellBox},
 	{"Cornell Box & Lucy", CornellBoxLucy},
 	{"Cubes and Common Scene", CubesAndCommonScene},
-	{"Cylinder and Common Scene", CylinderCubesCommonScene}
+	{"Cylinder and Common Scene", CylinderCubesCommonScene},
+	// {"Test Scene", TestScene},
+	{"TreesAndGrass", TreesAndGrass},
+	{"blender_3_0", blender_2_78},
+	{"blender_3_2", blender_3_2},
+	// {"blender_3_3", blender_3_3},
 	
 };
 
@@ -429,3 +438,275 @@ SceneAssets SceneList::CylinderCubesCommonScene(CameraInitialSate& camera)
 
 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
 }
+
+// SceneAssets SceneList::TestScene(CameraInitialSate& camera)
+// {
+// 	// Final scene from Ray Tracing In One Weekend book.
+	
+// 	camera.ModelView = lookAt(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0));
+// 	camera.FieldOfView = 20;
+// 	camera.Aperture = 0.1f;
+// 	camera.FocusDistance = 10.0f;
+// 	camera.ControlSpeed = 5.0f;
+// 	camera.GammaCorrection = true;
+// 	camera.HasSky = true;
+
+// 	const bool isProc = true;
+
+// 	std::mt19937 engine(42);
+// 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+// 	std::vector<Model> models;
+
+// 	models.push_back(Model::CreateSphere(vec3(0, -1000, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
+
+
+// 	// stuff I added
+// 	const auto i = mat4(1);
+
+// 	auto human = Model::LoadModel("/home/mrs/vulkan-samples/obj-files/human-model/FinalBaseMesh.obj");
+// 	human.Transform(
+// 			rotate(
+// 				scale(
+// 					translate(i, vec3(2, 0, 0))
+// 				, vec3(0.05)),
+// 			radians(90.0f), vec3(0, 1, 0)));
+// 	models.push_back(human);
+	
+// 	auto Tree1 = Model::LoadModel("/home/mrs/vulkan-samples/obj-files/three-tree/Tree-1.obj");
+// 	Tree1.Transform(
+// 			rotate(
+// 				scale(
+// 					translate(i, vec3(-2, 0, -3))
+// 				, vec3(0.25)),
+// 			radians(180.0f), vec3(0, 1, 0)));
+// 	models.push_back(Tree1);
+
+// 	auto Tree2 = Model::LoadModel("/home/mrs/vulkan-samples/obj-files/three-tree/Tree-2.obj");
+// 	Tree2.Transform(
+// 			rotate(
+// 				scale(
+// 					translate(i, vec3(0, 0, 0))
+// 				, vec3(0.25)),
+// 			radians(180.0f), vec3(0, 1, 0)));
+// 	models.push_back(Tree2);
+
+// 	auto Tree3 = Model::LoadModel("/home/mrs/vulkan-samples/obj-files/three-tree/Tree-3.obj");
+// 	Tree3.Transform(
+// 			rotate(
+// 				scale(
+// 					translate(i, vec3(2, 0, 2))
+// 				, vec3(0.25)),
+// 			radians(180.0f), vec3(0, 1, 0)));
+// 	models.push_back(Tree3);
+
+// 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+// }
+
+SceneAssets SceneList::TreesAndGrass(CameraInitialSate& camera)
+{
+	// Final scene from Ray Tracing In One Weekend book.
+	
+	camera.ModelView = lookAt(vec3(2, 0.5, 0.75), vec3(0, 0.3, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 30;
+	camera.Aperture = 0.0001f;
+	camera.FocusDistance = 2.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+	models.push_back(Model::CreateSphere(vec3(0, -1000, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
+
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/TreesAndGrass";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+			model.Transform(scale(i, vec3(0.1)));
+
+			if(entry.path().string().find("leaves") != std::string::npos || entry.path().string().find("grass") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(124.0 / 256, 252.0 / 256, 0.0)));
+			}
+			else if(entry.path().string().find("mountain") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(136.0 / 256, 140.0 / 256, 141.0 / 256)));
+			}
+			else if(entry.path().string().find("ground") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(155.0 / 256, 118.0 / 256, 83.0 / 256)));
+			}
+			else if(entry.path().string().find("tree") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(114.0 / 256, 92.0 / 256, 66.0 / 256)));
+			}
+			else if(entry.path().string().find("human") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(197.0 / 256, 140.0 / 256, 133.0 / 256)));
+			}
+			else if(entry.path().string().find("Benz") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Metallic(vec3(200.0 / 256, 200.0 / 256, 200.0 / 256), 0.2));
+			}
+
+			models.push_back(model);
+		}
+	}
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_2_78(CameraInitialSate& camera)
+{
+	// Final scene from Ray Tracing In One Weekend book.
+	
+	// camera.ModelView = lookAt(vec3(1.1334, -0.991873, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
+	camera.ModelView = lookAt(vec3(-0.0, 1.6, 1.2), vec3(0.0, 1.24307, -5.23752), vec3(0, 1, 0));
+	camera.FieldOfView = 30;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+
+	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(1.0, 0.0, 0.0)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(3.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(0.0, 1.0, 0.0)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 3.0), 1.0f, Material::Lambertian(vec3(0.0, 0.0, 1.0)), isProc));
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_2.78";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+			models.push_back(model);
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_3_2(CameraInitialSate& camera)
+{
+	// Final scene from Ray Tracing In One Weekend book.
+	
+	// camera.ModelView = lookAt(vec3(1.1334, -0.991873, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
+	camera.ModelView = lookAt(vec3(1.1334, -1.3, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
+	camera.FieldOfView = 25;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+
+	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(1.0, 0.0, 0.0)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(3.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(0.0, 1.0, 0.0)), isProc));
+	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 3.0), 1.0f, Material::Lambertian(vec3(0.0, 0.0, 1.0)), isProc));
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_3.2";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+
+			if(entry.path().string().find("boat") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(150.0 / 256, 111.0 / 256, 51.0 / 256)));
+			}
+			// else if(entry.path().string().find("noise") != std::string::npos)
+			// {
+			// 	model.SetAllMaterial(Material::Dielectric(0.01));
+			// }
+			else if(entry.path().string().find("water") != std::string::npos)
+			{
+				// model.SetAllMaterial(Material::Lambertian(vec3(18.0 / 256, 109.0 / 256, 105.0 / 256)));
+				model.SetAllMaterial(Material::Metallic(vec3(18.0 / 256, 109.0 / 256, 105.0 / 256), 0.6));
+			}
+			else if(entry.path().string().find("Landscape") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(250.0 / 256, 250.0 / 256, 245.0 / 256)));
+			}
+
+			models.push_back(model);
+		}
+	}
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+// SceneAssets SceneList::blender_3_3(CameraInitialSate& camera)
+// {
+// 	// Final scene from Ray Tracing In One Weekend book.
+	
+// 	camera.ModelView = lookAt(vec3(563.448, 697.095, -556.87), vec3(361.606, 110.776, 117.695), vec3(0, 1, 0));
+// 	camera.FieldOfView = 30;
+// 	camera.Aperture = 0.0f;
+// 	camera.FocusDistance = 700.0f;
+// 	camera.ControlSpeed = 5.0f;
+// 	camera.GammaCorrection = true;
+// 	camera.HasSky = true;
+
+// 	const bool isProc = true;
+
+// 	std::mt19937 engine(42);
+// 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+// 	std::vector<Model> models;
+
+// 	// models.push_back(Model::CreateSphere(vec3(0, -1000, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
+
+
+// 	// stuff I added
+// 	const auto i = mat4(1);
+
+// 	std::string path = "/home/mrs/vulkan-samples/RayTracingInVulkan-cube/Scenes/blender_3_3_lts_splash_by_piotr_krynski";
+// 	for (const auto & entry : fs::directory_iterator(path))
+// 	{
+// 		if(entry.path().extension() == ".obj")
+// 		{
+// 			auto model = Model::LoadModel(entry.path());
+// 			// model.Transform(scale(i, vec3(0.1)));
+
+// 			models.push_back(model);
+// 		}
+// 	}
+
+// 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+// }
