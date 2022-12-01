@@ -744,6 +744,40 @@ SceneAssets SceneList::blender_2_80(CameraInitialSate& camera)
 		if(entry.path().extension() == ".obj")
 		{
 			auto model = Model::LoadModel(entry.path());
+
+			if(entry.path().string().find("spring_body") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(223.0 / 256, 175.0 / 256, 171.0 / 256)));
+			}
+			else if(entry.path().string().find("stitches") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(92.0 / 256, 64.0 / 256, 51.0 / 256)));
+			}
+			else if(entry.path().string().find("spring_jacket") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(163.0 / 256, 67.0 / 256, 42.0 / 256)));
+			}
+			else if(entry.path().string().find("spring_pants") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(92.0 / 256, 74.0 / 256, 101.0 / 256)));
+			}
+			else if(entry.path().string().find("spring_boots") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(150.0 / 256, 106.0 / 256, 86.0 / 256)));
+			}
+			else if(entry.path().string().find("spring_hairband") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(69.0 / 256, 23.0 / 256, 8.0 / 256)));
+			}
+			else if(entry.path().string().find("spring_hair") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(108.0 / 256, 86.0 / 256, 99.0 / 256)));
+			}
+			else if(entry.path().string().find("spring_scarf") != std::string::npos || entry.path().string().find("spring_pullover") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(114.0 / 256, 76.0 / 256, 64.0 / 256)));
+			}
+
 			models.push_back(model);
 		}
 	}
