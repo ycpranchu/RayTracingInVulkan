@@ -826,7 +826,7 @@ SceneAssets SceneList::blender_2_83(CameraInitialSate& camera)
 
 SceneAssets SceneList::blender_2_90(CameraInitialSate& camera)
 {
-	camera.ModelView = lookAt(vec3(3.83184, 2.85771, 10.6313), vec3(-1.0, 4.94832, 0.0), vec3(0, 1, 0));
+	camera.ModelView = lookAt(vec3(2.83184, 2.85771, 10.6313), vec3(-2.0, 4.94832, 0.0), vec3(0, 1, 0));
 	camera.FieldOfView = 30;
 	camera.Aperture = 0.0f;
 	camera.FocusDistance = 7.0f;
