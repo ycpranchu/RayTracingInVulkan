@@ -6,6 +6,7 @@
 #include <random>
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 
 using namespace glm;
 using Assets::Material;
@@ -75,13 +76,14 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Cubes and Common Scene", CubesAndCommonScene},
 	{"Cylinder and Common Scene", CylinderCubesCommonScene},
 	{"TreesAndGrass", TreesAndGrass},
-	{"blender_2_78 Procedural", blender_2_78},
-	{"blender_3_2 White Lands", blender_3_2},
 	{"blender_2_77 Racing Car", blender_2_77},
+	{"blender_2_78 Procedural", blender_2_78},
 	{"blender_2_80 Spring", blender_2_80},
 	{"blender_2_83 PartyTug", blender_2_83},
 	{"blender_2_90 Splash Fox", blender_2_90},
 	{"blender_2_91 Red Autumn Forest", blender_2_91},
+	{"blender_3_2 White Lands", blender_3_2},
+	{"TestScene", TestScene},
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -570,112 +572,8 @@ SceneAssets SceneList::TreesAndGrass(CameraInitialSate& camera)
 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
 }
 
-SceneAssets SceneList::blender_2_78(CameraInitialSate& camera)
-{
-	// Final scene from Ray Tracing In One Weekend book.
-	
-	// camera.ModelView = lookAt(vec3(1.1334, -0.991873, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
-	camera.ModelView = lookAt(vec3(-0.0, 1.6, 1.2), vec3(0.0, 1.24307, -5.23752), vec3(0, 1, 0));
-	camera.FieldOfView = 30;
-	camera.Aperture = 0.0f;
-	camera.FocusDistance = 7.0f;
-	camera.ControlSpeed = 5.0f;
-	camera.GammaCorrection = true;
-	camera.HasSky = true;
-
-	const bool isProc = true;
-
-	std::mt19937 engine(42);
-	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
-
-	std::vector<Model> models;
-
-
-	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(1.0, 0.0, 0.0)), isProc));
-	// models.push_back(Model::CreateSphere(vec3(3.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(0.0, 1.0, 0.0)), isProc));
-	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 3.0), 1.0f, Material::Lambertian(vec3(0.0, 0.0, 1.0)), isProc));
-
-	// stuff I added
-	const auto i = mat4(1);
-
-	std::string path = "../../../Scenes/Blender_2.78";
-	for (const auto & entry : fs::directory_iterator(path))
-	{
-		if(entry.path().extension() == ".obj")
-		{
-			auto model = Model::LoadModel(entry.path());
-			models.push_back(model);
-		}
-	}
-
-	std::cout << "done loading" << std::endl;
-
-	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
-}
-
-SceneAssets SceneList::blender_3_2(CameraInitialSate& camera)
-{
-	// Final scene from Ray Tracing In One Weekend book.
-	
-	// camera.ModelView = lookAt(vec3(1.1334, -0.991873, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
-	camera.ModelView = lookAt(vec3(1.1334, -1.3, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
-	camera.FieldOfView = 25;
-	camera.Aperture = 0.0f;
-	camera.FocusDistance = 7.0f;
-	camera.ControlSpeed = 5.0f;
-	camera.GammaCorrection = true;
-	camera.HasSky = true;
-
-	const bool isProc = true;
-
-	std::mt19937 engine(42);
-	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
-
-	std::vector<Model> models;
-
-
-	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(1.0, 0.0, 0.0)), isProc));
-	// models.push_back(Model::CreateSphere(vec3(3.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(0.0, 1.0, 0.0)), isProc));
-	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 3.0), 1.0f, Material::Lambertian(vec3(0.0, 0.0, 1.0)), isProc));
-
-	// stuff I added
-	const auto i = mat4(1);
-
-	std::string path = "../../../Scenes/Blender_3.2";
-	for (const auto & entry : fs::directory_iterator(path))
-	{
-		if(entry.path().extension() == ".obj")
-		{
-			auto model = Model::LoadModel(entry.path());
-
-			if(entry.path().string().find("boat") != std::string::npos)
-			{
-				model.SetAllMaterial(Material::Lambertian(vec3(150.0 / 256, 111.0 / 256, 51.0 / 256)));
-			}
-			// else if(entry.path().string().find("noise") != std::string::npos)
-			// {
-			// 	model.SetAllMaterial(Material::Dielectric(0.01));
-			// }
-			else if(entry.path().string().find("water") != std::string::npos)
-			{
-				// model.SetAllMaterial(Material::Lambertian(vec3(18.0 / 256, 109.0 / 256, 105.0 / 256)));
-				model.SetAllMaterial(Material::Metallic(vec3(18.0 / 256, 109.0 / 256, 105.0 / 256), 0.6));
-			}
-			else if(entry.path().string().find("Landscape") != std::string::npos)
-			{
-				model.SetAllMaterial(Material::Lambertian(vec3(250.0 / 256, 250.0 / 256, 245.0 / 256)));
-			}
-
-			models.push_back(model);
-		}
-	}
-
-	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
-}
-
 SceneAssets SceneList::blender_2_77(CameraInitialSate& camera)
 {
-	camera.ModelView = lookAt(vec3(24.5407, -6.05775, -8.10281), vec3(1.74147, 2.4026, 1.04626), vec3(0, 1, 0));
 	camera.FieldOfView = 30;
 	camera.Aperture = 0.0f;
 	camera.FocusDistance = 7.0f;
@@ -706,6 +604,57 @@ SceneAssets SceneList::blender_2_77(CameraInitialSate& camera)
 			auto model = Model::LoadModel(entry.path());
 			models.push_back(model);
 		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_2_78(CameraInitialSate& camera)
+{
+	camera.FieldOfView = 30;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_2.78";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+			models.push_back(model);
+		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
 	}
 
 	std::cout << "done loading" << std::endl;
@@ -715,7 +664,6 @@ SceneAssets SceneList::blender_2_77(CameraInitialSate& camera)
 
 SceneAssets SceneList::blender_2_80(CameraInitialSate& camera)
 {
-	camera.ModelView = lookAt(vec3(-2.40336, -0.290645, 5.15517), vec3(-3.54456, 0.632684, 1.72994), vec3(0, 1, 0));
 	camera.FieldOfView = 20;
 	camera.Aperture = 0.0f;
 	camera.FocusDistance = 7.0f;
@@ -723,19 +671,11 @@ SceneAssets SceneList::blender_2_80(CameraInitialSate& camera)
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
 
-	const bool isProc = true;
-
 	std::mt19937 engine(42);
 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
 
 	std::vector<Model> models;
 
-
-	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(1.0, 0.0, 0.0)), isProc));
-	// models.push_back(Model::CreateSphere(vec3(3.0, 10.0, 0.0), 1.0f, Material::Lambertian(vec3(0.0, 1.0, 0.0)), isProc));
-	// models.push_back(Model::CreateSphere(vec3(0.0, 10.0, 3.0), 1.0f, Material::Lambertian(vec3(0.0, 0.0, 1.0)), isProc));
-
-	// stuff I added
 	const auto i = mat4(1);
 
 	std::string path = "../../../Scenes/Blender_2.80";
@@ -780,6 +720,16 @@ SceneAssets SceneList::blender_2_80(CameraInitialSate& camera)
 
 			models.push_back(model);
 		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
 	}
 
 	std::cout << "done loading" << std::endl;
@@ -789,7 +739,7 @@ SceneAssets SceneList::blender_2_80(CameraInitialSate& camera)
 
 SceneAssets SceneList::blender_2_83(CameraInitialSate& camera)
 {
-	camera.ModelView = lookAt(vec3(-63.8804, 4.68381, 59.8617), vec3(16.7533, 7.33571, -15.7229), vec3(0, 1, 0));
+	// camera.ModelView = lookAt(vec3(-63.8804, 4.68381, 59.8617), vec3(16.7533, 7.33571, -15.7229), vec3(0, 1, 0));
 	camera.FieldOfView = 20;
 	camera.Aperture = 0.0f;
 	camera.FocusDistance = 7.0f;
@@ -797,16 +747,11 @@ SceneAssets SceneList::blender_2_83(CameraInitialSate& camera)
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
 
-	const bool isProc = true;
-
 	std::mt19937 engine(42);
 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
 
 	std::vector<Model> models;
 
-	// models.push_back(Model::CreateSphere(vec3(0, -1010, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
-
-	// stuff I added
 	const auto i = mat4(1);
 
 	std::string path = "../../../Scenes/Blender_2.83";
@@ -817,6 +762,16 @@ SceneAssets SceneList::blender_2_83(CameraInitialSate& camera)
 			auto model = Model::LoadModel(entry.path());
 			models.push_back(model);
 		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
 	}
 
 	std::cout << "done loading" << std::endl;
@@ -826,7 +781,6 @@ SceneAssets SceneList::blender_2_83(CameraInitialSate& camera)
 
 SceneAssets SceneList::blender_2_90(CameraInitialSate& camera)
 {
-	camera.ModelView = lookAt(vec3(2.83184, 2.85771, 10.6313), vec3(-2.0, 4.94832, 0.0), vec3(0, 1, 0));
 	camera.FieldOfView = 30;
 	camera.Aperture = 0.0f;
 	camera.FocusDistance = 7.0f;
@@ -834,16 +788,11 @@ SceneAssets SceneList::blender_2_90(CameraInitialSate& camera)
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
 
-	const bool isProc = true;
-
 	std::mt19937 engine(42);
 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
 
 	std::vector<Model> models;
 
-	// models.push_back(Model::CreateSphere(vec3(0, -1010, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
-
-	// stuff I added
 	const auto i = mat4(1);
 
 	std::string path = "../../../Scenes/Blender_2.90";
@@ -854,6 +803,16 @@ SceneAssets SceneList::blender_2_90(CameraInitialSate& camera)
 			auto model = Model::LoadModel(entry.path());
 			models.push_back(model);
 		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
 	}
 
 	std::cout << "done loading" << std::endl;
@@ -863,7 +822,6 @@ SceneAssets SceneList::blender_2_90(CameraInitialSate& camera)
 
 SceneAssets SceneList::blender_2_91(CameraInitialSate& camera)
 {
-	camera.ModelView = lookAt(vec3(-25.9075, 2.54455, 61.7621), vec3(-16.8204, 3.49817, 29.8268), vec3(0, 1, 0));
 	camera.FieldOfView = 30;
 	camera.Aperture = 0.0f;
 	camera.FocusDistance = 7.0f;
@@ -878,9 +836,6 @@ SceneAssets SceneList::blender_2_91(CameraInitialSate& camera)
 
 	std::vector<Model> models;
 
-	// models.push_back(Model::CreateSphere(vec3(0, -1010, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
-
-	// stuff I added
 	const auto i = mat4(1);
 
 	std::string path = "../../../Scenes/Blender_2.91";
@@ -958,9 +913,125 @@ SceneAssets SceneList::blender_2_91(CameraInitialSate& camera)
 				else
 					model.SetAllMaterial(Material::Lambertian(vec3(236.0 / 256, 186.0 / 256, 85.0 / 256)));
 			}
-			
 
 			models.push_back(model);
+		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::blender_3_2(CameraInitialSate& camera)
+{
+	// camera.ModelView = lookAt(vec3(1.1334, -1.3, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
+	camera.FieldOfView = 25;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Blender_3.2";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+
+			if(entry.path().string().find("boat") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(150.0 / 256, 111.0 / 256, 51.0 / 256)));
+			}
+			else if(entry.path().string().find("water") != std::string::npos)
+			{
+				// model.SetAllMaterial(Material::Lambertian(vec3(18.0 / 256, 109.0 / 256, 105.0 / 256)));
+				model.SetAllMaterial(Material::Metallic(vec3(18.0 / 256, 109.0 / 256, 105.0 / 256), 0.6));
+			}
+			else if(entry.path().string().find("Landscape") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(250.0 / 256, 250.0 / 256, 245.0 / 256)));
+			}
+
+			models.push_back(model);
+		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
+	}
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::TestScene(CameraInitialSate& camera)
+{
+	// camera.ModelView = lookAt(vec3(-0.0, 1.6, 1.2), vec3(0.0, 1.24307, -5.23752), vec3(0, 1, 0));
+	// camera.ModelView = lookAt(vec3(-0.35024330019950867, -1.0811127424240112, 1.1617968082427979), vec3(0.0, 1.24307, -5.23752), vec3(0, 1, 0));
+	// camera.ModelView = lookAt(vec3(-0.35024330019950867, 1.1617968082427979, 1.0811127424240112), vec3(-0.06039896607398987, 1.5020394325256348, 0.18655967712402344), vec3(0, 1, 0));
+	// camera.ModelView = lookAt(vec3(-25.9075, 2.54455, 61.7621), vec3(-16.8204, 3.49817, 29.8268), vec3(0, 1, 0));
+	camera.FieldOfView = 30;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+
+	// models.push_back(Model::CreateSphere(vec3(0, -1010, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/TestScene";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+			models.push_back(model);
+		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
 		}
 	}
 

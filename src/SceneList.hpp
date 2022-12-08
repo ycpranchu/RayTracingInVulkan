@@ -45,6 +45,7 @@ public:
 	static SceneAssets blender_2_83(CameraInitialSate& camera);
 	static SceneAssets blender_2_90(CameraInitialSate& camera);
 	static SceneAssets blender_2_91(CameraInitialSate& camera);
+	static SceneAssets TestScene(CameraInitialSate& camera);
 	// static SceneAssets blender_3_3(CameraInitialSate& camera);
 
 	static const std::vector<std::pair<std::string, std::function<SceneAssets (CameraInitialSate&)>>> AllScenes;
