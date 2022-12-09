@@ -1,3 +1,4 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9b2cc92218ba34535db284a15c72849b74f97ae2bf6e04c879b0646a1d2401fe
-size 91
+# Blender 3.4.0
+# www.blender.org
+mtllib _mat_helper_RB_LINK_D.mtl
+o _mat_helper:RB_LINK_D

@@ -1,3 +1,4 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4ef70696cc890ad59a643c5e8a98d33d06f63c47be7b2e611c7d669fa9e04872
-size 67
+# Blender 3.4.0
+# www.blender.org
+mtllib sheet_002.mtl
+o sheet.002

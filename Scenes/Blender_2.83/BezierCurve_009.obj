@@ -1,3 +1,4 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:22d997b5bfac55ce227a67361d8e21082e01fe7a52251c1b278ef627e13d0287
-size 79
+# Blender 3.4.0
+# www.blender.org
+mtllib BezierCurve_009.mtl
+o BezierCurve.009
