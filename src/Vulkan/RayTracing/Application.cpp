@@ -147,8 +147,11 @@ void Application::CreateSwapChain()
 
 	const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {rayTracingPipeline_->RayGenShaderIndex(), {}} };
 	const std::vector<ShaderBindingTable::Entry> missPrograms = { {rayTracingPipeline_->MissShaderIndex(), {}} };
+	#ifdef USE_PROCEDURALS
 	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralHitGroupIndex(), {}} };
-
+	#else
+	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}} };
+	#endif
 	shaderBindingTable_.reset(new ShaderBindingTable(*deviceProcedures_, *rayTracingPipeline_, *rayTracingProperties_, rayGenPrograms, missPrograms, hitGroups));
 }
 
@@ -187,7 +190,9 @@ void Application::Render(VkCommandBuffer commandBuffer, const uint32_t imageInde
 		VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 
 	// Bind ray tracing pipeline.
+	printf("RTV: Bind ray tracing pipeline...\n");
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rayTracingPipeline_->Handle());
+	printf("RTV: Bind descriptor sets...\n");
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rayTracingPipeline_->PipelineLayout().Handle(), 0, 1, descriptorSets, 0, nullptr);
 
 	// Describe the shader binding table.
@@ -209,6 +214,7 @@ void Application::Render(VkCommandBuffer commandBuffer, const uint32_t imageInde
 	VkStridedDeviceAddressRegionKHR callableShaderBindingTable = {};
 
 	// Execute ray tracing shaders.
+	printf("RTV: Trace ray...\n");
 	deviceProcedures_->vkCmdTraceRaysKHR(commandBuffer,
 		&raygenShaderBindingTable, &missShaderBindingTable, &hitShaderBindingTable, &callableShaderBindingTable,
 		extent.width, extent.height, 1);
@@ -284,6 +290,7 @@ void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 
 	for (size_t i = 0; i != bottomAs_.size(); ++i)
 	{
+		printf("RTV: Creating bottom level acceleration structure %ld...\n", i);
 		bottomAs_[i].Generate(commandBuffer, *bottomScratchBuffer_, scratchOffset, *bottomBuffer_, resultOffset);
 		
 		resultOffset += bottomAs_[i].BuildSizes().accelerationStructureSize;

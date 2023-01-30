@@ -56,6 +56,7 @@ void TopLevelAccelerationStructure::Generate(
 	const VkDeviceSize resultOffset)
 {
 	// Create the acceleration structure.
+	printf("RTV: Creating top level acceleration structure...\n");
 	CreateAccelerationStructure(resultBuffer, resultOffset);
 
 	// Build the actual bottom-level acceleration structure

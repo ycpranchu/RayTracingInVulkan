@@ -4,6 +4,9 @@
 #include <memory>
 #include <vector>
 
+
+// #define USE_PROCEDURALS
+
 namespace Assets
 {
 	class Scene;
@@ -42,7 +45,9 @@ namespace Vulkan::RayTracing
 		uint32_t RayGenShaderIndex() const { return rayGenIndex_; }
 		uint32_t MissShaderIndex() const { return missIndex_; }
 		uint32_t TriangleHitGroupIndex() const { return triangleHitGroupIndex_; }
+		#ifdef USE_PROCEDURALS
 		uint32_t ProceduralHitGroupIndex() const { return proceduralHitGroupIndex_; }
+		#endif
 
 		VkDescriptorSet DescriptorSet(uint32_t index) const;
 		const class PipelineLayout& PipelineLayout() const { return *pipelineLayout_; }
@@ -59,7 +64,9 @@ namespace Vulkan::RayTracing
 		uint32_t rayGenIndex_;
 		uint32_t missIndex_;
 		uint32_t triangleHitGroupIndex_;
+		#ifdef USE_PROCEDURALS
 		uint32_t proceduralHitGroupIndex_;
+		#endif
 	};
 
 }
