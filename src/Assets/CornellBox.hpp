@@ -16,6 +16,12 @@ namespace Assets
 			std::vector<Vertex>& vertices,
 			std::vector<uint32_t>& indices,
 			std::vector<Material>& materials);
+
+		static void CreateSimple(
+			float scale,
+			std::vector<Vertex>& vertices,
+			std::vector<uint32_t>& indices,
+			std::vector<Material>& materials);
 	};
 
 }

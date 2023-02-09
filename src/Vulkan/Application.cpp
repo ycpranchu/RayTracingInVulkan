@@ -119,6 +119,7 @@ void Application::OnDeviceSet()
 
 void Application::CreateSwapChain()
 {
+	printf("RTV(app): Creating swap chain...\n");
 	// Wait until the window is visible.
 	while (window_->IsMinimized())
 	{

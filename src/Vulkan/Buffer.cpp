@@ -14,6 +14,7 @@ Buffer::Buffer(const class Device& device, const size_t size, const VkBufferUsag
 
 	Check(vkCreateBuffer(device.Handle(), &bufferInfo, nullptr, &buffer_),
 		"create buffer");
+	printf("RTV: New vkBuffer created at %p\n", &buffer_);
 }
 
 Buffer::~Buffer()
@@ -37,6 +38,7 @@ DeviceMemory Buffer::AllocateMemory(const VkMemoryAllocateFlags allocateFlags, c
 
 	Check(vkBindBufferMemory(device_.Handle(), buffer_, memory.Handle(), 0),
 		"bind buffer memory");
+	printf("RTV: Bind buffer memory for vkBuffer %p\n", &buffer_);
 
 	return memory;
 }

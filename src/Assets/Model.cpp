@@ -189,6 +189,22 @@ Model Model::CreateCornellBox(const float scale)
 	);
 }
 
+Model Model::CreateSquare(const float scale)
+{
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+	std::vector<Material> materials;
+
+	CornellBox::CreateSimple(scale, vertices, indices, materials);
+
+	return Model(
+		std::move(vertices),
+		std::move(indices),
+		std::move(materials),
+		nullptr
+	);
+}
+
 Model Model::CreateBox(const vec3& p0, const vec3& p1, const Material& material)
 {
 	std::vector<Vertex> vertices = 

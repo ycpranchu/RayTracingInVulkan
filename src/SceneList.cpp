@@ -68,6 +68,7 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Lucy In One Weekend", LucyInOneWeekend},
 	{"Cornell Box", CornellBox},
 	{"Cornell Box & Lucy", CornellBoxLucy},
+	{"Simple Test", SimpleTest},
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -239,6 +240,25 @@ SceneAssets SceneList::CornellBox(CameraInitialSate& camera)
 	models.push_back(Model::CreateCornellBox(555));
 	models.push_back(box0);
 	models.push_back(box1);
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::SimpleTest(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(278, 278, 800), vec3(278, 278, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 40;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = false;
+
+	const auto i = mat4(1);
+	const auto white = Material::Lambertian(vec3(0.73f, 0.73f, 0.73f));
+
+	std::vector<Model> models;
+	models.push_back(Model::CreateSquare(555));
 
 	return std::make_tuple(std::move(models), std::vector<Texture>());
 }

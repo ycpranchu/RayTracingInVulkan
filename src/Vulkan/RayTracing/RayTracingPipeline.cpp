@@ -241,6 +241,7 @@ RayTracingPipeline::~RayTracingPipeline()
 {
 	if (pipeline_ != nullptr)
 	{
+		printf("RTV: Destroying ray tracing pipeline...\n");
 		vkDestroyPipeline(swapChain_.Device().Handle(), pipeline_, nullptr);
 		pipeline_ = nullptr;
 	}

@@ -95,6 +95,7 @@ ShaderBindingTable::ShaderBindingTable(
 	const size_t groupCount = rayGenPrograms.size() + missPrograms.size() + hitGroups.size();
 	std::vector<uint8_t> shaderHandleStorage(groupCount * handleSize);
 
+	printf("RTV: Get ray tracing shader group handles... group count: %d; handle size: %d\n", groupCount, handleSize);
 	Check(deviceProcedures.vkGetRayTracingShaderGroupHandlesKHR(
 		device.Handle(), 
 		rayTracingPipeline.Handle(), 
