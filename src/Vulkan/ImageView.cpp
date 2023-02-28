@@ -1,5 +1,6 @@
 #include "ImageView.hpp"
 #include "Device.hpp"
+#include <stdio.h> 
 
 namespace Vulkan {
 
@@ -25,6 +26,7 @@ ImageView::ImageView(const class Device& device, const VkImage image, const VkFo
 
 	Check(vkCreateImageView(device_.Handle(), &createInfo, nullptr, &imageView_),
 		"create image view");
+	printf("RTV: Creating image view at %p\n", imageView_);
 }
 
 ImageView::~ImageView()

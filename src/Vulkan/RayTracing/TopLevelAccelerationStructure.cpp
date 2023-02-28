@@ -85,6 +85,7 @@ VkAccelerationStructureInstanceKHR TopLevelAccelerationStructure::CreateInstance
 	addressInfo.accelerationStructure = bottomLevelAs.Handle();
 	
 	const VkDeviceAddress address = deviceProcedure.vkGetAccelerationStructureDeviceAddressKHR(device.Handle(), &addressInfo);
+	printf("RTV: Getting address of BLAS %p -> 0x%lx\n", addressInfo.accelerationStructure, address);
 
 	VkAccelerationStructureInstanceKHR instance = {};
 	instance.instanceCustomIndex = instanceId;

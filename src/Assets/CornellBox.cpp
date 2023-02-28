@@ -66,6 +66,9 @@ void CornellBox::CreateSimple(
 	AddTriangle(indices, i, 0, 1, 2);
 	AddTriangle(indices, i, 0, 2, 3);
 
+	printf("RTV: Add vertices [(0, 0, %f), (%f, 0, %f), (%f, %f, %f), (0, %f, %f)]\n", -s, s, -s, s, s, -s, s, -s); 
+	printf("RTV: Add indices [0, 1, 2], [0, 2, 3]\n");
+
 	// // Bottom white panel
 	// i = static_cast<uint32_t>(vertices.size());
 	// vertices.push_back(Vertex{ l0, vec3(0, 1, 0), vec2(0, 1), 2 });
@@ -102,6 +105,9 @@ void CornellBox::CreateSimple(
 
 	AddTriangle(indices, i, 0, 1, 2);
 	AddTriangle(indices, i, 0, 2, 3);
+
+	printf("RTV: Add vertices [(%f, %f, %f), (%f, %f, %f), (%f, %f, %f), (%f, %f, %f)]\n", x0, y1, z1, x1, y1, z1, x1, y1, z0, x0, y1, z0); 
+	printf("RTV: Add indices [0, 1, 2], [0, 2, 3]\n");
 }
 
 void CornellBox::Create(

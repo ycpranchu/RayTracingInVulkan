@@ -41,6 +41,7 @@ Image::Image(
 
 	Check(vkCreateImage(device.Handle(), &imageInfo, nullptr, &image_),
 		"create image");
+	printf("RTV: Creating image at %p\n", image_);
 }
 
 Image::Image(Image&& other) noexcept :

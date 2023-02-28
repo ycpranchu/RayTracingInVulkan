@@ -27,7 +27,7 @@ UniformBuffer::~UniformBuffer()
 void UniformBuffer::SetValue(const UniformBufferObject& ubo)
 {
 	const auto data = memory_->Map(0, sizeof(UniformBufferObject));
-	printf("RTV: Setting uniform buffer value at 0x%x using memcpy\n", data);
+	printf("RTV: Setting uniform buffer value at %p using memcpy\n", data);
 	std::memcpy(data, &ubo, sizeof(ubo));
 	memory_->Unmap();
 }

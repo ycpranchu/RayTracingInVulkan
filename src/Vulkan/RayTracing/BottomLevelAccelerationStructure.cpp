@@ -56,6 +56,7 @@ void BottomLevelAccelerationStructure::Generate(
 	const VkAccelerationStructureBuildRangeInfoKHR* pBuildOffsetInfo = geometries_.BuildOffsetInfo().data();
 
 	buildGeometryInfo_.dstAccelerationStructure = Handle();
+	printf("RTV: Building BLAS into %p\n", buildGeometryInfo_.dstAccelerationStructure);
 	buildGeometryInfo_.scratchData.deviceAddress = scratchBuffer.GetDeviceAddress() + scratchOffset;
 
 	deviceProcedures_.vkCmdBuildAccelerationStructuresKHR(commandBuffer, 1, &buildGeometryInfo_, &pBuildOffsetInfo);

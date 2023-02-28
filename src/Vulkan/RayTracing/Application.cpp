@@ -28,14 +28,17 @@ namespace
 	VkAccelerationStructureBuildSizesInfoKHR GetTotalRequirements(const std::vector<TAccelerationStructure>& accelerationStructures)
 	{
 		VkAccelerationStructureBuildSizesInfoKHR total{};
+		printf("RTV: Total accel structure size = ");
 
 		for (const auto& accelerationStructure : accelerationStructures)
 		{
 			total.accelerationStructureSize += accelerationStructure.BuildSizes().accelerationStructureSize;
 			total.buildScratchSize += accelerationStructure.BuildSizes().buildScratchSize;
 			total.updateScratchSize += accelerationStructure.BuildSizes().updateScratchSize;
+			printf("0x%lx + ", accelerationStructure.BuildSizes().accelerationStructureSize);
 		}
 
+		printf("... = 0x%lx\n", total.accelerationStructureSize);
 		return total;
 	}
 }
@@ -218,6 +221,7 @@ void Application::Render(VkCommandBuffer commandBuffer, const uint32_t imageInde
 	deviceProcedures_->vkCmdTraceRaysKHR(commandBuffer,
 		&raygenShaderBindingTable, &missShaderBindingTable, &hitShaderBindingTable, &callableShaderBindingTable,
 		extent.width, extent.height, 1);
+	printf("RTV: (%d x %d x 1) SBT raygen %p, miss %p, hit %p, callable %p\n", extent.width, extent.height, &raygenShaderBindingTable, &missShaderBindingTable, &hitShaderBindingTable, &callableShaderBindingTable);
 
 	// Acquire output image and swap-chain image for copying.
 	ImageMemoryBarrier::Insert(commandBuffer, outputImage_->Handle(), subresourceRange, 
@@ -280,6 +284,7 @@ void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 	bottomScratchBuffer_.reset(new Buffer(Device(), total.buildScratchSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT));
 	bottomScratchBufferMemory_.reset(new DeviceMemory(bottomScratchBuffer_->AllocateMemory(VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)));
 
+	printf("RTV: Created buffer for 0x%lx size BLAS at %p\n", total.accelerationStructureSize, bottomBuffer_->Handle());
 	debugUtils.SetObjectName(bottomBuffer_->Handle(), "BLAS Buffer");
 	debugUtils.SetObjectName(bottomBufferMemory_->Handle(), "BLAS Memory");
 	debugUtils.SetObjectName(bottomScratchBuffer_->Handle(), "BLAS Scratch Buffer");
@@ -313,6 +318,7 @@ void Application::CreateTopLevelStructures(VkCommandBuffer commandBuffer)
 	// Hit group 1: procedurals
 	uint32_t instanceId = 0;
 
+	printf("RTV: Adding %ld BLAS instances\n", scene.Models().size());
 	for (const auto& model : scene.Models())
 	{
 		instances.push_back(TopLevelAccelerationStructure::CreateInstance(

@@ -16,7 +16,6 @@ CommandBuffers::CommandBuffers(CommandPool& commandPool, const uint32_t size) :
 
 	commandBuffers_.resize(size);
 
-	printf("RTV(app): Allocating command buffers (vkAllocateCommandBuffers)...\n");
 	Check(vkAllocateCommandBuffers(commandPool.Device().Handle(), &allocInfo, commandBuffers_.data()),
 		"allocate command buffers");
 }
@@ -37,7 +36,6 @@ VkCommandBuffer CommandBuffers::Begin(const size_t i)
 	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 	beginInfo.pInheritanceInfo = nullptr; // Optional
 
-	printf("RTV(app): Begin recording command buffer (vkBeginCommandBuffer)...\n");
 	Check(vkBeginCommandBuffer(commandBuffers_[i], &beginInfo),
 		"begin recording command buffer");
 
@@ -46,7 +44,6 @@ VkCommandBuffer CommandBuffers::Begin(const size_t i)
 
 void CommandBuffers::End(const size_t i)
 {
-	printf("RTV(app): End recording command buffer (vkEndCommandBuffer)...\n");
 	Check(vkEndCommandBuffer(commandBuffers_[i]),
 		"record command buffer");
 }
