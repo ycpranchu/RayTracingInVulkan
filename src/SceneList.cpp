@@ -685,6 +685,12 @@ SceneAssets SceneList::blender_2_80(CameraInitialSate& camera)
 		{
 			auto model = Model::LoadModel(entry.path());
 
+			if(model.Vertices().size() == 0)
+				continue;
+			
+			if(entry.path().string().find("Dirt_grass") != std::string::npos)
+        		continue;
+
 			if(entry.path().string().find("spring_body") != std::string::npos)
 			{
 				model.SetAllMaterial(Material::Lambertian(vec3(223.0 / 256, 175.0 / 256, 171.0 / 256)));
