@@ -69,6 +69,8 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Cornell Box", CornellBox},
 	{"Cornell Box & Lucy", CornellBoxLucy},
 	{"Simple Test", SimpleTest},
+	{"Bunny", Bunny},
+	{"Carnival", Carnival},
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -244,6 +246,58 @@ SceneAssets SceneList::CornellBox(CameraInitialSate& camera)
 	return std::make_tuple(std::move(models), std::vector<Texture>());
 }
 
+SceneAssets SceneList::Carnival(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(275, 60, -700), vec3(225, 120, -1000), vec3(0, 1, 0));
+	camera.FieldOfView = 50;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const auto i = mat4(1);
+
+	auto carnival0 = Model::LoadModel("../assets/models/TheCarnival.obj");
+	carnival0.Transform(
+		rotate(
+			scale(
+				translate(i, vec3(400, 20, 150)),
+				vec3(0.2f)),
+			radians(0.0f), vec3(0, 1, 0)));
+	std::vector<Model> models;
+	models.push_back(carnival0);
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::Bunny(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(278, 278, 800), vec3(278, 278, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 40;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = false;
+
+	const auto i = mat4(1);
+
+	auto bunny0 = Model::LoadModel("../assets/models/bunny.obj");
+	bunny0.Transform(
+		rotate(
+			scale(
+				translate(i, vec3(555 - 300 - 165/2, 5, -225 - 165/2)),
+				vec3(200.0f)),
+			radians(75.0f), vec3(0, 1, 0)));
+	std::vector<Model> models;
+	models.push_back(Model::CreateCornellBox(555));
+	models.push_back(bunny0);
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
+
 SceneAssets SceneList::SimpleTest(CameraInitialSate& camera)
 {
 	camera.ModelView = lookAt(vec3(278, 278, 800), vec3(278, 278, 0), vec3(0, 1, 0));
@@ -255,7 +309,6 @@ SceneAssets SceneList::SimpleTest(CameraInitialSate& camera)
 	camera.HasSky = false;
 
 	const auto i = mat4(1);
-	const auto white = Material::Lambertian(vec3(0.73f, 0.73f, 0.73f));
 
 	std::vector<Model> models;
 	models.push_back(Model::CreateSquare(555));
