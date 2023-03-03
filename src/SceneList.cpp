@@ -602,6 +602,10 @@ SceneAssets SceneList::blender_2_77(CameraInitialSate& camera)
 		if(entry.path().extension() == ".obj")
 		{
 			auto model = Model::LoadModel(entry.path());
+
+			if(model.Vertices().size() == 0)
+				continue;
+
 			models.push_back(model);
 		}
 		else if(entry.path().extension() == ".camera")
