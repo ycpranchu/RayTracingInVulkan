@@ -93,10 +93,10 @@ Model Model::LoadModel(const std::string& filename)
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 	std::unordered_map<Vertex, uint32_t> uniqueVertices(objAttrib.vertices.size());
-	size_t faceId = 0;
 
 	for (const auto& shape : objReader.GetShapes())
 	{
+		size_t faceId = 0;
 		const auto& mesh = shape.mesh;
 
 		for (const auto& index : mesh.indices)
