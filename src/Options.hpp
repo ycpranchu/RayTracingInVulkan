@@ -32,6 +32,7 @@ public:
 	uint32_t Samples{};
 	uint32_t Bounces{};
 	uint32_t MaxSamples{};
+	uint32_t ShaderType{};
 
 	// Window options
 	uint32_t Width{};

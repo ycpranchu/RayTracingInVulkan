@@ -23,7 +23,8 @@ RayTracingPipeline::RayTracingPipeline(
 	const ImageView& accumulationImageView,
 	const ImageView& outputImageView,
 	const std::vector<Assets::UniformBuffer>& uniformBuffers,
-	const Assets::Scene& scene) :
+	const Assets::Scene& scene,
+	const uint32_t shaderType) :
 	swapChain_(swapChain)
 {
 	// Create descriptor pool/sets.
@@ -147,7 +148,18 @@ RayTracingPipeline::RayTracingPipeline(
 	pipelineLayout_.reset(new class PipelineLayout(device, descriptorSetManager_->DescriptorSetLayout()));
 
 	// Load shaders.
-	const ShaderModule rayGenShader(device, "../assets/shaders/RayTracing.rgen.spv");
+	ShaderModule* rayGenShader; 
+	switch (shaderType) {
+		case 0:
+			rayGenShader = new ShaderModule(device, "../assets/shaders/RayTracing.rgen.spv");
+			break;
+		case 1:
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rgen.spv");
+			break;
+		default:
+			printf("Unrecognized shader type: %d\n", shaderType);
+			break;
+	}
 	const ShaderModule missShader(device, "../assets/shaders/RayTracing.rmiss.spv");
 	const ShaderModule closestHitShader(device, "../assets/shaders/RayTracing.rchit.spv");
 	#ifdef USE_PROCEDURALS
@@ -156,7 +168,7 @@ RayTracingPipeline::RayTracingPipeline(
 	#endif
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 	{
-		rayGenShader.CreateShaderStage(VK_SHADER_STAGE_RAYGEN_BIT_KHR),
+		rayGenShader->CreateShaderStage(VK_SHADER_STAGE_RAYGEN_BIT_KHR),
 		missShader.CreateShaderStage(VK_SHADER_STAGE_MISS_BIT_KHR),
 		closestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		#ifdef USE_PROCEDURALS

@@ -105,6 +105,8 @@ namespace
 		userSettings.NumberOfBounces = options.Bounces;
 		userSettings.MaxNumberOfSamples = options.MaxSamples;
 
+		userSettings.ShaderType = options.ShaderType;
+		
 		userSettings.ShowSettings = !options.Benchmark;
 		userSettings.ShowOverlay = true;
 
