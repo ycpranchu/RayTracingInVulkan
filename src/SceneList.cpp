@@ -71,6 +71,7 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Simple Test", SimpleTest},
 	{"Bunny", Bunny},
 	{"Carnival", Carnival},
+	{"Ship", Ship},
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -267,6 +268,32 @@ SceneAssets SceneList::Carnival(CameraInitialSate& camera)
 			radians(0.0f), vec3(0, 1, 0)));
 	std::vector<Model> models;
 	models.push_back(carnival0);
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::Ship(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(378, 278, 500), vec3(178, 278, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 50;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const auto i = mat4(1);
+
+	auto ship0 = Model::LoadModel("../assets/models/karimSchooner.obj");
+	printf("Loading ship...\n");
+	ship0.Transform(
+		rotate(
+			scale(
+				translate(i, vec3(555 - 300 - 165/2, -9, -295 - 165/2)),
+				vec3(100.0f)),
+			radians(75.0f), vec3(0, 1, 0)));
+	std::vector<Model> models;
+	models.push_back(ship0);
 
 	return std::make_tuple(std::move(models), std::vector<Texture>());
 }

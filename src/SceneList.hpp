@@ -37,6 +37,7 @@ public:
 	static SceneAssets SimpleTest(CameraInitialSate& camera);
 	static SceneAssets Bunny(CameraInitialSate& camera);
 	static SceneAssets Carnival(CameraInitialSate& camera);
+	static SceneAssets Ship(CameraInitialSate& camera);
 
 	static const std::vector<std::pair<std::string, std::function<SceneAssets (CameraInitialSate&)>>> AllScenes;
 };
