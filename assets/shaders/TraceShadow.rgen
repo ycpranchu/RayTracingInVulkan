@@ -58,23 +58,40 @@ void main()
 			continue;
 		}
         			
-		// Trace shadow ray (TODO: Add more shadow rays)
-		{
-			const float shadowScale = 1;
+		for (uint j = 0; j < 2; j++) {
+			// Trace shadow ray (TODO: Add more shadow rays)
+			const float shadowScale = 0.3;
 
 			// // TODO: Figure out light sampling
-			// vec3 lightPt = vec3(200, 200, 200);
+			// Randomly choose a light
+			vec3 lightPoint;
+			const float randomLight = RandomFloat(Ray.RandomSeed);
+			
+			if (randomLight < 0.25) {
+				lightPoint = vec3(-1.0f * origin.x, -1.0f * origin.y, 10.0f);
+			} else if (randomLight < 0.5) {
+				lightPoint = vec3(-1.0f * origin.x, origin.y, origin.z);
+			} else if (randomLight < 0.75) {
+				lightPoint = vec3(origin.x, origin.y, 0.0f);
+			} else {
+				lightPoint = vec3(origin.x, -1.0f * origin.y, origin.z);
+			}
+			
+			vec3 intersectionPoint = Ray.ScatterDirection.xyz;
+			vec3 shadowDirection = lightPoint - intersectionPoint;
+			shadowDirection = normalize(shadowDirection);
 
-			vec3 currentDirection = origin.xyz - Ray.ScatterDirection.xyz;
-			currentDirection = normalize(currentDirection);
-
+			vec3 intersectionOrigin = intersectionPoint + shadowDirection * 0.001f;
+			
 			// t >= 0 to trace shadow ray, set to t = -1 on miss
 			traceRayEXT(Scene, gl_RayFlagsOpaqueEXT | gl_RayFlagsTerminateOnFirstHitEXT, 0xff, 
 			0 /*sbtRecordOffset*/, 0 /*sbtRecordStride*/, 0 /*missIndex*/, 
-			Ray.ScatterDirection.xyz, tMin, currentDirection, tMax, 0 /*payload*/);
+			intersectionOrigin, tMin, shadowDirection, tMax, 0 /*payload*/);
+
+			const float occluded = Ray.ColorAndDistance.w;
 
 			// Found occlusion
-			if (t > 0) {
+			if (occluded > 0) {
 				hitColor *= shadowScale;
 			}
 		}
@@ -91,5 +108,8 @@ void main()
 	pixelColor = sqrt(pixelColor);
 
 	imageStore(AccumulationImage, ivec2(gl_LaunchIDEXT.xy), vec4(accumulatedColor, 0));
-    imageStore(OutputImage, ivec2(gl_LaunchIDEXT.xy), vec4(pixelColor, 0));
+    
+	// if (gl_LaunchIDEXT.x >= 0 && gl_LaunchIDEXT.x < 20)
+	// 	debugPrintfEXT("[%d, %d] rgba(%f, %f, %f)\n", gl_LaunchIDEXT.x, gl_LaunchIDEXT.y, pixelColor.x, pixelColor.y, pixelColor.z);
+	imageStore(OutputImage, ivec2(gl_LaunchIDEXT.xy), vec4(pixelColor, 0));
 }

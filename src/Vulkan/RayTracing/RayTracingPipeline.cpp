@@ -149,19 +149,21 @@ RayTracingPipeline::RayTracingPipeline(
 
 	// Load shaders.
 	ShaderModule* rayGenShader; 
+	ShaderModule* closestHitShader;
 	switch (shaderType) {
 		case 0:
 			rayGenShader = new ShaderModule(device, "../assets/shaders/RayTracing.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/RayTracing.rchit.spv");
 			break;
 		case 1:
 			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rchit.spv");
 			break;
 		default:
 			printf("Unrecognized shader type: %d\n", shaderType);
 			break;
 	}
 	const ShaderModule missShader(device, "../assets/shaders/RayTracing.rmiss.spv");
-	const ShaderModule closestHitShader(device, "../assets/shaders/RayTracing.rchit.spv");
 	#ifdef USE_PROCEDURALS
 	const ShaderModule proceduralClosestHitShader(device, "../assets/shaders/RayTracing.Procedural.rchit.spv");
 	const ShaderModule proceduralIntersectionShader(device, "../assets/shaders/RayTracing.Procedural.rint.spv");
@@ -170,7 +172,7 @@ RayTracingPipeline::RayTracingPipeline(
 	{
 		rayGenShader->CreateShaderStage(VK_SHADER_STAGE_RAYGEN_BIT_KHR),
 		missShader.CreateShaderStage(VK_SHADER_STAGE_MISS_BIT_KHR),
-		closestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+		closestHitShader->CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		#ifdef USE_PROCEDURALS
 		proceduralClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
