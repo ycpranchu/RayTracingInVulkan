@@ -152,11 +152,23 @@ RayTracingPipeline::RayTracingPipeline(
 	ShaderModule* closestHitShader;
 	switch (shaderType) {
 		case 0:
+			printf("RTV: Using regular path tracing shaders.\n");
 			rayGenShader = new ShaderModule(device, "../assets/shaders/RayTracing.rgen.spv");
 			closestHitShader = new ShaderModule(device, "../assets/shaders/RayTracing.rchit.spv");
 			break;
 		case 1:
+			printf("RTV: Using primary + shadow shader with default light sources.\n");
 			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rchit.spv");
+			break;
+		case 2:
+			printf("RTV: Using primary + AO shader.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceAO.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rchit.spv");
+			break;
+		case 3:
+			printf("RTV: Using primary + shadow + AO shader.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceAnyhit.rgen.spv");
 			closestHitShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rchit.spv");
 			break;
 		default:
