@@ -26,6 +26,7 @@ DescriptorSets::DescriptorSets(
 
 	descriptorSets_.resize(size);
 
+	printf("RTV: Allocate descriptor sets...\n");
 	Check(vkAllocateDescriptorSets(descriptorPool.Device().Handle(), &allocInfo, descriptorSets_.data()),
 		"allocate descriptor sets");
 }
@@ -88,6 +89,7 @@ VkWriteDescriptorSet DescriptorSets::Bind(uint32_t index, uint32_t binding, cons
 
 void DescriptorSets::UpdateDescriptors(uint32_t index, const std::vector<VkWriteDescriptorSet>& descriptorWrites)
 {
+	printf("RTV: Update descriptor sets...\n");
 	vkUpdateDescriptorSets(
 		descriptorPool_.Device().Handle(),
 		static_cast<uint32_t>(descriptorWrites.size()),

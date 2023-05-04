@@ -1,5 +1,6 @@
 #include "DescriptorPool.hpp"
 #include "Device.hpp"
+#include <stdio.h>
 
 namespace Vulkan {
 
@@ -19,6 +20,7 @@ DescriptorPool::DescriptorPool(const Vulkan::Device& device, const std::vector<D
 	poolInfo.pPoolSizes = poolSizes.data();
 	poolInfo.maxSets = static_cast<uint32_t>(maxSets);
 
+	printf("RTV: Create descriptor pool...\n");
 	Check(vkCreateDescriptorPool(device.Handle(), &poolInfo, nullptr, &descriptorPool_),
 		"create descriptor pool");
 }

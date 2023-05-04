@@ -67,6 +67,7 @@ namespace Vulkan
 			? VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT
 			: 0;
 
+		printf("RTV: Creating device buffer %s of size %ld\n", name, contentSize);
 		buffer.reset(new Buffer(device, contentSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage));
 		memory.reset(new DeviceMemory(buffer->AllocateMemory(allocateFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)));
 

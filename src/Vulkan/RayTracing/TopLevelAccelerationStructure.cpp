@@ -56,6 +56,7 @@ void TopLevelAccelerationStructure::Generate(
 	const VkDeviceSize resultOffset)
 {
 	// Create the acceleration structure.
+	printf("RTV: Creating top level acceleration structure...\n");
 	CreateAccelerationStructure(resultBuffer, resultOffset);
 
 	// Build the actual bottom-level acceleration structure
@@ -84,6 +85,7 @@ VkAccelerationStructureInstanceKHR TopLevelAccelerationStructure::CreateInstance
 	addressInfo.accelerationStructure = bottomLevelAs.Handle();
 	
 	const VkDeviceAddress address = deviceProcedure.vkGetAccelerationStructureDeviceAddressKHR(device.Handle(), &addressInfo);
+	printf("RTV: Getting address of BLAS %p -> 0x%lx\n", addressInfo.accelerationStructure, address);
 
 	VkAccelerationStructureInstanceKHR instance = {};
 	instance.instanceCustomIndex = instanceId;

@@ -98,7 +98,6 @@ Model Model::LoadModel(const std::string& filename)
 	{
 		size_t faceId = 0;
 		const auto& mesh = shape.mesh;
-
 		for (const auto& index : mesh.indices)
 		{
 			Vertex vertex = {};
@@ -129,7 +128,10 @@ Model Model::LoadModel(const std::string& filename)
 				};
 			}
 
-			vertex.MaterialIndex = std::max(0, mesh.material_ids[faceId++ / 3]);
+			size_t material_id_index = faceId / 3;
+			int32_t material_index = mesh.material_ids[material_id_index];
+			faceId++;
+			vertex.MaterialIndex = std::max(0, material_index);
 
 			if (uniqueVertices.count(vertex) == 0)
 			{
@@ -180,6 +182,22 @@ Model Model::CreateCornellBox(const float scale)
 	std::vector<Material> materials;
 
 	CornellBox::Create(scale, vertices, indices, materials);
+
+	return Model(
+		std::move(vertices),
+		std::move(indices),
+		std::move(materials),
+		nullptr
+	);
+}
+
+Model Model::CreateSquare(const float scale)
+{
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+	std::vector<Material> materials;
+
+	CornellBox::CreateSimple(scale, vertices, indices, materials);
 
 	return Model(
 		std::move(vertices),

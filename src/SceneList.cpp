@@ -84,6 +84,10 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"blender_2_91 Red Autumn Forest", blender_2_91},
 	{"blender_3_2 White Lands", blender_3_2},
 	{"TestScene", TestScene},
+	{"Simple Test", SimpleTest},
+	{"Bunny", Bunny},
+	{"Carnival", Carnival},
+	{"Ship", Ship},
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -255,6 +259,102 @@ SceneAssets SceneList::CornellBox(CameraInitialSate& camera)
 	models.push_back(Model::CreateCornellBox(555));
 	models.push_back(box0);
 	models.push_back(box1);
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::Carnival(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(275, 60, -700), vec3(225, 120, -1000), vec3(0, 1, 0));
+	camera.FieldOfView = 50;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const auto i = mat4(1);
+
+	auto carnival0 = Model::LoadModel("../assets/models/TheCarnival.obj");
+	carnival0.Transform(
+		rotate(
+			scale(
+				translate(i, vec3(400, 20, 150)),
+				vec3(0.2f)),
+			radians(0.0f), vec3(0, 1, 0)));
+	std::vector<Model> models;
+	models.push_back(carnival0);
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::Ship(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(378, 278, 500), vec3(178, 278, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 50;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const auto i = mat4(1);
+
+	auto ship0 = Model::LoadModel("../assets/models/karimSchooner.obj");
+	printf("Loading ship...\n");
+	ship0.Transform(
+		rotate(
+			scale(
+				translate(i, vec3(555 - 300 - 165/2, -9, -295 - 165/2)),
+				vec3(100.0f)),
+			radians(75.0f), vec3(0, 1, 0)));
+	std::vector<Model> models;
+	models.push_back(ship0);
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::Bunny(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(278, 278, 800), vec3(278, 278, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 40;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = false;
+
+	const auto i = mat4(1);
+
+	auto bunny0 = Model::LoadModel("../assets/models/bunny.obj");
+	bunny0.Transform(
+		rotate(
+			scale(
+				translate(i, vec3(555 - 300 - 165/2, 5, -225 - 165/2)),
+				vec3(200.0f)),
+			radians(75.0f), vec3(0, 1, 0)));
+	std::vector<Model> models;
+	models.push_back(Model::CreateCornellBox(555));
+	models.push_back(bunny0);
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
+
+SceneAssets SceneList::SimpleTest(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(278, 278, 800), vec3(278, 278, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 40;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = false;
+
+	const auto i = mat4(1);
+
+	std::vector<Model> models;
+	models.push_back(Model::CreateSquare(555));
 
 	return std::make_tuple(std::move(models), std::vector<Texture>());
 }

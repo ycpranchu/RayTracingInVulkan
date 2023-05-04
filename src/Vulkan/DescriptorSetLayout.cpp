@@ -1,5 +1,6 @@
 #include "DescriptorSetLayout.hpp"
 #include "Device.hpp"
+#include <stdio.h>
 
 namespace Vulkan {
 
@@ -24,6 +25,7 @@ DescriptorSetLayout::DescriptorSetLayout(const Device& device, const std::vector
 	layoutInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
 	layoutInfo.pBindings = layoutBindings.data();
 
+	printf("RTV: Create descriptor set layout...\n");
 	Check(vkCreateDescriptorSetLayout(device.Handle(), &layoutInfo, nullptr, &layout_),
 		"create descriptor set layout");
 }

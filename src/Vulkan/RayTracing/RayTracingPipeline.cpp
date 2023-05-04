@@ -132,6 +132,7 @@ RayTracingPipeline::RayTracingPipeline(
 			descriptorSets.Bind(i, 8, *imageInfos.data(), static_cast<uint32_t>(imageInfos.size()))
 		};
 
+		#ifdef USE_PROCEDURALS
 		// Procedural buffer (optional)
 		VkDescriptorBufferInfo proceduralBufferInfo = {};
 		
@@ -142,6 +143,7 @@ RayTracingPipeline::RayTracingPipeline(
 
 			descriptorWrites.push_back(descriptorSets.Bind(i, 9, proceduralBufferInfo));
 		}
+		#endif
 
 		// Procedural Cube buffer (optional)
 		VkDescriptorBufferInfo proceduralCubeBufferInfo = {};
@@ -174,24 +176,35 @@ RayTracingPipeline::RayTracingPipeline(
 	const ShaderModule rayGenShader(device, "../assets/shaders/RayTracing.rgen.spv");
 	const ShaderModule missShader(device, "../assets/shaders/RayTracing.rmiss.spv");
 	const ShaderModule closestHitShader(device, "../assets/shaders/RayTracing.rchit.spv");
+	#ifdef USE_PROCEDURALS
 	const ShaderModule proceduralClosestHitShader(device, "../assets/shaders/RayTracing.Procedural.rchit.spv");
 	const ShaderModule proceduralIntersectionShader(device, "../assets/shaders/RayTracing.Procedural.rint.spv");
+<<<<<<< HEAD
 	const ShaderModule proceduralCubeClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCube.rchit.spv");
 	const ShaderModule proceduralCubeIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCube.rint.spv");
 	const ShaderModule proceduralCylinderClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rchit.spv");
 	const ShaderModule proceduralCylinderIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rint.spv");
 
+=======
+	#endif
+>>>>>>> lavapipe-investigation
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 	{
 		rayGenShader.CreateShaderStage(VK_SHADER_STAGE_RAYGEN_BIT_KHR),
 		missShader.CreateShaderStage(VK_SHADER_STAGE_MISS_BIT_KHR),
 		closestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+		#ifdef USE_PROCEDURALS
 		proceduralClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+<<<<<<< HEAD
 		proceduralCubeClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralCylinderClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralCubeIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralCylinderIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
+=======
+		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
+		#endif
+>>>>>>> lavapipe-investigation
 	};
 
 	// Shader groups
@@ -225,6 +238,7 @@ RayTracingPipeline::RayTracingPipeline(
 	triangleHitGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
 	triangleHitGroupIndex_ = 2;
 
+	#ifdef USE_PROCEDURALS
 	VkRayTracingShaderGroupCreateInfoKHR proceduralHitGroupInfo = {};
 	proceduralHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
 	proceduralHitGroupInfo.pNext = nullptr;
@@ -234,6 +248,7 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
 	proceduralHitGroupInfo.intersectionShader = 6;
 	proceduralHitGroupIndex_ = 3;
+	#endif
 
 	VkRayTracingShaderGroupCreateInfoKHR proceduralCubeHitGroupInfo = {};
 	proceduralCubeHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
@@ -260,9 +275,14 @@ RayTracingPipeline::RayTracingPipeline(
 		rayGenGroupInfo, 
 		missGroupInfo, 
 		triangleHitGroupInfo, 
+		#ifdef USE_PROCEDURALS
 		proceduralHitGroupInfo,
+<<<<<<< HEAD
 		proceduralCubeHitGroupInfo,
 		proceduralCylinderHitGroupInfo
+=======
+		#endif
+>>>>>>> lavapipe-investigation
 	};
 
 	// Create graphic pipeline
@@ -279,6 +299,7 @@ RayTracingPipeline::RayTracingPipeline(
 	pipelineInfo.basePipelineHandle = nullptr;
 	pipelineInfo.basePipelineIndex = 0;
 
+	printf("RTV: Creating ray tracing pipeline...\n");
 	Check(deviceProcedures.vkCreateRayTracingPipelinesKHR(device.Handle(), nullptr, nullptr, 1, &pipelineInfo, nullptr, &pipeline_), 
 		"create ray tracing pipeline");
 }
@@ -287,6 +308,7 @@ RayTracingPipeline::~RayTracingPipeline()
 {
 	if (pipeline_ != nullptr)
 	{
+		printf("RTV: Destroying ray tracing pipeline...\n");
 		vkDestroyPipeline(swapChain_.Device().Handle(), pipeline_, nullptr);
 		pipeline_ = nullptr;
 	}

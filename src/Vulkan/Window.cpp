@@ -171,6 +171,8 @@ void Window::Run()
 		if (DrawFrame)
 		{
 			DrawFrame();
+			// fflush(stdout);
+			// abort();
 		}
 	}
 }
