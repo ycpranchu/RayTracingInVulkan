@@ -179,15 +179,12 @@ RayTracingPipeline::RayTracingPipeline(
 	#ifdef USE_PROCEDURALS
 	const ShaderModule proceduralClosestHitShader(device, "../assets/shaders/RayTracing.Procedural.rchit.spv");
 	const ShaderModule proceduralIntersectionShader(device, "../assets/shaders/RayTracing.Procedural.rint.spv");
-<<<<<<< HEAD
 	const ShaderModule proceduralCubeClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCube.rchit.spv");
 	const ShaderModule proceduralCubeIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCube.rint.spv");
 	const ShaderModule proceduralCylinderClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rchit.spv");
 	const ShaderModule proceduralCylinderIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rint.spv");
-
-=======
 	#endif
->>>>>>> lavapipe-investigation
+
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 	{
 		rayGenShader.CreateShaderStage(VK_SHADER_STAGE_RAYGEN_BIT_KHR),
@@ -195,16 +192,13 @@ RayTracingPipeline::RayTracingPipeline(
 		closestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		#ifdef USE_PROCEDURALS
 		proceduralClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
-<<<<<<< HEAD
 		proceduralCubeClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralCylinderClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralCubeIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralCylinderIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
-=======
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
 		#endif
->>>>>>> lavapipe-investigation
 	};
 
 	// Shader groups
@@ -277,12 +271,9 @@ RayTracingPipeline::RayTracingPipeline(
 		triangleHitGroupInfo, 
 		#ifdef USE_PROCEDURALS
 		proceduralHitGroupInfo,
-<<<<<<< HEAD
 		proceduralCubeHitGroupInfo,
 		proceduralCylinderHitGroupInfo
-=======
 		#endif
->>>>>>> lavapipe-investigation
 	};
 
 	// Create graphic pipeline
