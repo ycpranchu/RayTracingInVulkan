@@ -535,6 +535,79 @@ Model Model::CreateCylinder(const vec3& center, float radius, const Material& ma
 		isProcedural ? new Cylinder(center, radius) : nullptr);
 }
 
+Model Model::CreateMandelbulb(const vec3& center, float radius, const Material& material, const bool isProcedural)
+{
+	const int slices = 64;
+	const int stacks = 32;
+	
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+
+	const float pi = 3.14159265358979f;
+	
+	for (int j = 0; j <= stacks; ++j) 
+	{
+		const float j0 = pi * j / stacks;
+
+		// Vertex
+		const float v = radius * -std::sin(j0);
+		const float z = radius * std::cos(j0);
+		
+		// Normals		
+		const float n0 = -std::sin(j0);
+		const float n1 = std::cos(j0);
+
+		for (int i = 0; i <= slices; ++i) 
+		{
+			const float i0 = 2 * pi * i / slices;
+
+			const vec3 position(
+				center.x + v * std::sin(i0),
+				center.y + z,
+				center.z + v * std::cos(i0));
+			
+			const vec3 normal(
+				n0 * std::sin(i0),
+				n1,
+				n0 * std::cos(i0));
+
+			const vec2 texCoord(
+				static_cast<float>(i) / slices,
+				static_cast<float>(j) / stacks);
+
+			vertices.push_back(Vertex{ position, normal, texCoord, 0 });
+		}
+	}
+
+	for (int j = 0; j < stacks; ++j)
+	{
+		for (int i = 0; i < slices; ++i)
+		{
+			const auto j0 = (j + 0) * (slices + 1);
+			const auto j1 = (j + 1) * (slices + 1);
+			const auto i0 = i + 0;
+			const auto i1 = i + 1;
+			
+			indices.push_back(j0 + i0);
+			indices.push_back(j1 + i0);
+			indices.push_back(j1 + i1);
+			
+			indices.push_back(j0 + i0);
+			indices.push_back(j1 + i1);
+			indices.push_back(j0 + i1);
+		}
+	}
+
+	return Model(
+		std::move(vertices),
+		std::move(indices),
+		std::vector<Material>{material},
+		nullptr,
+		nullptr,
+		nullptr,
+		isProcedural ? new Mandelbulb(center, radius) : nullptr);
+}
+
 void Model::SetMaterial(const Material& material)
 {
 	if (materials_.size() != 1)
@@ -592,6 +665,17 @@ Model::Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, st
 	procedural_(procedural),
 	proceduralCube_(proceduralCube),
 	proceduralCylinder_(proceduralCylinder)
+{
+}
+
+Model::Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, const class Procedural* procedural, const class Procedural* proceduralCube, const class Procedural* proceduralCylinder, const class Procedural* proceduralMandelbulb) :
+	vertices_(std::move(vertices)),
+	indices_(std::move(indices)),
+	materials_(std::move(materials)),
+	procedural_(procedural),
+	proceduralCube_(proceduralCube),
+	proceduralCylinder_(proceduralCylinder),
+	proceduralMandelbulb_(proceduralMandelbulb)
 {
 }
 

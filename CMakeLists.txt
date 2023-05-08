@@ -42,6 +42,7 @@ if (UNIX)
 	
 	add_definitions(-DUNIX)
 	add_compile_options("-Wall")
+	add_compile_options("-g")
 	add_compile_options("-fvisibility=hidden")
 	
 	find_package(Backtrace REQUIRED)

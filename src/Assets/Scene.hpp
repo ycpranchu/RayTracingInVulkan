@@ -34,6 +34,7 @@ namespace Assets
 		bool HasProcedurals() const { return static_cast<bool>(proceduralBuffer_); }
 		bool HasProceduralCubes() const { return static_cast<bool>(proceduralCubeBuffer_); }
 		bool HasProceduralCylinder() const { return static_cast<bool>(proceduralCylinderBuffer_); }
+		bool HasProceduralMandelbulb() const { return static_cast<bool>(proceduralMandelbulbBuffer_); }
 
 		const Vulkan::Buffer& VertexBuffer() const { return *vertexBuffer_; }
 		const Vulkan::Buffer& IndexBuffer() const { return *indexBuffer_; }
@@ -42,9 +43,11 @@ namespace Assets
 		const Vulkan::Buffer& AabbBuffer() const { return *aabbBuffer_; }
 		const Vulkan::Buffer& AabbCubeBuffer() const { return *aabbCubeBuffer_; }
 		const Vulkan::Buffer& AabbCylinderBuffer() const { return *aabbCylinderBuffer_; }
+		const Vulkan::Buffer& AabbMandelbulbBuffer() const { return *aabbMandelbulbBuffer_; }
 		const Vulkan::Buffer& ProceduralBuffer() const { return *proceduralBuffer_; }
 		const Vulkan::Buffer& ProceduralCubeBuffer() const { return *proceduralCubeBuffer_; }
 		const Vulkan::Buffer& ProceduralCylinderBuffer() const { return *proceduralCylinderBuffer_; }
+		const Vulkan::Buffer& ProceduralMandelbulbBuffer() const { return *proceduralMandelbulbBuffer_; }
 		const std::vector<VkImageView> TextureImageViews() const { return textureImageViewHandles_; }
 		const std::vector<VkSampler> TextureSamplers() const { return textureSamplerHandles_; }
 
@@ -74,6 +77,9 @@ namespace Assets
 		std::unique_ptr<Vulkan::Buffer> aabbCylinderBuffer_;
 		std::unique_ptr<Vulkan::DeviceMemory> aabbCylinderBufferMemory_;
 
+		std::unique_ptr<Vulkan::Buffer> aabbMandelbulbBuffer_;
+		std::unique_ptr<Vulkan::DeviceMemory> aabbMandelbulbBufferMemory_;
+
 		std::unique_ptr<Vulkan::Buffer> proceduralBuffer_;
 		std::unique_ptr<Vulkan::DeviceMemory> proceduralBufferMemory_;
 
@@ -82,6 +88,9 @@ namespace Assets
 
 		std::unique_ptr<Vulkan::Buffer> proceduralCylinderBuffer_;
 		std::unique_ptr<Vulkan::DeviceMemory> proceduralCylinderBufferMemory_;
+
+		std::unique_ptr<Vulkan::Buffer> proceduralMandelbulbBuffer_;
+		std::unique_ptr<Vulkan::DeviceMemory> proceduralMandelbulbBufferMemory_;
 
 		std::vector<std::unique_ptr<TextureImage>> textureImages_;
 		std::vector<VkImageView> textureImageViewHandles_;

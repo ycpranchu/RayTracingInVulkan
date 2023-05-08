@@ -88,6 +88,7 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Bunny", Bunny},
 	{"Carnival", Carnival},
 	{"Ship", Ship},
+	{"Mandelbulb Test", MandelbulbScene}
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -1150,6 +1151,33 @@ SceneAssets SceneList::TestScene(CameraInitialSate& camera)
 	std::cout << "done loading" << std::endl;
 
 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::MandelbulbScene(CameraInitialSate& camera)
+{
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	camera.ModelView = translate(mat4(1), -vec3(0, 2.5, 3));
+	camera.FieldOfView = 90;
+	camera.Aperture = 0.05f;
+	camera.FocusDistance = 2.0f;
+	camera.ControlSpeed = 2.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	const auto i = mat4(1);
+
+	std::vector<Model> models;
+
+	AddRayTracingInOneWeekendCommonScene(models, isProc, random);
+
+	Material mat = Material::Lambertian(vec3(0.5f, 0.7f, 1.0f));
+	models.push_back(Model::CreateMandelbulb(vec3(0, 2, 0), 1.25, mat, true));
+
+	return std::make_tuple(std::move(models), std::vector<Texture>());
 }
 
 // SceneAssets SceneList::blender_3_3(CameraInitialSate& camera)
