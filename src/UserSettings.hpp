@@ -12,6 +12,9 @@ struct UserSettings final
 	// Scene
 	int SceneIndex;
 
+	uint32_t Width;
+	uint32_t Height;
+
 	// Renderer
 	bool IsRayTraced;
 	bool AccumulateRays;

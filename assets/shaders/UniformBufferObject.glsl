@@ -12,6 +12,8 @@ struct UniformBufferObject
 	uint NumberOfSamples;
 	uint NumberOfBounces;
 	uint RandomSeed;
+	uint Width;
+	uint Height;
 	bool HasSky;
 	bool ShowHeatmap;
 };

@@ -57,25 +57,24 @@ void main()
 			pixelColor += hitColor;
 			continue;
 		}
-        			
-		for (uint j = 0; j < 1; j++) {
-			// Trace shadow ray (TODO: Add more shadow rays)
-			const float shadowScale = 0.3;
 
-			// // TODO: Figure out light sampling
-			// Randomly choose a light
+        const float shadowScale = 0.3;
+        const float AOScale = 0.9;
+        const float AODist = 5.0;
+
+		vec3 intersectionPoint = Ray.ScatterDirection.xyz;
+		for (uint j = 0; j < 2; j++) {
 			vec3 lightPoint;
 			const float randomLight = RandomFloat(Ray.RandomSeed);
-			offset = Camera.Aperture/2 * RandomInUnitDisk(Ray.RandomSeed);
 			
 			if (randomLight < 0.25) {
-				lightPoint = vec3(-1.0f * origin.x, -1.0f * origin.y, 10.0f) * vec3(offset, 1);;
+				lightPoint = vec3(-1.0f * origin.x, -1.0f * origin.y, 10.0f);
 			} else if (randomLight < 0.5) {
-				lightPoint = vec3(-1.0f * origin.x, origin.y, origin.z) * vec3(offset, 1);;
+				lightPoint = vec3(-1.0f * origin.x, origin.y, origin.z);
 			} else if (randomLight < 0.75) {
-				lightPoint = vec3(origin.x, origin.y, 0.0f) * vec3(offset, 1);;
+				lightPoint = vec3(origin.x, origin.y, 0.0f);
 			} else {
-				lightPoint = vec3(origin.x, -1.0f * origin.y, origin.z) * vec3(offset, 1);;
+				lightPoint = vec3(origin.x, -1.0f * origin.y, origin.z);
 			}
 			
 			vec3 intersectionPoint = Ray.ScatterDirection.xyz;
@@ -94,6 +93,27 @@ void main()
 			// Found occlusion
 			if (occluded > 0) {
 				hitColor *= shadowScale;
+			}
+		}
+        
+        // Trace 16 AO rays
+		for (uint j = 0; j < 16; j++) {
+            vec3 shadowDirection = RandomInUnitSphere(Ray.RandomSeed);
+			shadowDirection = normalize(shadowDirection);
+
+			vec3 intersectionOrigin = intersectionPoint + shadowDirection * 0.001f;
+
+			// t >= 0 to trace shadow ray, set to t = -1 on miss
+            // Use AODist as tMax
+			traceRayEXT(Scene, gl_RayFlagsOpaqueEXT | gl_RayFlagsTerminateOnFirstHitEXT, 0xff, 
+			0 /*sbtRecordOffset*/, 0 /*sbtRecordStride*/, 0 /*missIndex*/, 
+			intersectionOrigin, tMin, shadowDirection, AODist, 0 /*payload*/);
+
+			const float occluded = Ray.ColorAndDistance.w;
+
+			// Found occlusion
+			if (occluded > 0) {
+				hitColor *= AOScale;
 			}
 		}
 

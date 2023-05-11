@@ -171,6 +171,11 @@ RayTracingPipeline::RayTracingPipeline(
 			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceAnyhit.rgen.spv");
 			closestHitShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rchit.spv");
 			break;
+		case 4:
+			printf("RTV: Using foveated rendering shader.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceFoveated.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/RayTracing.rchit.spv");
+			break;
 		default:
 			printf("Unrecognized shader type: %d\n", shaderType);
 			break;

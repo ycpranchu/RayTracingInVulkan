@@ -57,37 +57,23 @@ void main()
 			pixelColor += hitColor;
 			continue;
 		}
-        			
-		for (uint j = 0; j < 1; j++) {
-			// Trace shadow ray (TODO: Add more shadow rays)
-			const float shadowScale = 0.3;
+        
+        // Trace 16 AO rays
+		vec3 intersectionPoint = Ray.ScatterDirection.xyz;
+		for (uint j = 0; j < 16; j++) {
+			const float shadowScale = 0.9;
+            const float AODist = 5.0;
 
-			// // TODO: Figure out light sampling
-			// Randomly choose a light
-			vec3 lightPoint;
-			const float randomLight = RandomFloat(Ray.RandomSeed);
-			offset = Camera.Aperture/2 * RandomInUnitDisk(Ray.RandomSeed);
-			
-			if (randomLight < 0.25) {
-				lightPoint = vec3(-1.0f * origin.x, -1.0f * origin.y, 10.0f) * vec3(offset, 1);;
-			} else if (randomLight < 0.5) {
-				lightPoint = vec3(-1.0f * origin.x, origin.y, origin.z) * vec3(offset, 1);;
-			} else if (randomLight < 0.75) {
-				lightPoint = vec3(origin.x, origin.y, 0.0f) * vec3(offset, 1);;
-			} else {
-				lightPoint = vec3(origin.x, -1.0f * origin.y, origin.z) * vec3(offset, 1);;
-			}
-			
-			vec3 intersectionPoint = Ray.ScatterDirection.xyz;
-			vec3 shadowDirection = lightPoint - intersectionPoint;
+            vec3 shadowDirection = RandomInUnitSphere(Ray.RandomSeed);
 			shadowDirection = normalize(shadowDirection);
 
 			vec3 intersectionOrigin = intersectionPoint + shadowDirection * 0.001f;
-			
+
 			// t >= 0 to trace shadow ray, set to t = -1 on miss
+            // Use AODist as tMax
 			traceRayEXT(Scene, gl_RayFlagsOpaqueEXT | gl_RayFlagsTerminateOnFirstHitEXT, 0xff, 
 			0 /*sbtRecordOffset*/, 0 /*sbtRecordStride*/, 0 /*missIndex*/, 
-			intersectionOrigin, tMin, shadowDirection, tMax, 0 /*payload*/);
+			intersectionOrigin, tMin, shadowDirection, AODist, 0 /*payload*/);
 
 			const float occluded = Ray.ColorAndDistance.w;
 

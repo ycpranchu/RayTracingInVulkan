@@ -50,6 +50,8 @@ Assets::UniformBufferObject RayTracer::GetUniformBufferObject(const VkExtent2D e
 	ubo.TotalNumberOfSamples = totalNumberOfSamples_;
 	ubo.NumberOfSamples = numberOfSamples_;
 	ubo.NumberOfBounces = userSettings_.NumberOfBounces;
+	ubo.Width = userSettings_.Width;
+	ubo.Height = userSettings_.Height;
 	// RANDOM SEED
 	ubo.RandomSeed = 1;
 	ubo.HasSky = init.HasSky;

@@ -99,6 +99,9 @@ namespace
 		
 		userSettings.SceneIndex = options.SceneIndex;
 
+		userSettings.Width = options.Width;
+		userSettings.Height = options.Height;
+
 		userSettings.IsRayTraced = true;
 		userSettings.AccumulateRays = true;
 		userSettings.NumberOfSamples = options.Samples;
