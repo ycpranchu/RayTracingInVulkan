@@ -334,3 +334,6 @@ build
 
 # VSCode workspace
 *-workspace
+
+# Custom compile flags
+compile_flags.txt
