@@ -20,7 +20,7 @@ SwapChain::SwapChain(const class Device& device, const VkPresentModeKHR presentM
 	VkExtent2D extent = device.Surface().Instance().Window().FramebufferSize();
 
 	// default surface format
-	VkSurfaceFormatKHR surfaceFormat = { VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+	VkSurfaceFormatKHR surfaceFormat = { VK_FORMAT_R32G32B32A32_SFLOAT, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
 
 	Image swapImg(device, extent, surfaceFormat.format);
 	std::vector<VkImage> images;
