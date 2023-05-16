@@ -88,6 +88,8 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Bunny", Bunny},
 	{"Carnival", Carnival},
 	{"Ship", Ship},
+	{"Reflection Cornell Box & Lucy", ReflectionCornellBoxLucy},
+	{"Bathroom", Bathroom},
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -1191,3 +1193,218 @@ SceneAssets SceneList::TestScene(CameraInitialSate& camera)
 
 // 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
 // }
+
+
+// SceneAssets SceneList::Sibenik(CameraInitialSate& camera)
+// {
+// 	// camera.ModelView = lookAt(vec3(1.1334, -1.3, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
+// 	camera.FieldOfView = 25;
+// 	camera.Aperture = 0.0f;
+// 	camera.FocusDistance = 7.0f;
+// 	camera.ControlSpeed = 5.0f;
+// 	camera.GammaCorrection = true;
+// 	camera.HasSky = true;
+
+// 	const bool isProc = true;
+
+// 	std::mt19937 engine(42);
+// 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+// 	std::vector<Model> models;
+
+// 	const auto i = mat4(1);
+
+// 	std::string path = "../../../Scenes/sibenik";
+// 	for (const auto & entry : fs::directory_iterator(path))
+// 	{
+// 		if(entry.path().extension() == ".obj")
+// 		{
+// 			auto model = Model::LoadModel(entry.path());
+
+// 			models.push_back(model);
+// 		}
+// 		else if(entry.path().extension() == ".camera")
+// 		{
+// 			std::ifstream fin(entry.path().string());
+			
+// 			float eye[3], center[3];
+// 			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+// 			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+// 			fin.close();
+// 		}
+// 	}
+
+// 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+// }
+
+// SceneAssets SceneList::Exterior(CameraInitialSate& camera)
+// {
+// 	// camera.ModelView = lookAt(vec3(1.1334, -1.3, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
+// 	camera.FieldOfView = 25;
+// 	camera.Aperture = 0.0f;
+// 	camera.FocusDistance = 7.0f;
+// 	camera.ControlSpeed = 5.0f;
+// 	camera.GammaCorrection = true;
+// 	camera.HasSky = true;
+
+// 	const bool isProc = true;
+
+// 	std::mt19937 engine(42);
+// 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+// 	std::vector<Model> models;
+
+// 	const auto i = mat4(1);
+
+// 	std::string path = "../../../Scenes/Exterior";
+// 	for (const auto & entry : fs::directory_iterator(path))
+// 	{
+// 		if(entry.path().extension() == ".obj")
+// 		{
+// 			auto model = Model::LoadModel(entry.path());
+// 			model.Transform(scale(i, vec3(0.05)));
+
+// 			models.push_back(model);
+// 		}
+// 		else if(entry.path().extension() == ".camera")
+// 		{
+// 			std::ifstream fin(entry.path().string());
+			
+// 			float eye[3], center[3];
+// 			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+// 			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+// 			fin.close();
+// 		}
+// 	}
+
+// 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+// }
+
+SceneAssets SceneList::ReflectionCornellBoxLucy(CameraInitialSate& camera)
+{
+	// camera.ModelView = lookAt(vec3(278, 278, 350), vec3(278, 278, 0), vec3(0, 1, 0));
+	// camera.FieldOfView = 80;
+	camera.ModelView = lookAt(vec3(550, 278, 0), vec3(200, 278, -350), vec3(0, 1, 0));
+	camera.FieldOfView = 55;
+
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = false;
+
+	const auto i = mat4(1);
+	// const auto sphere = Model::CreateSphere(vec3(555 - 130, 165.0f, -165.0f / 2 - 65), 80.0f, Material::Dielectric(1.5f), true);
+	const auto sphere = Model::CreateSphere(vec3(555 - 300, 100.0f, -165.0f / 2 - 150), 80.0f, Material::Dielectric(1.5f), true);
+	auto lucy0 = Model::LoadModel("../assets/models/lucy.obj");
+
+	lucy0.Transform(
+		rotate(
+			scale(
+				translate(i, vec3(555 - 300 - 165/2, -9, -295 - 165/2)),
+				vec3(0.6f)),
+			radians(75.0f), vec3(0, 1, 0)));
+	
+	auto cornellBox = Model::CreateCornellBox(555);
+	// cornellBox.SetMaterial(Material::Metallic(vec3(0.73f, 0.73f, 0.73f), 0.0f), 0);
+	// cornellBox.SetMaterial(Material::Metallic(vec3(0.73f, 0.73f, 0.73f), 0.0f), 1);
+	cornellBox.SetMaterial(Material::Metallic(vec3(0.65f, 0.05f, 0.05f), 0.0f), 0);
+	cornellBox.SetMaterial(Material::Metallic(vec3(0.12f, 0.45f, 0.15f), 0.0f), 1);
+
+	std::vector<Model> models;
+	
+	models.push_back(cornellBox);
+	models.push_back(sphere);
+	models.push_back(lucy0);
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::Bathroom(CameraInitialSate& camera) // https://blendswap.com/blend/12584
+{
+	// camera.ModelView = lookAt(vec3(1.1334, -1.3, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
+	camera.FieldOfView = 36;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	std::vector<Model> models;
+
+	const auto i = mat4(1);
+
+	std::string path = "../../../Scenes/Bathroom";
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path());
+
+			if(entry.path().filename().string() == "sol.obj")
+			{
+				model.SetMaterial(Material::DiffuseLight(vec3(15.0f)), 0);
+				model.SetMaterial(Material::Lambertian(vec3(44.0 / 256, 26.0 / 256, 12.0 / 256)), 1);
+				model.SetMaterial(Material::Metallic(vec3(0.73f, 0.73f, 0.73f), 0.0f), 2);
+				model.SetMaterial(Material::Lambertian(vec3(226.0 / 256, 243.0 / 256, 227.0 / 256)), 4);
+				model.SetMaterial(Material::Lambertian(vec3(196.0 / 256, 137.0 / 256, 88.0 / 256)), 5);
+			}
+			else if(entry.path().string().find("Meuble") != std::string::npos || 
+					entry.path().string().find("meuble") != std::string::npos ||
+					entry.path().string().find("baignoire") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(196.0 / 256, 137.0 / 256, 88.0 / 256)));
+			}
+			else if(entry.path().string().find("statu") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Lambertian(vec3(14.0 / 256, 6.0 / 256, 3.0 / 256)));
+			}
+			else if(entry.path().string().find("robinet") != std::string::npos ||
+					entry.path().string().find("etend_serviette") != std::string::npos)
+			{
+				model.SetAllMaterial(Material::Metallic(vec3(0.73f, 0.73f, 0.73f), 0.0f));
+			}
+			else if(entry.path().filename().string() == "prise.obj")
+			{
+				model.SetMaterial(Material::Lambertian(vec3(164.0 / 256, 150.0 / 256, 134.0 / 256)), 0);
+				model.SetMaterial(Material::Lambertian(vec3(34.0 / 256, 22.0 / 256, 13.0 / 256)), 1);
+			}
+			else if(entry.path().string().find("poubelle") != std::string::npos)
+			{
+				model.SetMaterial(Material::Metallic(vec3(0.73f, 0.73f, 0.73f), 0.0f), 0);
+				model.SetMaterial(Material::Lambertian(vec3(14.0 / 256, 5.0 / 256, 4.0 / 256)), 1);
+			}
+			else if(entry.path().string().find("pese_personne") != std::string::npos)
+			{
+				model.SetMaterial(Material::Lambertian(vec3(14.0 / 256, 5.0 / 256, 4.0 / 256)), 1);
+			}
+			else if(entry.path().string().find("bouteille") != std::string::npos)
+			{
+				model.SetMaterial(Material::Lambertian(vec3(93.0 / 256, 77.0 / 256, 62.0 / 256)), 2);
+			}
+			else if(entry.path().string().find("emit_haut") != std::string::npos)
+			{
+				model.SetMaterial(Material::DiffuseLight(vec3(15.0f)));
+			}
+			// printf("%d\n", model.Materials().size());
+			// exit(-1);
+
+
+			models.push_back(model);
+		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
+	}
+
+	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
