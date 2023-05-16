@@ -88,7 +88,7 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Bunny", Bunny},
 	{"Carnival", Carnival},
 	{"Ship", Ship},
-	{"Reflection Cornell Box & Lucy", ReflectionCornellBoxLucy},
+	{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy},
 	{"Bathroom", Bathroom},
 };
 
@@ -1282,12 +1282,12 @@ SceneAssets SceneList::TestScene(CameraInitialSate& camera)
 // 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
 // }
 
-SceneAssets SceneList::ReflectionCornellBoxLucy(CameraInitialSate& camera)
+SceneAssets SceneList::ReflectiveCornellBoxLucy(CameraInitialSate& camera)
 {
-	// camera.ModelView = lookAt(vec3(278, 278, 350), vec3(278, 278, 0), vec3(0, 1, 0));
-	// camera.FieldOfView = 80;
-	camera.ModelView = lookAt(vec3(550, 278, 0), vec3(200, 278, -350), vec3(0, 1, 0));
-	camera.FieldOfView = 55;
+	camera.ModelView = lookAt(vec3(278, 278, 350), vec3(278, 278, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 78;
+	// camera.ModelView = lookAt(vec3(550, 278, 0), vec3(200, 278, -350), vec3(0, 1, 0));
+	// camera.FieldOfView = 55;
 
 	camera.Aperture = 0.0f;
 	camera.FocusDistance = 10.0f;
@@ -1296,8 +1296,8 @@ SceneAssets SceneList::ReflectionCornellBoxLucy(CameraInitialSate& camera)
 	camera.HasSky = false;
 
 	const auto i = mat4(1);
-	// const auto sphere = Model::CreateSphere(vec3(555 - 130, 165.0f, -165.0f / 2 - 65), 80.0f, Material::Dielectric(1.5f), true);
-	const auto sphere = Model::CreateSphere(vec3(555 - 300, 100.0f, -165.0f / 2 - 150), 80.0f, Material::Dielectric(1.5f), true);
+	const auto sphere = Model::CreateSphere(vec3(555 - 130, 165.0f, -165.0f / 2 - 65), 80.0f, Material::Dielectric(1.5f), true);
+	// const auto sphere = Model::CreateSphere(vec3(555 - 300, 100.0f, -165.0f / 2 - 150), 80.0f, Material::Dielectric(1.5f), true);
 	auto lucy0 = Model::LoadModel("../assets/models/lucy.obj");
 
 	lucy0.Transform(
