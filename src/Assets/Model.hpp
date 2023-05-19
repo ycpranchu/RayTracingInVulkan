@@ -3,6 +3,7 @@
 #include "Material.hpp"
 #include "Procedural.hpp"
 #include "Vertex.hpp"
+#include "Texture.hpp"
 #include <memory>
 #include <string>
 #include <vector>
@@ -14,6 +15,7 @@ namespace Assets
 	public:
 
 		static Model LoadModel(const std::string& filename);
+		static Model LoadModel(const std::string& filename, std::vector<Texture>& sceneTextures);
 		static Model CreateCornellBox(const float scale);
 		static Model CreateSquare(const float scale);
 		static Model CreateBox(const glm::vec3& p0, const glm::vec3& p1, const Material& material);

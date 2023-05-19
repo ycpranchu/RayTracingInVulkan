@@ -88,6 +88,7 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Bunny", Bunny},
 	{"Carnival", Carnival},
 	{"Ship", Ship},
+	{"Sponza", Sponza},
 	{"Mandelbulb Test", MandelbulbScene}
 };
 
@@ -1151,6 +1152,31 @@ SceneAssets SceneList::TestScene(CameraInitialSate& camera)
 	std::cout << "done loading" << std::endl;
 
 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+SceneAssets SceneList::Sponza(CameraInitialSate& camera)
+{
+	camera.ModelView = translate(mat4(1), -vec3(0, 5, 2));
+	camera.FieldOfView = 90;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 2.0f;
+	camera.ControlSpeed = 2.0f;
+	camera.GammaCorrection = true;
+	camera.ControlSpeed = 25.0f;
+	camera.HasSky = true;
+
+	std::vector<Model> models;
+	std::vector<Texture> textures;
+
+	const bool isProc = true;
+
+	// models.push_back(Model::CreateSphere(vec3(0, 1, 0), 1.0f, Material::Metallic(vec3(1.0f), 0.1f, 2), isProc));
+	// models.push_back(Model::CreateSphere(vec3(-4, 1, 0), 1.0f, Material::Lambertian(vec3(1.0f), 0), isProc));
+	// models.push_back(Model::CreateSphere(vec3(4, 1, 0), 1.0f, Material::Metallic(vec3(1.0f), 0.0f, 1), isProc));
+
+	models.push_back(Model::LoadModel("../../../Scenes/Sponza/sponza.obj", textures));
+
+	return std::forward_as_tuple(std::move(models), std::move(textures));
 }
 
 SceneAssets SceneList::MandelbulbScene(CameraInitialSate& camera)

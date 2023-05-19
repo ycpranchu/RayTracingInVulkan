@@ -44,6 +44,12 @@ namespace Assets {
 
 Model Model::LoadModel(const std::string& filename)
 {
+	std::vector<Texture> empty;
+	return LoadModel(filename, empty);
+}
+
+Model Model::LoadModel(const std::string& filename, std::vector<Texture>& sceneTextures)
+{
 	std::cout << "- loading '" << filename << "'... " << std::flush;
 
 	const auto timer = std::chrono::high_resolution_clock::now();
@@ -73,6 +79,15 @@ Model Model::LoadModel(const std::string& filename)
 
 		m.Diffuse = vec4(material.diffuse[0], material.diffuse[1], material.diffuse[2], 1.0);
 		m.DiffuseTextureId = -1;
+
+		const std::string tex_name = material.diffuse_texname;
+		if (!tex_name.empty())
+		{
+			const std::string texturePath = materialPath + "/" + tex_name;
+			m.DiffuseTextureId = sceneTextures.size();
+			sceneTextures.push_back(Texture::LoadTexture(texturePath, Vulkan::SamplerConfig()));
+		}
+
 
 		materials.emplace_back(m);
 	}
