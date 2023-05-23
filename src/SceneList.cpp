@@ -105,6 +105,7 @@ SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
 	camera.ControlSpeed = 2.0f;
 	camera.GammaCorrection = false;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	std::vector<Model> models;
 	std::vector<Texture> textures;
@@ -130,6 +131,7 @@ SceneAssets SceneList::RayTracingInOneWeekend(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -158,6 +160,7 @@ SceneAssets SceneList::PlanetsInOneWeekend(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -191,6 +194,7 @@ SceneAssets SceneList::LucyInOneWeekend(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -249,6 +253,8 @@ SceneAssets SceneList::CornellBox(CameraInitialSate& camera)
 	camera.ControlSpeed = 500.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = false;
+	camera.LightPosition = vec3(280, 500, -100);
+	camera.LightRadius = 10.0f;
 
 	const auto i = mat4(1);
 	const auto white = Material::Lambertian(vec3(0.73f, 0.73f, 0.73f));
@@ -276,6 +282,7 @@ SceneAssets SceneList::Carnival(CameraInitialSate& camera)
 	camera.ControlSpeed = 500.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const auto i = mat4(1);
 
@@ -301,6 +308,7 @@ SceneAssets SceneList::Ship(CameraInitialSate& camera)
 	camera.ControlSpeed = 500.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const auto i = mat4(1);
 
@@ -327,6 +335,8 @@ SceneAssets SceneList::Bunny(CameraInitialSate& camera)
 	camera.ControlSpeed = 500.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = false;
+	camera.LightPosition = vec3(280, 500, 400);
+	camera.LightRadius = 10.0f;
 
 	const auto i = mat4(1);
 
@@ -354,6 +364,8 @@ SceneAssets SceneList::SimpleTest(CameraInitialSate& camera)
 	camera.ControlSpeed = 500.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = false;
+	camera.LightPosition = vec3(280, 500, 280);
+	camera.LightRadius = 10.0f;
 
 	const auto i = mat4(1);
 
@@ -372,6 +384,8 @@ SceneAssets SceneList::CornellBoxLucy(CameraInitialSate& camera)
 	camera.ControlSpeed = 500.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = false;
+	camera.LightPosition = vec3(280, 500, 280);
+	camera.LightRadius = 10.0f;
 
 	const auto i = mat4(1);
 	const auto sphere = Model::CreateSphere(vec3(555 - 130, 165.0f, -165.0f / 2 - 65), 80.0f, Material::Dielectric(1.5f), true);
@@ -401,6 +415,7 @@ SceneAssets SceneList::CubesAndCommonScene(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -468,6 +483,7 @@ SceneAssets SceneList::CylinderCubesCommonScene(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -622,6 +638,7 @@ SceneAssets SceneList::TreesAndGrass(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -684,6 +701,7 @@ SceneAssets SceneList::blender_2_77(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -737,6 +755,7 @@ SceneAssets SceneList::blender_2_78(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	std::mt19937 engine(42);
 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
@@ -778,6 +797,7 @@ SceneAssets SceneList::blender_2_80(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	std::mt19937 engine(42);
 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
@@ -862,6 +882,7 @@ SceneAssets SceneList::blender_2_83(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	std::mt19937 engine(42);
 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
@@ -903,6 +924,7 @@ SceneAssets SceneList::blender_2_90(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	std::mt19937 engine(42);
 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
@@ -944,6 +966,7 @@ SceneAssets SceneList::blender_2_91(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -1058,6 +1081,7 @@ SceneAssets SceneList::blender_3_2(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -1118,6 +1142,7 @@ SceneAssets SceneList::TestScene(CameraInitialSate& camera)
 	camera.ControlSpeed = 5.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const bool isProc = true;
 
@@ -1166,6 +1191,7 @@ SceneAssets SceneList::Sponza(CameraInitialSate& camera)
 	camera.GammaCorrection = true;
 	camera.ControlSpeed = 25.0f;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	std::vector<Model> models;
 	std::vector<Texture> textures;
@@ -1195,6 +1221,7 @@ SceneAssets SceneList::MandelbulbScene(CameraInitialSate& camera)
 	camera.ControlSpeed = 2.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
 
 	const auto i = mat4(1);
 
@@ -1348,6 +1375,8 @@ SceneAssets SceneList::ReflectiveCornellBoxLucy(CameraInitialSate& camera)
 	camera.ControlSpeed = 500.0f;
 	camera.GammaCorrection = true;
 	camera.HasSky = false;
+	camera.LightPosition = vec3(280, 500, 280);
+	camera.LightRadius = 10.0f;
 
 	const auto i = mat4(1);
 	const auto sphere = Model::CreateSphere(vec3(555 - 130, 165.0f, -165.0f / 2 - 65), 80.0f, Material::Dielectric(1.5f), true);

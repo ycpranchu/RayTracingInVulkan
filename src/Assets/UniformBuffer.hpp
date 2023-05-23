@@ -20,6 +20,8 @@ namespace Assets
 		glm::mat4 Projection;
 		glm::mat4 ModelViewInverse;
 		glm::mat4 ProjectionInverse;
+		glm::vec3 LightPosition;
+		float LightRadius;
 		float Aperture;
 		float FocusDistance;
 		float HeatmapScale;

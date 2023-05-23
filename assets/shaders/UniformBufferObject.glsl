@@ -5,6 +5,8 @@ struct UniformBufferObject
 	mat4 Projection;
 	mat4 ModelViewInverse;
 	mat4 ProjectionInverse;
+	vec3 LightPosition;
+	float LightRadius;
 	float Aperture;
 	float FocusDistance;
 	float HeatmapScale;

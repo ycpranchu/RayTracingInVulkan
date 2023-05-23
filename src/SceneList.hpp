@@ -20,6 +20,8 @@ public:
 	struct CameraInitialSate
 	{
 		glm::mat4 ModelView;
+		glm::vec3 LightPosition;
+		float LightRadius;
 		float FieldOfView;
 		float Aperture;
 		float FocusDistance;
