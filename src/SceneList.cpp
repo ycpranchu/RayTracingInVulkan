@@ -89,7 +89,7 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Carnival", Carnival},
 	{"Ship", Ship},
 	{"Sponza", Sponza},
-	{"Mandelbulb Test", MandelbulbScene}
+	{"Mandelbulb Test", MandelbulbScene},
 	{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy},
 	{"Bathroom", Bathroom},
 };
