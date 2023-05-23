@@ -58,7 +58,7 @@ void main()
 			continue;
 		}
         			
-		for (uint j = 0; j < 1; j++) {
+		for (uint j = 0; j < Camera.NumberOfShadows; j++) {
 			// Trace shadow ray (TODO: Add more shadow rays)
 			const float shadowScale = 0.3;
 

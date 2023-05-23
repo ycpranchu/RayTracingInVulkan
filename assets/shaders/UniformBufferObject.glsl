@@ -11,6 +11,7 @@ struct UniformBufferObject
 	uint TotalNumberOfSamples;
 	uint NumberOfSamples;
 	uint NumberOfBounces;
+	uint NumberOfShadows;
 	uint RandomSeed;
 	uint Width;
 	uint Height;

@@ -60,7 +60,7 @@ void main()
         
         // Trace 16 AO rays
 		vec3 intersectionPoint = Ray.ScatterDirection.xyz;
-		for (uint j = 0; j < 16; j++) {
+		for (uint j = 0; j < Camera.NumberOfShadows; j++) {
 			const float shadowScale = 0.9;
             const float AODist = 5.0;
 

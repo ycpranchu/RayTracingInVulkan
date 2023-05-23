@@ -26,6 +26,7 @@ namespace Assets
 		uint32_t TotalNumberOfSamples;
 		uint32_t NumberOfSamples;
 		uint32_t NumberOfBounces;
+		uint32_t NumberOfShadows;
 		uint32_t RandomSeed;
 		uint32_t Width;
 		uint32_t Height;
