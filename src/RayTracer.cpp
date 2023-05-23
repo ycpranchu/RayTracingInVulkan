@@ -99,7 +99,10 @@ void RayTracer::CreateSwapChain()
 {
 	Application::CreateSwapChain();
 
+	#ifndef OFFSCREEN_RENDERING
 	userInterface_.reset(new UserInterface(CommandPool(), SwapChain(), DepthBuffer(), userSettings_));
+	#endif
+
 	resetAccumulation_ = true;
 
 	CheckFramebufferSize();
@@ -178,7 +181,9 @@ void RayTracer::Render(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
 		stats.TotalSamples = totalNumberOfSamples_;
 	}
 
+	#ifndef OFFSCREEN_RENDERING
 	userInterface_->Render(commandBuffer, SwapChainFrameBuffer(imageIndex), stats);
+	#endif
 }
 
 void RayTracer::OnKey(int key, int scancode, int action, int mods)
