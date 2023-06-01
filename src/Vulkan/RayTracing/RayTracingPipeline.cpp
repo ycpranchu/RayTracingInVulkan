@@ -42,13 +42,13 @@ RayTracingPipeline::RayTracingPipeline(
 		{3, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR},
 
 		// Vertex buffer, Index buffer, Material buffer, Offset buffer
-		{4, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-		{5, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-		{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-		{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
+		{4, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
+		{5, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
+		{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
+		{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
 
 		// Textures and image samplers
-		{8, static_cast<uint32_t>(scene.TextureSamplers().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
+		{8, static_cast<uint32_t>(scene.TextureSamplers().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
 
 		// The Procedural buffer.
 		{9, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR},
@@ -190,6 +190,7 @@ RayTracingPipeline::RayTracingPipeline(
 	// Load shaders.
 	ShaderModule* rayGenShader; 
 	ShaderModule* closestHitShader;
+	ShaderModule* anyhitShader = NULL;
 	switch (shaderType) {
 		case 0:
 			printf("RTV: Using regular path tracing shaders.\n");
@@ -215,6 +216,12 @@ RayTracingPipeline::RayTracingPipeline(
 			printf("RTV: Using foveated rendering shader.\n");
 			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceFoveated.rgen.spv");
 			closestHitShader = new ShaderModule(device, "../assets/shaders/RayTracing.rchit.spv");
+			break;
+		case 5:
+			printf("RTV: Using anyhit shader.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceTree.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/RayTracing.rchit.spv");
+			anyhitShader = new ShaderModule(device, "../assets/shaders/TraceTree.rahit.spv");
 			break;
 		default:
 			printf("Unrecognized shader type: %d\n", shaderType);
@@ -250,6 +257,12 @@ RayTracingPipeline::RayTracingPipeline(
 		#endif
 	};
 
+	if (anyhitShader != NULL) {
+		shaderStages.push_back(
+			anyhitShader->CreateShaderStage(VK_SHADER_STAGE_ANY_HIT_BIT_KHR)
+		);
+	}
+
 	// Shader groups
 	VkRayTracingShaderGroupCreateInfoKHR rayGenGroupInfo = {};
 	rayGenGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
@@ -277,9 +290,11 @@ RayTracingPipeline::RayTracingPipeline(
 	triangleHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
 	triangleHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	triangleHitGroupInfo.closestHitShader = 2;
-	triangleHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
+	triangleHitGroupInfo.anyHitShader = anyhitShader == NULL ? VK_SHADER_UNUSED_KHR : shaderStages.size() - 1;
 	triangleHitGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
 	triangleHitGroupIndex_ = 2;
+
+	printf("RTV: Anyhit shader: %d\n", triangleHitGroupInfo.anyHitShader);
 
 	#ifdef USE_PROCEDURALS
 	VkRayTracingShaderGroupCreateInfoKHR proceduralHitGroupInfo = {};

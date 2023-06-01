@@ -92,6 +92,7 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Mandelbulb Test", MandelbulbScene},
 	{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy},
 	{"Bathroom", Bathroom},
+	{"Chestnut", Chestnut}
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -1203,6 +1204,31 @@ SceneAssets SceneList::Sponza(CameraInitialSate& camera)
 	// models.push_back(Model::CreateSphere(vec3(4, 1, 0), 1.0f, Material::Metallic(vec3(1.0f), 0.0f, 1), isProc));
 
 	models.push_back(Model::LoadModel("../../../Scenes/Sponza/sponza.obj", textures));
+
+	return std::forward_as_tuple(std::move(models), std::move(textures));
+}
+
+SceneAssets SceneList::Chestnut(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(20, 0, 100), vec3(20, 100, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 50;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
+
+	const auto i = mat4(1);
+	std::vector<Model> models;
+	std::vector<Texture> textures;
+
+	auto chestnutTree = Model::LoadModel("../assets/models/chestnut.obj", textures);
+	printf("Loading chestnut...\n");
+	chestnutTree.Transform(
+		rotate(i,
+			radians(-75.0f), vec3(1, 0, 0)));
+	models.push_back(chestnutTree);
 
 	return std::forward_as_tuple(std::move(models), std::move(textures));
 }

@@ -25,7 +25,7 @@ void BottomLevelGeometry::AddGeometryTriangles(
 	geometry.geometry.triangles.indexData.deviceAddress = scene.IndexBuffer().GetDeviceAddress();
 	geometry.geometry.triangles.indexType = VK_INDEX_TYPE_UINT32;
 	geometry.geometry.triangles.transformData = {};
-	geometry.flags = isOpaque ? VK_GEOMETRY_OPAQUE_BIT_KHR : 0;
+	geometry.flags = isOpaque ? VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR : 0;
 
 	VkAccelerationStructureBuildRangeInfoKHR buildOffsetInfo = {};
 	buildOffsetInfo.firstVertex = vertexOffset / sizeof(Assets::Vertex);
