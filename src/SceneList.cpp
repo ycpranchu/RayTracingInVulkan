@@ -89,9 +89,11 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Carnival", Carnival},
 	{"Ship", Ship},
 	{"Sponza", Sponza},
-	{"Mandelbulb Test", MandelbulbScene}
+	{"Textured Bathroom", TexturedBathroom},
+	// {"San Miguel", San_Miguel},
+	{"Mandelbulb Test", MandelbulbScene},
 	{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy},
-	{"Bathroom", Bathroom},
+	{"Bathroom", Bathroom}
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -1158,8 +1160,8 @@ SceneAssets SceneList::TestScene(CameraInitialSate& camera)
 
 SceneAssets SceneList::Sponza(CameraInitialSate& camera)
 {
-	camera.ModelView = translate(mat4(1), -vec3(0, 5, 2));
-	camera.FieldOfView = 90;
+	camera.ModelView = translate(mat4(1), -vec3(0, 115, 2));
+	camera.FieldOfView = 70;
 	camera.Aperture = 0.0f;
 	camera.FocusDistance = 2.0f;
 	camera.ControlSpeed = 2.0f;
@@ -1176,7 +1178,46 @@ SceneAssets SceneList::Sponza(CameraInitialSate& camera)
 	// models.push_back(Model::CreateSphere(vec3(-4, 1, 0), 1.0f, Material::Lambertian(vec3(1.0f), 0), isProc));
 	// models.push_back(Model::CreateSphere(vec3(4, 1, 0), 1.0f, Material::Metallic(vec3(1.0f), 0.0f, 1), isProc));
 
-	models.push_back(Model::LoadModel("../../../Scenes/Sponza/sponza.obj", textures));
+	auto sponza = Model::LoadModel("../../../Scenes/Sponza/sponza.obj", textures);
+
+	sponza.Transform(
+		rotate(
+			scale(mat4(1), vec3(1, 1, 1)),
+			radians(270.0f), vec3(0, 1, 0)));
+
+	models.push_back(sponza);
+
+	return std::forward_as_tuple(std::move(models), std::move(textures));
+}
+
+SceneAssets SceneList::San_Miguel(CameraInitialSate& camera)
+{
+	camera.ModelView = translate(mat4(1), -vec3(0, 115, 2));
+	camera.FieldOfView = 70;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 2.0f;
+	camera.ControlSpeed = 2.0f;
+	camera.GammaCorrection = true;
+	camera.ControlSpeed = 25.0f;
+	camera.HasSky = true;
+
+	std::vector<Model> models;
+	std::vector<Texture> textures;
+
+	const bool isProc = true;
+
+	// models.push_back(Model::CreateSphere(vec3(0, 1, 0), 1.0f, Material::Metallic(vec3(1.0f), 0.1f, 2), isProc));
+	// models.push_back(Model::CreateSphere(vec3(-4, 1, 0), 1.0f, Material::Lambertian(vec3(1.0f), 0), isProc));
+	// models.push_back(Model::CreateSphere(vec3(4, 1, 0), 1.0f, Material::Metallic(vec3(1.0f), 0.0f, 1), isProc));
+
+	auto san_miguel = Model::LoadModel("../../../Scenes/San_Miguel/san-miguel.obj", textures);
+
+	san_miguel.Transform(
+		rotate(
+			scale(mat4(1), vec3(1, 1, 1)),
+			radians(270.0f), vec3(0, 1, 0)));
+
+	models.push_back(san_miguel);
 
 	return std::forward_as_tuple(std::move(models), std::move(textures));
 }
@@ -1461,4 +1502,27 @@ SceneAssets SceneList::Bathroom(CameraInitialSate& camera) // https://blendswap.
 	}
 
 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
+}
+
+
+SceneAssets SceneList::TexturedBathroom(CameraInitialSate& camera)
+{
+	camera.ModelView = lookAt(vec3(3.281494617462158, 20.03567123413086, 40.006858825683594), vec3(3.056297540664673, 19.762132227420807, 39.07173180580139), vec3(0, 1, 0));
+	camera.FieldOfView = 36;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+
+	std::vector<Model> models;
+	std::vector<Texture> textures;
+
+	const bool isProc = true;
+
+	auto bathroom = Model::LoadModel("../../../Scenes/Salle_De_Bain/salle_de_bain.obj", textures);
+
+	models.push_back(bathroom);
+
+	return std::forward_as_tuple(std::move(models), std::move(textures));
 }
