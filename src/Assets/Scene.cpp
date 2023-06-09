@@ -122,8 +122,8 @@ Scene::Scene(Vulkan::CommandPool& commandPool, std::vector<Model>&& models, std:
 
 	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "CylinderAABBs", VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | flags, aabbCylinder, aabbCylinderBuffer_, aabbCylinderBufferMemory_);
 	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "ProceduralCylinders", flags, proceduralCylinder, proceduralCylinderBuffer_, proceduralCylinderBufferMemory_);
-	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "MandelbulbAABBs", VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | flags, aabbMandelbulbs, aabbMandelbulbBuffer_, aabbMandelbulbBufferMemory_);
-	Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "ProceduralMandelbulbs", flags, proceduralMandelbulbs, proceduralMandelbulbBuffer_, proceduralMandelbulbBufferMemory_);
+	// Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "MandelbulbAABBs", VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR | flags, aabbMandelbulbs, aabbMandelbulbBuffer_, aabbMandelbulbBufferMemory_);
+	// Vulkan::BufferUtil::CreateDeviceBuffer(commandPool, "ProceduralMandelbulbs", flags, proceduralMandelbulbs, proceduralMandelbulbBuffer_, proceduralMandelbulbBufferMemory_);
 
 	
 	// Upload all textures
@@ -150,16 +150,16 @@ Scene::~Scene()
 	proceduralCubeBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	proceduralCylinderBuffer_.reset();
 	proceduralCylinderBufferMemory_.reset(); // release memory after bound buffer has been destroyed
-	proceduralMandelbulbBuffer_.reset();
-	proceduralMandelbulbBufferMemory_.reset(); // release memory after bound buffer has been destroyed
+	// proceduralMandelbulbBuffer_.reset();
+	// proceduralMandelbulbBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	aabbBuffer_.reset();
 	aabbBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	aabbCubeBuffer_.reset();
 	aabbCubeBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	aabbCylinderBuffer_.reset();
 	aabbCylinderBufferMemory_.reset(); // release memory after bound buffer has been destroyed
-	aabbMandelbulbBuffer_.reset();
-	aabbMandelbulbBufferMemory_.reset(); // release memory after bound buffer has been destroyed
+	// aabbMandelbulbBuffer_.reset();
+	// aabbMandelbulbBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	offsetBuffer_.reset();
 	offsetBufferMemory_.reset(); // release memory after bound buffer has been destroyed
 	materialBuffer_.reset();

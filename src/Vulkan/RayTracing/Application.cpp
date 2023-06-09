@@ -152,7 +152,7 @@ void Application::CreateSwapChain()
 	const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {rayTracingPipeline_->RayGenShaderIndex(), {}} };
 	const std::vector<ShaderBindingTable::Entry> missPrograms = { {rayTracingPipeline_->MissShaderIndex(), {}} };
 #ifdef USE_PROCEDURALS
-	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}},{rayTracingPipeline_->ProceduralHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCubeHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCylinderHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralMandelbulbHitGroupIndex(), {}} };
+	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}},{rayTracingPipeline_->ProceduralHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCubeHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCylinderHitGroupIndex(), {}}/*, {rayTracingPipeline_->ProceduralMandelbulbHitGroupIndex(), {}}*/ };
 #else
 	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}} };
 #endif

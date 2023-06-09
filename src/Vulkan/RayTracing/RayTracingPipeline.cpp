@@ -60,7 +60,7 @@ RayTracingPipeline::RayTracingPipeline(
 		{11, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR},
 
 		// Mandelbulb Procedural buffer.
-		{12, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
+		// {12, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
 	};
 
 	descriptorSetManager_.reset(new DescriptorSetManager(device, descriptorBindings, uniformBuffers.size()));
@@ -172,15 +172,15 @@ RayTracingPipeline::RayTracingPipeline(
 		}
 
 		// Procedural Mandelbulb buffer (optional)
-		VkDescriptorBufferInfo proceduralMandelbulbBufferInfo = {};
+		// VkDescriptorBufferInfo proceduralMandelbulbBufferInfo = {};
 
-		if (scene.HasProceduralMandelbulb())
-		{
-			proceduralMandelbulbBufferInfo.buffer = scene.ProceduralMandelbulbBuffer().Handle();
-			proceduralMandelbulbBufferInfo.range = VK_WHOLE_SIZE;
+		// if (scene.HasProceduralMandelbulb())
+		// {
+		// 	proceduralMandelbulbBufferInfo.buffer = scene.ProceduralMandelbulbBuffer().Handle();
+		// 	proceduralMandelbulbBufferInfo.range = VK_WHOLE_SIZE;
 
-			descriptorWrites.push_back(descriptorSets.Bind(i, 12, proceduralMandelbulbBufferInfo));
-		}
+		// 	descriptorWrites.push_back(descriptorSets.Bind(i, 12, proceduralMandelbulbBufferInfo));
+		// }
 
 		descriptorSets.UpdateDescriptors(i, descriptorWrites);
 	}
@@ -235,8 +235,8 @@ RayTracingPipeline::RayTracingPipeline(
 	const ShaderModule proceduralCubeIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCube.rint.spv");
 	const ShaderModule proceduralCylinderClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rchit.spv");
 	const ShaderModule proceduralCylinderIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rint.spv");
-	const ShaderModule proceduralMandelbulbClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rchit.spv");
-	const ShaderModule proceduralMandelbulbIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rint.spv");
+	// const ShaderModule proceduralMandelbulbClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rchit.spv");
+	// const ShaderModule proceduralMandelbulbIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rint.spv");
 	#endif
 
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
@@ -248,11 +248,11 @@ RayTracingPipeline::RayTracingPipeline(
 		proceduralClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralCubeClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralCylinderClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
-		proceduralMandelbulbClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+		// proceduralMandelbulbClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralCubeIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralCylinderIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
-		proceduralMandelbulbIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
+		// proceduralMandelbulbIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
 		#endif
 	};
@@ -304,7 +304,7 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralHitGroupInfo.closestHitShader = 3;
 	proceduralHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralHitGroupInfo.intersectionShader = 7;
+	proceduralHitGroupInfo.intersectionShader = 6;
 	proceduralHitGroupIndex_ = 3;
 
 	VkRayTracingShaderGroupCreateInfoKHR proceduralCubeHitGroupInfo = {};
@@ -314,7 +314,7 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralCubeHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralCubeHitGroupInfo.closestHitShader = 4;
 	proceduralCubeHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralCubeHitGroupInfo.intersectionShader = 8;
+	proceduralCubeHitGroupInfo.intersectionShader = 7;
 	proceduralCubeHitGroupIndex_ = 4;
 
 	VkRayTracingShaderGroupCreateInfoKHR proceduralCylinderHitGroupInfo = {};
@@ -324,18 +324,18 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralCylinderHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralCylinderHitGroupInfo.closestHitShader = 5;
 	proceduralCylinderHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralCylinderHitGroupInfo.intersectionShader = 9;
+	proceduralCylinderHitGroupInfo.intersectionShader = 8;
 	proceduralCylinderHitGroupIndex_ = 5;
 
-	VkRayTracingShaderGroupCreateInfoKHR proceduralMandelbulbHitGroupInfo = {};
-	proceduralMandelbulbHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-	proceduralMandelbulbHitGroupInfo.pNext = nullptr;
-	proceduralMandelbulbHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
-	proceduralMandelbulbHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
-	proceduralMandelbulbHitGroupInfo.closestHitShader = 6;
-	proceduralMandelbulbHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralMandelbulbHitGroupInfo.intersectionShader = 10;
-	proceduralMandelbulbHitGroupIndex_ = 6;
+	// VkRayTracingShaderGroupCreateInfoKHR proceduralMandelbulbHitGroupInfo = {};
+	// proceduralMandelbulbHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+	// proceduralMandelbulbHitGroupInfo.pNext = nullptr;
+	// proceduralMandelbulbHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
+	// proceduralMandelbulbHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
+	// proceduralMandelbulbHitGroupInfo.closestHitShader = 6;
+	// proceduralMandelbulbHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
+	// proceduralMandelbulbHitGroupInfo.intersectionShader = 10;
+	// proceduralMandelbulbHitGroupIndex_ = 6;
 	#endif
 
 	std::vector<VkRayTracingShaderGroupCreateInfoKHR> groups =
@@ -347,7 +347,7 @@ RayTracingPipeline::RayTracingPipeline(
 		proceduralHitGroupInfo,
 		proceduralCubeHitGroupInfo,
 		proceduralCylinderHitGroupInfo,
-		proceduralMandelbulbHitGroupInfo
+		// proceduralMandelbulbHitGroupInfo
 		#endif
 	};
 
