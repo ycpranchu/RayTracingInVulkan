@@ -175,7 +175,7 @@ Model Model::LoadModel(const std::string& filename)
 	return Model(std::move(vertices), std::move(indices), std::move(materials), nullptr);
 }
 
-Model Model::LoadModel(const std::string& filename, std::vector<Texture>& sceneTextures)
+Model Model::LoadModel(const std::string& filename, std::vector<Texture>& sceneTextures, std::vector<CustomMaterial>& customMaterials)
 {
 	std::cout << "- loading '" << filename << "'... " << std::flush;
 
@@ -215,6 +215,14 @@ Model Model::LoadModel(const std::string& filename, std::vector<Texture>& sceneT
 			sceneTextures.push_back(Texture::LoadTexture(texturePath, Vulkan::SamplerConfig()));
 		}
 
+		for (CustomMaterial &cm : customMaterials)
+		{
+			if (material.name == cm.first)
+			{
+				m = cm.second;
+				break;
+			}
+		}
 
 		materials.emplace_back(m);
 	}
@@ -228,6 +236,7 @@ Model Model::LoadModel(const std::string& filename, std::vector<Texture>& sceneT
 
 		materials.emplace_back(m);
 	}
+
 
 	// Geometry
 	const auto& objAttrib = objReader.GetAttrib();

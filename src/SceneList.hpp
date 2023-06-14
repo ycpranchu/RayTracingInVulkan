@@ -20,6 +20,8 @@ public:
 	struct CameraInitialSate
 	{
 		glm::mat4 ModelView;
+		glm::vec3 LightPosition;
+		float LightRadius;
 		float FieldOfView;
 		float Aperture;
 		float FocusDistance;
@@ -53,6 +55,7 @@ public:
 	static SceneAssets Ship(CameraInitialSate& camera);
 	static SceneAssets Sponza(CameraInitialSate& camera);
 	static SceneAssets San_Miguel(CameraInitialSate& camera);
+	static SceneAssets Chestnut(CameraInitialSate& camera);
 	static SceneAssets MandelbulbScene(CameraInitialSate& camera);
 	// static SceneAssets Sibenik(CameraInitialSate& camera);
 	// static SceneAssets Exterior(CameraInitialSate& camera);

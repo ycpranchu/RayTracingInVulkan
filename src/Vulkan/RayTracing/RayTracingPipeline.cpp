@@ -23,7 +23,8 @@ RayTracingPipeline::RayTracingPipeline(
 	const ImageView& accumulationImageView,
 	const ImageView& outputImageView,
 	const std::vector<Assets::UniformBuffer>& uniformBuffers,
-	const Assets::Scene& scene) :
+	const Assets::Scene& scene,
+	const uint32_t shaderType) :
 	swapChain_(swapChain)
 {
 	// Create descriptor pool/sets.
@@ -41,13 +42,13 @@ RayTracingPipeline::RayTracingPipeline(
 		{3, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR | VK_SHADER_STAGE_MISS_BIT_KHR},
 
 		// Vertex buffer, Index buffer, Material buffer, Offset buffer
-		{4, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-		{5, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-		{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
-		{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
+		{4, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
+		{5, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
+		{6, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
+		{7, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
 
 		// Textures and image samplers
-		{8, static_cast<uint32_t>(scene.TextureSamplers().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR},
+		{8, static_cast<uint32_t>(scene.TextureSamplers().size()), VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR},
 
 		// The Procedural buffer.
 		{9, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR},
@@ -59,7 +60,7 @@ RayTracingPipeline::RayTracingPipeline(
 		{11, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR},
 
 		// Mandelbulb Procedural buffer.
-		{12, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
+		// {12, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
 	};
 
 	descriptorSetManager_.reset(new DescriptorSetManager(device, descriptorBindings, uniformBuffers.size()));
@@ -171,15 +172,15 @@ RayTracingPipeline::RayTracingPipeline(
 		}
 
 		// Procedural Mandelbulb buffer (optional)
-		VkDescriptorBufferInfo proceduralMandelbulbBufferInfo = {};
+		// VkDescriptorBufferInfo proceduralMandelbulbBufferInfo = {};
 
-		if (scene.HasProceduralMandelbulb())
-		{
-			proceduralMandelbulbBufferInfo.buffer = scene.ProceduralMandelbulbBuffer().Handle();
-			proceduralMandelbulbBufferInfo.range = VK_WHOLE_SIZE;
+		// if (scene.HasProceduralMandelbulb())
+		// {
+		// 	proceduralMandelbulbBufferInfo.buffer = scene.ProceduralMandelbulbBuffer().Handle();
+		// 	proceduralMandelbulbBufferInfo.range = VK_WHOLE_SIZE;
 
-			descriptorWrites.push_back(descriptorSets.Bind(i, 12, proceduralMandelbulbBufferInfo));
-		}
+		// 	descriptorWrites.push_back(descriptorSets.Bind(i, 12, proceduralMandelbulbBufferInfo));
+		// }
 
 		descriptorSets.UpdateDescriptors(i, descriptorWrites);
 	}
@@ -187,9 +188,46 @@ RayTracingPipeline::RayTracingPipeline(
 	pipelineLayout_.reset(new class PipelineLayout(device, descriptorSetManager_->DescriptorSetLayout()));
 
 	// Load shaders.
-	const ShaderModule rayGenShader(device, "../assets/shaders/RayTracing.rgen.spv");
+	ShaderModule* rayGenShader; 
+	ShaderModule* closestHitShader;
+	ShaderModule* anyhitShader = NULL;
+	switch (shaderType) {
+		case 0:
+			printf("RTV: Using regular path tracing shaders.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/RayTracing.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/RayTracing.rchit.spv");
+			break;
+		case 1:
+			printf("RTV: Using primary + shadow shader with default light sources.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rchit.spv");
+			break;
+		case 2:
+			printf("RTV: Using primary + AO shader.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceAO.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rchit.spv");
+			break;
+		case 3:
+			printf("RTV: Using primary + shadow + AO shader.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceAnyhit.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/TraceShadow.rchit.spv");
+			break;
+		case 4:
+			printf("RTV: Using foveated rendering shader.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceFoveated.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/RayTracing.rchit.spv");
+			break;
+		case 5:
+			printf("RTV: Using anyhit shader.\n");
+			rayGenShader = new ShaderModule(device, "../assets/shaders/TraceTree.rgen.spv");
+			closestHitShader = new ShaderModule(device, "../assets/shaders/RayTracing.rchit.spv");
+			anyhitShader = new ShaderModule(device, "../assets/shaders/TraceTree.rahit.spv");
+			break;
+		default:
+			printf("Unrecognized shader type: %d\n", shaderType);
+			break;
+	}
 	const ShaderModule missShader(device, "../assets/shaders/RayTracing.rmiss.spv");
-	const ShaderModule closestHitShader(device, "../assets/shaders/RayTracing.rchit.spv");
 	#ifdef USE_PROCEDURALS
 	const ShaderModule proceduralClosestHitShader(device, "../assets/shaders/RayTracing.Procedural.rchit.spv");
 	const ShaderModule proceduralIntersectionShader(device, "../assets/shaders/RayTracing.Procedural.rint.spv");
@@ -197,27 +235,33 @@ RayTracingPipeline::RayTracingPipeline(
 	const ShaderModule proceduralCubeIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCube.rint.spv");
 	const ShaderModule proceduralCylinderClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rchit.spv");
 	const ShaderModule proceduralCylinderIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralCylinder.rint.spv");
-	const ShaderModule proceduralMandelbulbClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rchit.spv");
-	const ShaderModule proceduralMandelbulbIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rint.spv");
+	// const ShaderModule proceduralMandelbulbClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rchit.spv");
+	// const ShaderModule proceduralMandelbulbIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rint.spv");
 	#endif
 
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 	{
-		rayGenShader.CreateShaderStage(VK_SHADER_STAGE_RAYGEN_BIT_KHR),
+		rayGenShader->CreateShaderStage(VK_SHADER_STAGE_RAYGEN_BIT_KHR),
 		missShader.CreateShaderStage(VK_SHADER_STAGE_MISS_BIT_KHR),
-		closestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+		closestHitShader->CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		#ifdef USE_PROCEDURALS
 		proceduralClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralCubeClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralCylinderClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
-		proceduralMandelbulbClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
+		// proceduralMandelbulbClosestHitShader.CreateShaderStage(VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR),
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralCubeIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralCylinderIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
-		proceduralMandelbulbIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
+		// proceduralMandelbulbIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR),
 		proceduralIntersectionShader.CreateShaderStage(VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
 		#endif
 	};
+
+	if (anyhitShader != NULL) {
+		shaderStages.push_back(
+			anyhitShader->CreateShaderStage(VK_SHADER_STAGE_ANY_HIT_BIT_KHR)
+		);
+	}
 
 	// Shader groups
 	VkRayTracingShaderGroupCreateInfoKHR rayGenGroupInfo = {};
@@ -246,9 +290,11 @@ RayTracingPipeline::RayTracingPipeline(
 	triangleHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR;
 	triangleHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	triangleHitGroupInfo.closestHitShader = 2;
-	triangleHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
+	triangleHitGroupInfo.anyHitShader = anyhitShader == NULL ? VK_SHADER_UNUSED_KHR : shaderStages.size() - 1;
 	triangleHitGroupInfo.intersectionShader = VK_SHADER_UNUSED_KHR;
 	triangleHitGroupIndex_ = 2;
+
+	printf("RTV: Anyhit shader: %d\n", triangleHitGroupInfo.anyHitShader);
 
 	#ifdef USE_PROCEDURALS
 	VkRayTracingShaderGroupCreateInfoKHR proceduralHitGroupInfo = {};
@@ -258,7 +304,7 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralHitGroupInfo.closestHitShader = 3;
 	proceduralHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralHitGroupInfo.intersectionShader = 7;
+	proceduralHitGroupInfo.intersectionShader = 6;
 	proceduralHitGroupIndex_ = 3;
 
 	VkRayTracingShaderGroupCreateInfoKHR proceduralCubeHitGroupInfo = {};
@@ -268,7 +314,7 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralCubeHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralCubeHitGroupInfo.closestHitShader = 4;
 	proceduralCubeHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralCubeHitGroupInfo.intersectionShader = 8;
+	proceduralCubeHitGroupInfo.intersectionShader = 7;
 	proceduralCubeHitGroupIndex_ = 4;
 
 	VkRayTracingShaderGroupCreateInfoKHR proceduralCylinderHitGroupInfo = {};
@@ -278,18 +324,18 @@ RayTracingPipeline::RayTracingPipeline(
 	proceduralCylinderHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
 	proceduralCylinderHitGroupInfo.closestHitShader = 5;
 	proceduralCylinderHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralCylinderHitGroupInfo.intersectionShader = 9;
+	proceduralCylinderHitGroupInfo.intersectionShader = 8;
 	proceduralCylinderHitGroupIndex_ = 5;
 
-	VkRayTracingShaderGroupCreateInfoKHR proceduralMandelbulbHitGroupInfo = {};
-	proceduralMandelbulbHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
-	proceduralMandelbulbHitGroupInfo.pNext = nullptr;
-	proceduralMandelbulbHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
-	proceduralMandelbulbHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
-	proceduralMandelbulbHitGroupInfo.closestHitShader = 6;
-	proceduralMandelbulbHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
-	proceduralMandelbulbHitGroupInfo.intersectionShader = 10;
-	proceduralMandelbulbHitGroupIndex_ = 6;
+	// VkRayTracingShaderGroupCreateInfoKHR proceduralMandelbulbHitGroupInfo = {};
+	// proceduralMandelbulbHitGroupInfo.sType = VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR;
+	// proceduralMandelbulbHitGroupInfo.pNext = nullptr;
+	// proceduralMandelbulbHitGroupInfo.type = VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR;
+	// proceduralMandelbulbHitGroupInfo.generalShader = VK_SHADER_UNUSED_KHR;
+	// proceduralMandelbulbHitGroupInfo.closestHitShader = 6;
+	// proceduralMandelbulbHitGroupInfo.anyHitShader = VK_SHADER_UNUSED_KHR;
+	// proceduralMandelbulbHitGroupInfo.intersectionShader = 10;
+	// proceduralMandelbulbHitGroupIndex_ = 6;
 	#endif
 
 	std::vector<VkRayTracingShaderGroupCreateInfoKHR> groups =
@@ -301,7 +347,7 @@ RayTracingPipeline::RayTracingPipeline(
 		proceduralHitGroupInfo,
 		proceduralCubeHitGroupInfo,
 		proceduralCylinderHitGroupInfo,
-		proceduralMandelbulbHitGroupInfo
+		// proceduralMandelbulbHitGroupInfo
 		#endif
 	};
 

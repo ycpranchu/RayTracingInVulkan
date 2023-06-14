@@ -99,12 +99,18 @@ namespace
 		
 		userSettings.SceneIndex = options.SceneIndex;
 
+		userSettings.Width = options.Width;
+		userSettings.Height = options.Height;
+
 		userSettings.IsRayTraced = true;
 		userSettings.AccumulateRays = true;
 		userSettings.NumberOfSamples = options.Samples;
 		userSettings.NumberOfBounces = options.Bounces;
+		userSettings.NumberOfShadows = options.ShadowRays;
 		userSettings.MaxNumberOfSamples = options.MaxSamples;
 
+		userSettings.ShaderType = options.ShaderType;
+		
 		userSettings.ShowSettings = !options.Benchmark;
 		userSettings.ShowOverlay = true;
 

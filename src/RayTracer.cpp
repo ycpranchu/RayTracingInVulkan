@@ -45,11 +45,16 @@ Assets::UniformBufferObject RayTracer::GetUniformBufferObject(const VkExtent2D e
 	ubo.Projection[1][1] *= -1; // Inverting Y for Vulkan, https://matthewwellings.com/blog/the-new-vulkan-coordinate-system/
 	ubo.ModelViewInverse = glm::inverse(ubo.ModelView);
 	ubo.ProjectionInverse = glm::inverse(ubo.Projection);
+	ubo.LightPosition = init.LightPosition;
+	ubo.LightRadius = init.LightRadius;
 	ubo.Aperture = userSettings_.Aperture;
 	ubo.FocusDistance = userSettings_.FocusDistance;
 	ubo.TotalNumberOfSamples = totalNumberOfSamples_;
 	ubo.NumberOfSamples = numberOfSamples_;
 	ubo.NumberOfBounces = userSettings_.NumberOfBounces;
+	ubo.NumberOfShadows = userSettings_.NumberOfShadows;
+	ubo.Width = userSettings_.Width;
+	ubo.Height = userSettings_.Height;
 	// RANDOM SEED
 	ubo.RandomSeed = 1;
 	ubo.HasSky = init.HasSky;

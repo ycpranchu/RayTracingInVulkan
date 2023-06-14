@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utilities/Glm.hpp"
+#include <string>
 
 namespace Assets
 {
@@ -55,6 +56,9 @@ namespace Assets
 
 		// Which material are we dealing with
 		Enum MaterialModel;
+
+		// Name of the material
+		// std::string Name;
 	};
 
 }

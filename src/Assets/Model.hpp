@@ -10,12 +10,14 @@
 
 namespace Assets
 {
+	typedef std::pair<std::string, Material> CustomMaterial; 
+
 	class Model final
 	{
 	public:
 
 		static Model LoadModel(const std::string& filename);
-		static Model LoadModel(const std::string& filename, std::vector<Texture>& sceneTextures);
+		static Model LoadModel(const std::string& filename, std::vector<Texture>& sceneTextures, std::vector<CustomMaterial>& customMaterials);
 		static Model CreateCornellBox(const float scale);
 		static Model CreateSquare(const float scale);
 		static Model CreateBox(const glm::vec3& p0, const glm::vec3& p1, const Material& material);
