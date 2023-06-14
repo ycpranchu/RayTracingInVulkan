@@ -337,3 +337,6 @@ build
 
 # Custom compile flags
 compile_flags.txt
+
+# Scenes
+Scenes/San_Miguel/*
