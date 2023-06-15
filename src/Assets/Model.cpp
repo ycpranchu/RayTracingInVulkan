@@ -212,6 +212,8 @@ Model Model::LoadModel(const std::string& filename, std::vector<Texture>& sceneT
 		{
 			const std::string texturePath = materialPath + "/" + tex_name;
 			m.DiffuseTextureId = sceneTextures.size();
+			if (m.Diffuse == vec4(0, 0, 0, 1))
+				m.Diffuse = vec4(1, 1, 1, 1);
 			sceneTextures.push_back(Texture::LoadTexture(texturePath, Vulkan::SamplerConfig()));
 		}
 

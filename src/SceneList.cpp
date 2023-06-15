@@ -90,6 +90,12 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"Ship", Ship},
 	{"Sponza", Sponza},
 	{"Textured Bathroom", TexturedBathroom},
+	{"CS:GO Cache", CounterStrikeCache},
+	{"CS:GO Dust2", CounterStrikeDust2},
+	{"CS:GO Inferno", CounterStrikeInferno},
+	{"CS:GO Mirage", CounterStrikeMirage},
+	{"CS:GO Nuke", CounterStrikeNuke},
+	{"CS:GO Vertigo", CounterStrikeVertigo},
 	// {"San Miguel", San_Miguel},
 	{"Mandelbulb Test", MandelbulbScene},
 	{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy},
@@ -1587,6 +1593,67 @@ SceneAssets SceneList::TexturedBathroom(CameraInitialSate& camera)
 	auto bathroom = Model::LoadModel("../../../Scenes/Salle_De_Bain/salle_de_bain.obj", textures, customMaterials);
 
 	models.push_back(bathroom);
+
+	return std::forward_as_tuple(std::move(models), std::move(textures));
+}
+
+
+SceneAssets SceneList::CounterStrikeCache(CameraInitialSate& camera) { return CounterStrikeMap(camera, "cache"); }
+SceneAssets SceneList::CounterStrikeDust2(CameraInitialSate& camera) { return CounterStrikeMap(camera, "dust2"); }
+SceneAssets SceneList::CounterStrikeInferno(CameraInitialSate& camera) { return CounterStrikeMap(camera, "inferno"); }
+SceneAssets SceneList::CounterStrikeMirage(CameraInitialSate& camera) { return CounterStrikeMap(camera, "mirage"); }
+SceneAssets SceneList::CounterStrikeNuke(CameraInitialSate& camera) { return CounterStrikeMap(camera, "nuke"); }
+SceneAssets SceneList::CounterStrikeVertigo(CameraInitialSate& camera) { return CounterStrikeMap(camera, "vertigo"); }
+
+
+SceneAssets SceneList::CounterStrikeMap(CameraInitialSate& camera, std::string mp)
+{
+	camera.FieldOfView = 50;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 7.0f;
+	camera.ControlSpeed = 5.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = true;
+	camera.LightPosition = vec3(0, 0, 0);
+
+	const bool isProc = true;
+
+	std::mt19937 engine(42);
+	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
+
+	std::vector<Model> models;
+	std::vector<Texture> textures;
+	std::vector<Assets::CustomMaterial> cms = {};
+
+	// stuff I added
+	const auto i = mat4(1);
+
+	std::string path = "/home/mrsaed/csgo_scenes/" + mp;
+
+	for (const auto & entry : fs::directory_iterator(path))
+	{
+		if(entry.path().extension() == ".obj")
+		{
+			auto model = Model::LoadModel(entry.path(), textures, cms);
+
+			if(model.Vertices().size() == 0)
+				continue;
+
+			models.push_back(model);
+		}
+		else if(entry.path().extension() == ".camera")
+		{
+			std::ifstream fin(entry.path().string());
+			
+			float eye[3], center[3];
+			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
+			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
+
+			fin.close();
+		}
+	}
+
+	std::cout << "done loading" << std::endl;
 
 	return std::forward_as_tuple(std::move(models), std::move(textures));
 }

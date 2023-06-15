@@ -63,5 +63,13 @@ public:
 	static SceneAssets Bathroom(CameraInitialSate& camera);
 	static SceneAssets TexturedBathroom(CameraInitialSate& camera);
 
+	static SceneAssets CounterStrikeMap(CameraInitialSate& camera, std::string mp);
+	static SceneAssets CounterStrikeCache(CameraInitialSate& camera);
+	static SceneAssets CounterStrikeDust2(CameraInitialSate& camera);
+	static SceneAssets CounterStrikeInferno(CameraInitialSate& camera);
+	static SceneAssets CounterStrikeMirage(CameraInitialSate& camera);
+	static SceneAssets CounterStrikeNuke(CameraInitialSate& camera);
+	static SceneAssets CounterStrikeVertigo(CameraInitialSate& camera);
+
 	static const std::vector<std::pair<std::string, std::function<SceneAssets (CameraInitialSate&)>>> AllScenes;
 };
