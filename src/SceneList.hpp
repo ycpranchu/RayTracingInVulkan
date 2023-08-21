@@ -38,7 +38,6 @@ public:
 	static SceneAssets CornellBoxLucy(CameraInitialSate& camera);
 	static SceneAssets CubesAndCommonScene(CameraInitialSate& camera);
 	static SceneAssets CylinderCubesCommonScene(CameraInitialSate& camera);
-	// static SceneAssets TestScene(CameraInitialSate& camera);
 	static SceneAssets TreesAndGrass(CameraInitialSate& camera);
 	static SceneAssets blender_2_78(CameraInitialSate& camera);
 	static SceneAssets blender_3_2(CameraInitialSate& camera);
@@ -48,7 +47,6 @@ public:
 	static SceneAssets blender_2_90(CameraInitialSate& camera);
 	static SceneAssets blender_2_91(CameraInitialSate& camera);
 	static SceneAssets TestScene(CameraInitialSate& camera);
-	// static SceneAssets blender_3_3(CameraInitialSate& camera);
 	static SceneAssets SimpleTest(CameraInitialSate& camera);
 	static SceneAssets Bunny(CameraInitialSate& camera);
 	static SceneAssets Carnival(CameraInitialSate& camera);
@@ -57,8 +55,6 @@ public:
 	static SceneAssets San_Miguel(CameraInitialSate& camera);
 	static SceneAssets Chestnut(CameraInitialSate& camera);
 	static SceneAssets MandelbulbScene(CameraInitialSate& camera);
-	// static SceneAssets Sibenik(CameraInitialSate& camera);
-	// static SceneAssets Exterior(CameraInitialSate& camera);
 	static SceneAssets ReflectiveCornellBoxLucy(CameraInitialSate& camera);
 	static SceneAssets Bathroom(CameraInitialSate& camera);
 	static SceneAssets TexturedBathroom(CameraInitialSate& camera);

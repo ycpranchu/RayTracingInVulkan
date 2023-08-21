@@ -68,27 +68,27 @@ namespace
 const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::CameraInitialSate&)>>> SceneList::AllScenes =
 {
 	{"Cube And Spheres", CubeAndSpheres},
-	{"Ray Tracing In One Weekend", RayTracingInOneWeekend},
+	{"Ray Tracing In One Weekend", RayTracingInOneWeekend}, // WKND
 	{"Planets In One Weekend", PlanetsInOneWeekend},
 	{"Lucy In One Weekend", LucyInOneWeekend},
 	{"Cornell Box", CornellBox},
 	{"Cornell Box & Lucy", CornellBoxLucy},
 	{"Cubes and Common Scene", CubesAndCommonScene},
 	{"Cylinder and Common Scene", CylinderCubesCommonScene},
-	{"TreesAndGrass", TreesAndGrass},
-	{"blender_2_77 Racing Car", blender_2_77},
-	{"blender_2_78 Procedural", blender_2_78},
-	{"blender_2_80 Spring", blender_2_80},
-	{"blender_2_83 PartyTug", blender_2_83},
-	{"blender_2_90 Splash Fox", blender_2_90},
-	{"blender_2_91 Red Autumn Forest", blender_2_91},
-	{"blender_3_2 White Lands", blender_3_2},
+	{"TreesAndGrass", TreesAndGrass}, // PARK
+	{"blender_2_77 Racing Car", blender_2_77}, // CAR
+	{"blender_2_78 Procedural", blender_2_78}, // ROBOT
+	{"blender_2_80 Spring", blender_2_80}, // SPRNG
+	{"blender_2_83 PartyTug", blender_2_83}, // PARTY
+	{"blender_2_90 Splash Fox", blender_2_90}, // FOX
+	{"blender_2_91 Red Autumn Forest", blender_2_91}, // FRST
+	{"blender_3_2 White Lands", blender_3_2}, // LANDS
 	{"TestScene", TestScene},
 	{"Simple Test", SimpleTest},
-	{"Bunny", Bunny},
-	{"Carnival", Carnival},
-	{"Ship", Ship},
-	{"Sponza", Sponza},
+	{"Bunny", Bunny}, // BUNNY
+	{"Carnival", Carnival}, // CRNVL
+	{"Ship", Ship}, // SHIP
+	{"Sponza", Sponza}, // SPNZA
 	{"Textured Bathroom", TexturedBathroom},
 	{"CS:GO Cache", CounterStrikeCache},
 	{"CS:GO Dust2", CounterStrikeDust2},
@@ -96,13 +96,10 @@ const std::vector<std::pair<std::string, std::function<SceneAssets (SceneList::C
 	{"CS:GO Mirage", CounterStrikeMirage},
 	{"CS:GO Nuke", CounterStrikeNuke},
 	{"CS:GO Vertigo", CounterStrikeVertigo},
-	// {"San Miguel", San_Miguel},
 	{"Mandelbulb Test", MandelbulbScene},
-	{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy},
-	{"Mandelbulb Test", MandelbulbScene},
-	{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy},
-	{"Bathroom", Bathroom},
-	{"Chestnut", Chestnut}
+	{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy}, // REF
+	{"Bathroom", Bathroom}, // BATH
+	{"Chestnut", Chestnut} // CHSNT
 };
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate& camera)
@@ -573,70 +570,6 @@ SceneAssets SceneList::CylinderCubesCommonScene(CameraInitialSate& camera)
 
 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
 }
-
-// SceneAssets SceneList::TestScene(CameraInitialSate& camera)
-// {
-// 	// Final scene from Ray Tracing In One Weekend book.
-	
-// 	camera.ModelView = lookAt(vec3(13, 2, 3), vec3(0, 0, 0), vec3(0, 1, 0));
-// 	camera.FieldOfView = 20;
-// 	camera.Aperture = 0.1f;
-// 	camera.FocusDistance = 10.0f;
-// 	camera.ControlSpeed = 5.0f;
-// 	camera.GammaCorrection = true;
-// 	camera.HasSky = true;
-
-// 	const bool isProc = true;
-
-// 	std::mt19937 engine(42);
-// 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
-
-// 	std::vector<Model> models;
-
-// 	models.push_back(Model::CreateSphere(vec3(0, -1000, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
-
-
-// 	// stuff I added
-// 	const auto i = mat4(1);
-
-// 	auto human = Model::LoadModel("/home/mrs/vulkan-samples/obj-files/human-model/FinalBaseMesh.obj");
-// 	human.Transform(
-// 			rotate(
-// 				scale(
-// 					translate(i, vec3(2, 0, 0))
-// 				, vec3(0.05)),
-// 			radians(90.0f), vec3(0, 1, 0)));
-// 	models.push_back(human);
-	
-// 	auto Tree1 = Model::LoadModel("/home/mrs/vulkan-samples/obj-files/three-tree/Tree-1.obj");
-// 	Tree1.Transform(
-// 			rotate(
-// 				scale(
-// 					translate(i, vec3(-2, 0, -3))
-// 				, vec3(0.25)),
-// 			radians(180.0f), vec3(0, 1, 0)));
-// 	models.push_back(Tree1);
-
-// 	auto Tree2 = Model::LoadModel("/home/mrs/vulkan-samples/obj-files/three-tree/Tree-2.obj");
-// 	Tree2.Transform(
-// 			rotate(
-// 				scale(
-// 					translate(i, vec3(0, 0, 0))
-// 				, vec3(0.25)),
-// 			radians(180.0f), vec3(0, 1, 0)));
-// 	models.push_back(Tree2);
-
-// 	auto Tree3 = Model::LoadModel("/home/mrs/vulkan-samples/obj-files/three-tree/Tree-3.obj");
-// 	Tree3.Transform(
-// 			rotate(
-// 				scale(
-// 					translate(i, vec3(2, 0, 2))
-// 				, vec3(0.25)),
-// 			radians(180.0f), vec3(0, 1, 0)));
-// 	models.push_back(Tree3);
-
-// 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
-// }
 
 SceneAssets SceneList::TreesAndGrass(CameraInitialSate& camera)
 {
@@ -1315,134 +1248,6 @@ SceneAssets SceneList::MandelbulbScene(CameraInitialSate& camera)
 	return std::make_tuple(std::move(models), std::vector<Texture>());
 }
 
-// SceneAssets SceneList::blender_3_3(CameraInitialSate& camera)
-// {
-// 	// Final scene from Ray Tracing In One Weekend book.
-	
-// 	camera.ModelView = lookAt(vec3(563.448, 697.095, -556.87), vec3(361.606, 110.776, 117.695), vec3(0, 1, 0));
-// 	camera.FieldOfView = 30;
-// 	camera.Aperture = 0.0f;
-// 	camera.FocusDistance = 700.0f;
-// 	camera.ControlSpeed = 5.0f;
-// 	camera.GammaCorrection = true;
-// 	camera.HasSky = true;
-
-// 	const bool isProc = true;
-
-// 	std::mt19937 engine(42);
-// 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
-
-// 	std::vector<Model> models;
-
-// 	// models.push_back(Model::CreateSphere(vec3(0, -1000, 0), 1000, Material::Lambertian(vec3(0.5f, 0.5f, 0.5f)), isProc));
-
-
-// 	// stuff I added
-// 	const auto i = mat4(1);
-
-// 	std::string path = "/home/mrs/vulkan-samples/RayTracingInVulkan-cube/Scenes/blender_3_3_lts_splash_by_piotr_krynski";
-// 	for (const auto & entry : fs::directory_iterator(path))
-// 	{
-// 		if(entry.path().extension() == ".obj")
-// 		{
-// 			auto model = Model::LoadModel(entry.path());
-// 			// model.Transform(scale(i, vec3(0.1)));
-
-// 			models.push_back(model);
-// 		}
-// 	}
-
-// 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
-// }
-
-
-// SceneAssets SceneList::Sibenik(CameraInitialSate& camera)
-// {
-// 	// camera.ModelView = lookAt(vec3(1.1334, -1.3, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
-// 	camera.FieldOfView = 25;
-// 	camera.Aperture = 0.0f;
-// 	camera.FocusDistance = 7.0f;
-// 	camera.ControlSpeed = 5.0f;
-// 	camera.GammaCorrection = true;
-// 	camera.HasSky = true;
-
-// 	const bool isProc = true;
-
-// 	std::mt19937 engine(42);
-// 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
-
-// 	std::vector<Model> models;
-
-// 	const auto i = mat4(1);
-
-// 	std::string path = "../../../Scenes/sibenik";
-// 	for (const auto & entry : fs::directory_iterator(path))
-// 	{
-// 		if(entry.path().extension() == ".obj")
-// 		{
-// 			auto model = Model::LoadModel(entry.path());
-
-// 			models.push_back(model);
-// 		}
-// 		else if(entry.path().extension() == ".camera")
-// 		{
-// 			std::ifstream fin(entry.path().string());
-			
-// 			float eye[3], center[3];
-// 			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
-// 			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
-
-// 			fin.close();
-// 		}
-// 	}
-
-// 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
-// }
-
-// SceneAssets SceneList::Exterior(CameraInitialSate& camera)
-// {
-// 	// camera.ModelView = lookAt(vec3(1.1334, -1.3, 13.2851), vec3(-4.44416, -2.71126, 12.7306), vec3(0, 1, 0));
-// 	camera.FieldOfView = 25;
-// 	camera.Aperture = 0.0f;
-// 	camera.FocusDistance = 7.0f;
-// 	camera.ControlSpeed = 5.0f;
-// 	camera.GammaCorrection = true;
-// 	camera.HasSky = true;
-
-// 	const bool isProc = true;
-
-// 	std::mt19937 engine(42);
-// 	std::function<float ()> random = std::bind(std::uniform_real_distribution<float>(), engine);
-
-// 	std::vector<Model> models;
-
-// 	const auto i = mat4(1);
-
-// 	std::string path = "../../../Scenes/Exterior";
-// 	for (const auto & entry : fs::directory_iterator(path))
-// 	{
-// 		if(entry.path().extension() == ".obj")
-// 		{
-// 			auto model = Model::LoadModel(entry.path());
-// 			model.Transform(scale(i, vec3(0.05)));
-
-// 			models.push_back(model);
-// 		}
-// 		else if(entry.path().extension() == ".camera")
-// 		{
-// 			std::ifstream fin(entry.path().string());
-			
-// 			float eye[3], center[3];
-// 			fin >> eye[0] >> eye[1] >> eye[2] >> center[0] >> center[1] >> center[2];
-// 			camera.ModelView = lookAt(vec3(eye[0], eye[1], eye[2]), vec3(center[0], center[1], center[2]), vec3(0, 1, 0));
-
-// 			fin.close();
-// 		}
-// 	}
-
-// 	return std::forward_as_tuple(std::move(models), std::vector<Texture>());
-// }
-
 SceneAssets SceneList::ReflectiveCornellBoxLucy(CameraInitialSate& camera)
 {
 	camera.ModelView = lookAt(vec3(278, 278, 350), vec3(278, 278, 0), vec3(0, 1, 0));
@@ -1625,10 +1430,10 @@ SceneAssets SceneList::CounterStrikeMap(CameraInitialSate& camera, std::string m
 	std::vector<Texture> textures;
 	std::vector<Assets::CustomMaterial> cms = {};
 
-	// stuff I added
 	const auto i = mat4(1);
 
-	std::string path = "/home/mrsaed/csgo_scenes/" + mp;
+	// Update this path with the location of CS:GO scenes
+	std::string path = mp;
 
 	for (const auto & entry : fs::directory_iterator(path))
 	{
