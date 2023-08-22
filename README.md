@@ -2,7 +2,7 @@
 This forked repository modifies the Ray Tracing In Vulkan application from GPSnoopy for use with the [Vulkan-Sim](https://github.com/ubc-aamodt-group/vulkan-sim) simulator and LumiBench benchmark. 
 
 If you use LumiBench in your research, please cite:  
-Lufei Liu, Mohammadreza Saed, Yuan Hsi Chou, Davit Grigoryan, Tyler Nowicki, Tor M. Aamodt, LumiBench: A Benchmark Suite for Hardware Ray Tracing, In proceedings of the IEEE International Symposium on Workload Characterization (IISWC), Ghent, Belgium October 1–3, 2023.
+> Lufei Liu, Mohammadreza Saed, Yuan Hsi Chou, Davit Grigoryan, Tyler Nowicki, Tor M. Aamodt, LumiBench: A Benchmark Suite for Hardware Ray Tracing, In proceedings of the IEEE International Symposium on Workload Characterization (IISWC), Ghent, Belgium October 1–3, 2023.
 
 ### Included Shaders
 `--shader-type 1` Shadow Shader  
