@@ -99,12 +99,18 @@ namespace
 		
 		userSettings.SceneIndex = options.SceneIndex;
 
+		userSettings.Width = options.Width;
+		userSettings.Height = options.Height;
+
 		userSettings.IsRayTraced = true;
 		userSettings.AccumulateRays = true;
 		userSettings.NumberOfSamples = options.Samples;
 		userSettings.NumberOfBounces = options.Bounces;
+		userSettings.NumberOfShadows = options.ShadowRays;
 		userSettings.MaxNumberOfSamples = options.MaxSamples;
 
+		userSettings.ShaderType = options.ShaderType;
+		
 		userSettings.ShowSettings = !options.Benchmark;
 		userSettings.ShowOverlay = true;
 
@@ -216,18 +222,6 @@ namespace
 				return false;
 			}
 
-			// We want a device that supports the ray tracing extension.
-			const auto extensions = Vulkan::GetEnumerateVector(device, static_cast<const char*>(nullptr), vkEnumerateDeviceExtensionProperties);
-			const auto hasRayTracing = std::find_if(extensions.begin(), extensions.end(), [](const VkExtensionProperties& extension)
-			{
-				return strcmp(extension.extensionName, VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME) == 0;
-			});
-
-			if (hasRayTracing == extensions.end())
-			{
-				return false;
-			}
-
 			// We want a device with a graphics queue.
 			const auto queueFamilies = Vulkan::GetEnumerateVector(device, vkGetPhysicalDeviceQueueFamilyProperties);
 			const auto hasGraphicsQueue = std::find_if(queueFamilies.begin(), queueFamilies.end(), [](const VkQueueFamilyProperties& queueFamily)
@@ -249,6 +243,7 @@ namespace
 
 		std::cout << "Setting Device [" << deviceProp.properties.deviceID << "]:" << std::endl;
 
+		// Set up device (will fail here without the extensions)
 		application.SetPhysicalDevice(*result);
 
 		std::cout << std::endl;

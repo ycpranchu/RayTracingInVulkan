@@ -12,12 +12,17 @@ struct UserSettings final
 	// Scene
 	int SceneIndex;
 
+	uint32_t Width;
+	uint32_t Height;
+
 	// Renderer
 	bool IsRayTraced;
 	bool AccumulateRays;
 	uint32_t NumberOfSamples;
 	uint32_t NumberOfBounces;
+	uint32_t NumberOfShadows;
 	uint32_t MaxNumberOfSamples;
+	uint32_t ShaderType;
 
 	// Camera
 	float FieldOfView;

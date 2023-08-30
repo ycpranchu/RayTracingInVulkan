@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 
 project(RayTracingInVulkan)
 
+
+option(AllowProcedurals "AllowProcedurals" OFF)
+
 set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
@@ -15,6 +18,12 @@ foreach (OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
 endforeach()
 
 set (CMAKE_CXX_STANDARD 17)
+
+add_definitions(-DOFFSCREEN_RENDERING)
+
+if (AllowProcedurals)
+	add_definitions(-DUSE_PROCEDURALS)
+endif ()
 
 if (WIN32)
 	add_definitions(-DUNICODE -D_UNICODE)
@@ -35,6 +44,7 @@ if (UNIX)
 	
 	add_definitions(-DUNIX)
 	add_compile_options("-Wall")
+	add_compile_options("-g")
 	add_compile_options("-fvisibility=hidden")
 	
 	find_package(Backtrace REQUIRED)
@@ -77,3 +87,4 @@ set(MAIN_PROJECT "RayTracer")
 add_subdirectory(assets)
 add_subdirectory(src)
 set_property (DIRECTORY PROPERTY VS_STARTUP_PROJECT ${MAIN_PROJECT})
+

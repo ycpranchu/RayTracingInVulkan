@@ -28,14 +28,17 @@ namespace
 	VkAccelerationStructureBuildSizesInfoKHR GetTotalRequirements(const std::vector<TAccelerationStructure>& accelerationStructures)
 	{
 		VkAccelerationStructureBuildSizesInfoKHR total{};
+		printf("RTV: Total accel structure size = ");
 
 		for (const auto& accelerationStructure : accelerationStructures)
 		{
 			total.accelerationStructureSize += accelerationStructure.BuildSizes().accelerationStructureSize;
 			total.buildScratchSize += accelerationStructure.BuildSizes().buildScratchSize;
 			total.updateScratchSize += accelerationStructure.BuildSizes().updateScratchSize;
+			printf("0x%lx + ", accelerationStructure.BuildSizes().accelerationStructureSize);
 		}
 
+		printf("... = 0x%lx\n", total.accelerationStructureSize);
 		return total;
 	}
 }
@@ -144,12 +147,15 @@ void Application::CreateSwapChain()
 
 	CreateOutputImage();
 
-	rayTracingPipeline_.reset(new RayTracingPipeline(*deviceProcedures_, SwapChain(), topAs_[0], *accumulationImageView_, *outputImageView_, UniformBuffers(), GetScene()));
+	rayTracingPipeline_.reset(new RayTracingPipeline(*deviceProcedures_, SwapChain(), topAs_[0], *accumulationImageView_, *outputImageView_, UniformBuffers(), GetScene(), GetShaderType()));
 
 	const std::vector<ShaderBindingTable::Entry> rayGenPrograms = { {rayTracingPipeline_->RayGenShaderIndex(), {}} };
 	const std::vector<ShaderBindingTable::Entry> missPrograms = { {rayTracingPipeline_->MissShaderIndex(), {}} };
-	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCubeHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCylinderHitGroupIndex(), {}} };
-
+#ifdef USE_PROCEDURALS
+	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}},{rayTracingPipeline_->ProceduralHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCubeHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCylinderHitGroupIndex(), {}}/*, {rayTracingPipeline_->ProceduralMandelbulbHitGroupIndex(), {}}*/ };
+#else
+	const std::vector<ShaderBindingTable::Entry> hitGroups = { {rayTracingPipeline_->TriangleHitGroupIndex(), {}} };
+#endif
 	shaderBindingTable_.reset(new ShaderBindingTable(*deviceProcedures_, *rayTracingPipeline_, *rayTracingProperties_, rayGenPrograms, missPrograms, hitGroups));
 }
 
@@ -188,7 +194,9 @@ void Application::Render(VkCommandBuffer commandBuffer, const uint32_t imageInde
 		VK_ACCESS_SHADER_WRITE_BIT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 
 	// Bind ray tracing pipeline.
+	printf("RTV: Bind ray tracing pipeline...\n");
 	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rayTracingPipeline_->Handle());
+	printf("RTV: Bind descriptor sets...\n");
 	vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR, rayTracingPipeline_->PipelineLayout().Handle(), 0, 1, descriptorSets, 0, nullptr);
 
 	// Describe the shader binding table.
@@ -210,9 +218,11 @@ void Application::Render(VkCommandBuffer commandBuffer, const uint32_t imageInde
 	VkStridedDeviceAddressRegionKHR callableShaderBindingTable = {};
 
 	// Execute ray tracing shaders.
+	printf("RTV: Trace ray...\n");
 	deviceProcedures_->vkCmdTraceRaysKHR(commandBuffer,
 		&raygenShaderBindingTable, &missShaderBindingTable, &hitShaderBindingTable, &callableShaderBindingTable,
 		extent.width, extent.height, 1);
+	printf("RTV: (%d x %d x 1) SBT raygen %p, miss %p, hit %p, callable %p\n", extent.width, extent.height, &raygenShaderBindingTable, &missShaderBindingTable, &hitShaderBindingTable, &callableShaderBindingTable);
 
 	// Acquire output image and swap-chain image for copying.
 	ImageMemoryBarrier::Insert(commandBuffer, outputImage_->Handle(), subresourceRange, 
@@ -229,6 +239,7 @@ void Application::Render(VkCommandBuffer commandBuffer, const uint32_t imageInde
 	copyRegion.dstOffset = { 0, 0, 0 };
 	copyRegion.extent = { extent.width, extent.height, 1 };
 
+	printf("RTV: Copy image...\n");
 	vkCmdCopyImage(commandBuffer,
 		outputImage_->Handle(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
 		SwapChain().Images()[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -261,6 +272,11 @@ void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 			geometries.AddGeometryCubeAabb(scene, aabbOffset, 1, true);
 		else if (model.ProceduralCylinder())
 			geometries.AddGeometryCylinderAabb(scene, aabbOffset, 1, true);
+		else if (model.ProceduralMandelbulb()) {
+			printf("MANDELBULB OOF!\n");
+			assert(false);
+			geometries.AddGeometryMandelbulbAabb(scene, aabbOffset, 1, true);
+		}
 		else
 			geometries.AddGeometryTriangles(scene, vertexOffset, vertexCount, indexOffset, indexCount, true);
 
@@ -283,6 +299,7 @@ void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 	bottomScratchBuffer_.reset(new Buffer(Device(), total.buildScratchSize, VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT));
 	bottomScratchBufferMemory_.reset(new DeviceMemory(bottomScratchBuffer_->AllocateMemory(VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)));
 
+	printf("RTV: Created buffer for 0x%lx size BLAS at %p\n", total.accelerationStructureSize, bottomBuffer_->Handle());
 	debugUtils.SetObjectName(bottomBuffer_->Handle(), "BLAS Buffer");
 	debugUtils.SetObjectName(bottomBufferMemory_->Handle(), "BLAS Memory");
 	debugUtils.SetObjectName(bottomScratchBuffer_->Handle(), "BLAS Scratch Buffer");
@@ -294,6 +311,7 @@ void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 
 	for (size_t i = 0; i != bottomAs_.size(); ++i)
 	{
+		printf("RTV: Creating bottom level acceleration structure %ld...\n", i);
 		bottomAs_[i].Generate(commandBuffer, *bottomScratchBuffer_, scratchOffset, *bottomBuffer_, resultOffset);
 		
 		resultOffset += bottomAs_[i].BuildSizes().accelerationStructureSize;
@@ -314,10 +332,12 @@ void Application::CreateTopLevelStructures(VkCommandBuffer commandBuffer)
 	// Hit group 0: triangles
 	// Hit group 1: procedurals
 	// Hit group 2: proceduralCubes
-	// Hit group 2: proceduralCylinder
+	// Hit group 3: proceduralCylinder
+	// Hit group 4: proceduralMandelbulb
 
 	uint32_t instanceId = 0;
 
+	printf("RTV: Adding %ld BLAS instances\n", scene.Models().size());
 	for (const auto& model : scene.Models())
 	{
 		int hitGroupID;
@@ -327,6 +347,8 @@ void Application::CreateTopLevelStructures(VkCommandBuffer commandBuffer)
 			hitGroupID = 2;
 		else if (model.ProceduralCylinder())
 			hitGroupID = 3;
+		else if (model.ProceduralMandelbulb())
+			hitGroupID = 4;
 		else
 			hitGroupID = 0;
 

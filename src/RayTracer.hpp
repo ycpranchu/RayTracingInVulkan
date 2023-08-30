@@ -17,6 +17,7 @@ public:
 protected:
 
 	const Assets::Scene& GetScene() const override { return *scene_; }
+	const uint32_t GetShaderType() const override { return userSettings_.ShaderType; }
 	Assets::UniformBufferObject GetUniformBufferObject(VkExtent2D extent) const override;
 
 	void SetPhysicalDevice(

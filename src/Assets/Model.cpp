@@ -98,7 +98,6 @@ Model Model::LoadModel(const std::string& filename)
 	{
 		size_t faceId = 0;
 		const auto& mesh = shape.mesh;
-
 		for (const auto& index : mesh.indices)
 		{
 			Vertex vertex = {};
@@ -129,7 +128,163 @@ Model Model::LoadModel(const std::string& filename)
 				};
 			}
 
-			vertex.MaterialIndex = std::max(0, mesh.material_ids[faceId++ / 3]);
+			size_t material_id_index = faceId / 3;
+			int32_t material_index = mesh.material_ids[material_id_index];
+			faceId++;
+			vertex.MaterialIndex = std::max(0, material_index);
+
+			if (uniqueVertices.count(vertex) == 0)
+			{
+				uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+				vertices.push_back(vertex);
+			}
+
+			indices.push_back(uniqueVertices[vertex]);
+		}
+	}
+
+	// If the model did not specify normals, then create smooth normals that conserve the same number of vertices.
+	// Using flat normals would mean creating more vertices than we currently have, so for simplicity and better visuals we don't do it.
+	// See https://stackoverflow.com/questions/12139840/obj-file-averaging-normals.
+	if (objAttrib.normals.empty())
+	{
+		std::vector<vec3> normals(vertices.size());
+		
+		for (size_t i = 0; i < indices.size(); i += 3)
+		{
+			const auto normal = normalize(cross(
+				vec3(vertices[indices[i + 1]].Position) - vec3(vertices[indices[i]].Position),
+				vec3(vertices[indices[i + 2]].Position) - vec3(vertices[indices[i]].Position)));
+
+			vertices[indices[i + 0]].Normal += normal;
+			vertices[indices[i + 1]].Normal += normal;
+			vertices[indices[i + 2]].Normal += normal;			
+		}
+
+		for (auto& vertex : vertices)
+		{
+			vertex.Normal = normalize(vertex.Normal);
+		}
+	}
+
+	const auto elapsed = std::chrono::duration<float, std::chrono::seconds::period>(std::chrono::high_resolution_clock::now() - timer).count();
+
+	std::cout << "(" << objAttrib.vertices.size() << " vertices, " << uniqueVertices.size() << " unique vertices, " << materials.size() << " materials) ";
+	std::cout << elapsed << "s" << std::endl;
+
+	return Model(std::move(vertices), std::move(indices), std::move(materials), nullptr);
+}
+
+Model Model::LoadModel(const std::string& filename, std::vector<Texture>& sceneTextures, std::vector<CustomMaterial>& customMaterials)
+{
+	std::cout << "- loading '" << filename << "'... " << std::flush;
+
+	const auto timer = std::chrono::high_resolution_clock::now();
+	const std::string materialPath = std::filesystem::path(filename).parent_path().string();
+	
+	tinyobj::ObjReader objReader;
+	
+	if (!objReader.ParseFromFile(filename))
+	{
+		Throw(std::runtime_error("failed to load model '" + filename + "':\n" + objReader.Error()));
+	}
+
+	if (!objReader.Warning().empty())
+	{
+		Utilities::Console::Write(Utilities::Severity::Warning, [&objReader]()
+		{
+			std::cout << "\nWARNING: " << objReader.Warning() << std::flush;
+		});
+	}
+
+	// Materials
+	std::vector<Material> materials;
+
+	for (const auto& material : objReader.GetMaterials())
+	{
+		Material m{};
+
+		m.Diffuse = vec4(material.diffuse[0], material.diffuse[1], material.diffuse[2], 1.0);
+		m.DiffuseTextureId = -1;
+
+		const std::string tex_name = material.diffuse_texname;
+		if (!tex_name.empty())
+		{
+			const std::string texturePath = materialPath + "/" + tex_name;
+			m.DiffuseTextureId = sceneTextures.size();
+			if (m.Diffuse == vec4(0, 0, 0, 1))
+				m.Diffuse = vec4(1, 1, 1, 1);
+			sceneTextures.push_back(Texture::LoadTexture(texturePath, Vulkan::SamplerConfig()));
+		}
+
+		for (CustomMaterial &cm : customMaterials)
+		{
+			if (material.name == cm.first)
+			{
+				m = cm.second;
+				break;
+			}
+		}
+
+		materials.emplace_back(m);
+	}
+
+	if (materials.empty())
+	{
+		Material m{};
+
+		m.Diffuse = vec4(0.7f, 0.7f, 0.7f, 1.0);
+		m.DiffuseTextureId = -1;
+
+		materials.emplace_back(m);
+	}
+
+
+	// Geometry
+	const auto& objAttrib = objReader.GetAttrib();
+
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+	std::unordered_map<Vertex, uint32_t> uniqueVertices(objAttrib.vertices.size());
+
+	for (const auto& shape : objReader.GetShapes())
+	{
+		size_t faceId = 0;
+		const auto& mesh = shape.mesh;
+		for (const auto& index : mesh.indices)
+		{
+			Vertex vertex = {};
+
+			vertex.Position =
+			{
+				objAttrib.vertices[3 * index.vertex_index + 0],
+				objAttrib.vertices[3 * index.vertex_index + 1],
+				objAttrib.vertices[3 * index.vertex_index + 2],
+			};
+
+			if (!objAttrib.normals.empty())
+			{
+				vertex.Normal =
+				{
+					objAttrib.normals[3 * index.normal_index + 0],
+					objAttrib.normals[3 * index.normal_index + 1],
+					objAttrib.normals[3 * index.normal_index + 2]
+				};
+			}
+
+			if (!objAttrib.texcoords.empty())
+			{
+				vertex.TexCoord =
+				{
+					objAttrib.texcoords[2 * index.texcoord_index + 0],
+					1 - objAttrib.texcoords[2 * index.texcoord_index + 1]
+				};
+			}
+
+			size_t material_id_index = faceId / 3;
+			int32_t material_index = mesh.material_ids[material_id_index];
+			faceId++;
+			vertex.MaterialIndex = std::max(0, material_index);
 
 			if (uniqueVertices.count(vertex) == 0)
 			{
@@ -180,6 +335,22 @@ Model Model::CreateCornellBox(const float scale)
 	std::vector<Material> materials;
 
 	CornellBox::Create(scale, vertices, indices, materials);
+
+	return Model(
+		std::move(vertices),
+		std::move(indices),
+		std::move(materials),
+		nullptr
+	);
+}
+
+Model Model::CreateSquare(const float scale)
+{
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+	std::vector<Material> materials;
+
+	CornellBox::CreateSimple(scale, vertices, indices, materials);
 
 	return Model(
 		std::move(vertices),
@@ -517,6 +688,79 @@ Model Model::CreateCylinder(const vec3& center, float radius, const Material& ma
 		isProcedural ? new Cylinder(center, radius) : nullptr);
 }
 
+Model Model::CreateMandelbulb(const vec3& center, float radius, const Material& material, const bool isProcedural)
+{
+	const int slices = 64;
+	const int stacks = 32;
+	
+	std::vector<Vertex> vertices;
+	std::vector<uint32_t> indices;
+
+	const float pi = 3.14159265358979f;
+	
+	for (int j = 0; j <= stacks; ++j) 
+	{
+		const float j0 = pi * j / stacks;
+
+		// Vertex
+		const float v = radius * -std::sin(j0);
+		const float z = radius * std::cos(j0);
+		
+		// Normals		
+		const float n0 = -std::sin(j0);
+		const float n1 = std::cos(j0);
+
+		for (int i = 0; i <= slices; ++i) 
+		{
+			const float i0 = 2 * pi * i / slices;
+
+			const vec3 position(
+				center.x + v * std::sin(i0),
+				center.y + z,
+				center.z + v * std::cos(i0));
+			
+			const vec3 normal(
+				n0 * std::sin(i0),
+				n1,
+				n0 * std::cos(i0));
+
+			const vec2 texCoord(
+				static_cast<float>(i) / slices,
+				static_cast<float>(j) / stacks);
+
+			vertices.push_back(Vertex{ position, normal, texCoord, 0 });
+		}
+	}
+
+	for (int j = 0; j < stacks; ++j)
+	{
+		for (int i = 0; i < slices; ++i)
+		{
+			const auto j0 = (j + 0) * (slices + 1);
+			const auto j1 = (j + 1) * (slices + 1);
+			const auto i0 = i + 0;
+			const auto i1 = i + 1;
+			
+			indices.push_back(j0 + i0);
+			indices.push_back(j1 + i0);
+			indices.push_back(j1 + i1);
+			
+			indices.push_back(j0 + i0);
+			indices.push_back(j1 + i1);
+			indices.push_back(j0 + i1);
+		}
+	}
+
+	return Model(
+		std::move(vertices),
+		std::move(indices),
+		std::vector<Material>{material},
+		nullptr,
+		nullptr,
+		nullptr,
+		isProcedural ? new Mandelbulb(center, radius) : nullptr);
+}
+
 void Model::SetMaterial(const Material& material)
 {
 	if (materials_.size() != 1)
@@ -574,6 +818,17 @@ Model::Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, st
 	procedural_(procedural),
 	proceduralCube_(proceduralCube),
 	proceduralCylinder_(proceduralCylinder)
+{
+}
+
+Model::Model(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices, std::vector<Material>&& materials, const class Procedural* procedural, const class Procedural* proceduralCube, const class Procedural* proceduralCylinder, const class Procedural* proceduralMandelbulb) :
+	vertices_(std::move(vertices)),
+	indices_(std::move(indices)),
+	materials_(std::move(materials)),
+	procedural_(procedural),
+	proceduralCube_(proceduralCube),
+	proceduralCylinder_(proceduralCylinder),
+	proceduralMandelbulb_(proceduralMandelbulb)
 {
 }
 

@@ -65,6 +65,8 @@ VkAccelerationStructureBuildSizesInfoKHR AccelerationStructure::GetBuildSizes(co
 
 	sizeInfo.accelerationStructureSize = RoundUp(sizeInfo.accelerationStructureSize, AccelerationStructureAlignment);
 	sizeInfo.buildScratchSize = RoundUp(sizeInfo.buildScratchSize, ScratchAlignment);
+
+	printf("RTV: Rounding size of BVH structure up to 0x%lx\n", sizeInfo.accelerationStructureSize);
 	
 	return sizeInfo;
 }
@@ -79,6 +81,7 @@ void AccelerationStructure::CreateAccelerationStructure(Buffer& resultBuffer, co
 	createInfo.buffer = resultBuffer.Handle();
 	createInfo.offset = resultOffset;
 
+	printf("RTV: Creating acceleration struction of size 0x%lx\n", createInfo.size);
 	Check(deviceProcedures_.vkCreateAccelerationStructureKHR(device_.Handle(), &createInfo, nullptr, &accelerationStructure_),
 		"create acceleration structure");
 }

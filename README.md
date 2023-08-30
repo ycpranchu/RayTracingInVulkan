@@ -1,4 +1,48 @@
 # Ray Tracing In Vulkan
+This forked repository modifies the Ray Tracing In Vulkan application from GPSnoopy for use with the [Vulkan-Sim](https://github.com/ubc-aamodt-group/vulkan-sim) simulator and LumiBench benchmark. 
+
+If you use LumiBench in your research, please cite:  
+> Lufei Liu, Mohammadreza Saed, Yuan Hsi Chou, Davit Grigoryan, Tyler Nowicki, Tor M. Aamodt, LumiBench: A Benchmark Suite for Hardware Ray Tracing, In proceedings of the IEEE International Symposium on Workload Characterization (IISWC), Ghent, Belgium October 1–3, 2023.
+
+### Included Shaders
+`--shader-type 1` Shadow Shader  
+Traces primary rays according to `--samples`, then shoots `--shadow-rays` number of anyhit rays towards the jittered light direction from the primary intersectin point. 
+
+`--shader-type 2` AO Shader  
+Traces primary rays according to `--samples`, then shoots `--shadow-rays` number of anyhit rays in a hemisphere with reduced length from the primary intersectin point. 
+
+`--shader-type 5` Anyhit Shader  
+Applies alpha-masking using model textures in the Anyhit shader. Only intersection points that hits opaque textures are accepted. 
+
+### Included Scenes
+Scenes from LumiBench can be accessed with the following scene numbers:
+
+- `1` Ray Tracing In One Weekend (WKND)
+- `8` Park (PARK)
+- `9` Racing Car (CAR)
+- `10` Procedural (ROBOT)
+- `11` Spring (SPRNG)
+- `12` PartyTug (PARTY)
+- `13` Splash Fox (FOX)
+- `14` Red Autumn Forest (FRST)
+- `15` White Lands (LANDS)
+- `18` Bunny (BUNNY)
+- `19` Carnival (CRNVL)
+- `20` Ship (SHIP)
+- `21` Crytek Sponza (SPNZA)
+- `24` Reflective Cornell Box (REF)
+- `25` Bathroom (BATH)
+- `26` Horse Chestnut Tree (CHSNT)
+
+Our scenes are taken from the following sources:
+- [Blender Demo Files](): LANDS, FRST, FOX, PARTY, SPRNG, ROBOT, CAR
+- [ARAUNA](https://jbikker.github.io/literature/Real-time%20Ray%20Tracing%20through%20the%20Eyes%20of%20a%20Game%20Developer%20-%202007.pdf): SHIP
+- [Benedikt Bitterli](https://benedikt-bitterli.me/resources/): BATH
+- [McGuire Computer Graphics Archive](https://casual-effects.com/data/index.html): BUNNY, SPNZA, CHSNT
+- [3D Render](https://www.3drender.com/challenges): CRNVL
+- Original Ray Tracing In Vulkan: WKND
+
+# Original README
 
 <img align="center" src="https://github.com/GPSnoopy/RayTracingInVulkan/blob/master/gallery/LucySettings.jpg">
 
