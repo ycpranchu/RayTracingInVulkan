@@ -1,5 +1,6 @@
 # Ray Tracing In Vulkan
 This forked repository modifies the Ray Tracing In Vulkan application from GPSnoopy for use with the [Vulkan-Sim](https://github.com/ubc-aamodt-group/vulkan-sim) simulator and LumiBench benchmark. 
+LumiBench is compatible with Vulkan-Sim version 2.0.0 and above. 
 
 If you use LumiBench in your research, please cite:  
 > Lufei Liu, Mohammadreza Saed, Yuan Hsi Chou, Davit Grigoryan, Tyler Nowicki, Tor M. Aamodt, LumiBench: A Benchmark Suite for Hardware Ray Tracing, In proceedings of the IEEE International Symposium on Workload Characterization (IISWC), Ghent, Belgium October 1–3, 2023.
@@ -41,6 +42,9 @@ Our scenes are taken from the following sources:
 - [McGuire Computer Graphics Archive](https://casual-effects.com/data/index.html): BUNNY, SPNZA, CHSNT
 - [3D Render](https://www.3drender.com/challenges): CRNVL
 - Original Ray Tracing In Vulkan: WKND
+
+### LumiBench Workloads
+Commands to run the complete set of LumiBench workloads are included in `lumibench.sh`. 
 
 # Original README
 
