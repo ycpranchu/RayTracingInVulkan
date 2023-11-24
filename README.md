@@ -31,9 +31,9 @@ Scenes from LumiBench can be accessed with the following scene numbers:
 - `19` Carnival (CRNVL)
 - `20` Ship (SHIP)
 - `21` Crytek Sponza (SPNZA)
-- `24` Reflective Cornell Box (REF)
-- `25` Bathroom (BATH)
-- `26` Horse Chestnut Tree (CHSNT)
+- `30` Reflective Cornell Box (REF)
+- `31` Bathroom (BATH)
+- `32` Horse Chestnut Tree (CHSNT)
 
 Our scenes are taken from the following sources:
 - [Blender Demo Files](): LANDS, FRST, FOX, PARTY, SPRNG, ROBOT, CAR
