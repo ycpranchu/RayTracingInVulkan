@@ -11,10 +11,9 @@ namespace Vulkan
 		class RayTracingProperties final
 		{
 		public:
+			explicit RayTracingProperties(const Device &device);
 
-			explicit RayTracingProperties(const Device& device);
-
-			const class Device& Device() const { return device_; }
+			const class Device &Device() const { return device_; }
 
 			uint32_t MaxDescriptorSetAccelerationStructures() const { return accelProps_.maxDescriptorSetAccelerationStructures; }
 			uint64_t MaxGeometryCount() const { return accelProps_.maxGeometryCount; }
@@ -28,8 +27,7 @@ namespace Vulkan
 			uint32_t ShaderGroupHandleSize() const { return pipelineProps_.shaderGroupHandleSize; }
 
 		private:
-
-			const class Device& device_;
+			const class Device &device_;
 			VkPhysicalDeviceAccelerationStructurePropertiesKHR accelProps_{};
 			VkPhysicalDeviceRayTracingPipelinePropertiesKHR pipelineProps_{};
 		};

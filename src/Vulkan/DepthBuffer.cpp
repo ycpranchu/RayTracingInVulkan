@@ -6,11 +6,12 @@
 #include "ImageView.hpp"
 #include "Utilities/Exception.hpp"
 
-namespace Vulkan {
+namespace Vulkan
+{
 
 	namespace
 	{
-		VkFormat FindSupportedFormat(const Device& device, const std::vector<VkFormat>& candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features)
+		VkFormat FindSupportedFormat(const Device &device, const std::vector<VkFormat> &candidates, const VkImageTiling tiling, const VkFormatFeatureFlags features)
 		{
 			for (auto format : candidates)
 			{
@@ -31,21 +32,19 @@ namespace Vulkan {
 			Throw(std::runtime_error("failed to find supported format"));
 		}
 
-		VkFormat FindDepthFormat(const Device& device)
+		VkFormat FindDepthFormat(const Device &device)
 		{
 			return FindSupportedFormat(
 				device,
-				{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+				{VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
 				VK_IMAGE_TILING_OPTIMAL,
-				VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-			);
+				VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 		}
 	}
 
-	DepthBuffer::DepthBuffer(CommandPool& commandPool, const VkExtent2D extent) :
-		format_(FindDepthFormat(commandPool.Device()))
+	DepthBuffer::DepthBuffer(CommandPool &commandPool, const VkExtent2D extent) : format_(FindDepthFormat(commandPool.Device()))
 	{
-		const auto& device = commandPool.Device();
+		const auto &device = commandPool.Device();
 
 		image_.reset(new Image(device, extent, format_, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT));
 		imageMemory_.reset(new DeviceMemory(image_->AllocateMemory(VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)));
@@ -53,7 +52,7 @@ namespace Vulkan {
 
 		image_->TransitionImageLayout(commandPool, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
-		const auto& debugUtils = device.DebugUtils();
+		const auto &debugUtils = device.DebugUtils();
 
 		debugUtils.SetObjectName(image_->Handle(), "Depth Buffer Image");
 		debugUtils.SetObjectName(imageMemory_->Handle(), "Depth Buffer Image Memory");

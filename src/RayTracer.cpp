@@ -23,9 +23,8 @@ namespace
 #endif
 }
 
-RayTracer::RayTracer(const UserSettings& userSettings, const Vulkan::WindowConfig& windowConfig, const VkPresentModeKHR presentMode) :
-	Application(windowConfig, presentMode, EnableValidationLayers),
-	userSettings_(userSettings)
+RayTracer::RayTracer(const UserSettings &userSettings, const Vulkan::WindowConfig &windowConfig, const VkPresentModeKHR presentMode) : Application(windowConfig, presentMode, EnableValidationLayers),
+																																	   userSettings_(userSettings)
 {
 	CheckFramebufferSize();
 }
@@ -37,7 +36,7 @@ RayTracer::~RayTracer()
 
 Assets::UniformBufferObject RayTracer::GetUniformBufferObject(const VkExtent2D extent) const
 {
-	const auto& init = cameraInitialSate_;
+	const auto &init = cameraInitialSate_;
 
 	Assets::UniformBufferObject ubo = {};
 	ubo.ModelView = modelViewController_.ModelView();
@@ -65,24 +64,22 @@ Assets::UniformBufferObject RayTracer::GetUniformBufferObject(const VkExtent2D e
 }
 
 void RayTracer::SetPhysicalDevice(
-	VkPhysicalDevice physicalDevice, 
-	std::vector<const char*>& requiredExtensions,
-	VkPhysicalDeviceFeatures& deviceFeatures, 
-	void* nextDeviceFeatures)
+	VkPhysicalDevice physicalDevice,
+	std::vector<const char *> &requiredExtensions,
+	VkPhysicalDeviceFeatures &deviceFeatures,
+	void *nextDeviceFeatures)
 {
 	// Required extensions.
 	requiredExtensions.insert(requiredExtensions.end(),
-		{
-			// VK_KHR_SHADER_CLOCK is required for heatmap
-			VK_KHR_SHADER_CLOCK_EXTENSION_NAME
-		});
-	
+							  {// VK_KHR_SHADER_CLOCK is required for heatmap
+							   VK_KHR_SHADER_CLOCK_EXTENSION_NAME});
+
 	// Opt-in into mandatory device features.
 	VkPhysicalDeviceShaderClockFeaturesKHR shaderClockFeatures = {};
 	shaderClockFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CLOCK_FEATURES_KHR;
 	shaderClockFeatures.pNext = nextDeviceFeatures;
 	shaderClockFeatures.shaderSubgroupClock = true;
-	
+
 	deviceFeatures.fillModeNonSolid = true;
 	deviceFeatures.samplerAnisotropy = true;
 	deviceFeatures.shaderInt64 = true;
@@ -102,9 +99,9 @@ void RayTracer::CreateSwapChain()
 {
 	Application::CreateSwapChain();
 
-	#ifndef OFFSCREEN_RENDERING
+#ifndef OFFSCREEN_RENDERING
 	userInterface_.reset(new UserInterface(CommandPool(), SwapChain(), DepthBuffer(), userSettings_));
-	#endif
+#endif
 
 	resetAccumulation_ = true;
 
@@ -133,8 +130,8 @@ void RayTracer::DrawFrame()
 	}
 
 	// Check if the accumulation buffer needs to be reset.
-	if (resetAccumulation_ || 
-		userSettings_.RequiresAccumulationReset(previousSettings_) || 
+	if (resetAccumulation_ ||
+		userSettings_.RequiresAccumulationReset(previousSettings_) ||
 		!userSettings_.AccumulateRays)
 	{
 		totalNumberOfSamples_ = 0;
@@ -178,15 +175,14 @@ void RayTracer::Render(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
 		const auto extent = SwapChain().Extent();
 
 		stats.RayRate = static_cast<float>(
-			double(extent.width*extent.height)*numberOfSamples_
-			/ (timeDelta * 1000000000));
+			double(extent.width * extent.height) * numberOfSamples_ / (timeDelta * 1000000000));
 
 		stats.TotalSamples = totalNumberOfSamples_;
 	}
 
-	#ifndef OFFSCREEN_RENDERING
+#ifndef OFFSCREEN_RENDERING
 	userInterface_->Render(commandBuffer, SwapChainFrameBuffer(imageIndex), stats);
-	#endif
+#endif
 }
 
 void RayTracer::OnKey(int key, int scancode, int action, int mods)
@@ -197,11 +193,14 @@ void RayTracer::OnKey(int key, int scancode, int action, int mods)
 	}
 
 	if (action == GLFW_PRESS)
-	{		
+	{
 		switch (key)
 		{
-		case GLFW_KEY_ESCAPE: Window().Close(); break;
-		default: break;
+		case GLFW_KEY_ESCAPE:
+			Window().Close();
+			break;
+		default:
+			break;
 		}
 
 		// Settings (toggle switches)
@@ -209,12 +208,23 @@ void RayTracer::OnKey(int key, int scancode, int action, int mods)
 		{
 			switch (key)
 			{
-			case GLFW_KEY_F1: userSettings_.ShowSettings = !userSettings_.ShowSettings; break;
-			case GLFW_KEY_F2: userSettings_.ShowOverlay = !userSettings_.ShowOverlay; break;
-			case GLFW_KEY_R: userSettings_.IsRayTraced = !userSettings_.IsRayTraced; break;
-			case GLFW_KEY_H: userSettings_.ShowHeatmap = !userSettings_.ShowHeatmap; break;
-			case GLFW_KEY_P: isWireFrame_ = !isWireFrame_; break;
-			default: break;
+			case GLFW_KEY_F1:
+				userSettings_.ShowSettings = !userSettings_.ShowSettings;
+				break;
+			case GLFW_KEY_F2:
+				userSettings_.ShowOverlay = !userSettings_.ShowOverlay;
+				break;
+			case GLFW_KEY_R:
+				userSettings_.IsRayTraced = !userSettings_.IsRayTraced;
+				break;
+			case GLFW_KEY_H:
+				userSettings_.ShowHeatmap = !userSettings_.ShowHeatmap;
+				break;
+			case GLFW_KEY_P:
+				isWireFrame_ = !isWireFrame_;
+				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -230,7 +240,7 @@ void RayTracer::OnCursorPosition(const double xpos, const double ypos)
 {
 	if (!HasSwapChain() ||
 		userSettings_.Benchmark ||
-		userInterface_->WantsToCaptureKeyboard() || 
+		userInterface_->WantsToCaptureKeyboard() ||
 		userInterface_->WantsToCaptureMouse())
 	{
 		return;
@@ -242,7 +252,7 @@ void RayTracer::OnCursorPosition(const double xpos, const double ypos)
 
 void RayTracer::OnMouseButton(const int button, const int action, const int mods)
 {
-	if (!HasSwapChain() || 
+	if (!HasSwapChain() ||
 		userSettings_.Benchmark ||
 		userInterface_->WantsToCaptureMouse())
 	{
@@ -280,7 +290,7 @@ void RayTracer::LoadScene(const uint32_t sceneIndex)
 	{
 		textures.push_back(Assets::Texture::LoadTexture("../assets/textures/white.png", Vulkan::SamplerConfig()));
 	}
-	
+
 	scene_.reset(new Assets::Scene(CommandPool(), std::move(models), std::move(textures)));
 	sceneIndex_ = sceneIndex;
 
@@ -300,7 +310,7 @@ void RayTracer::CheckAndUpdateBenchmarkState(double prevTime)
 	{
 		return;
 	}
-	
+
 	// Initialise scene benchmark timers
 	if (periodTotalFrames_ == 0)
 	{
@@ -347,9 +357,9 @@ void RayTracer::CheckAndUpdateBenchmarkState(double prevTime)
 void RayTracer::CheckFramebufferSize() const
 {
 	// Check the framebuffer size when requesting a fullscreen window, as it's not guaranteed to match.
-	const auto& cfg = Window().Config();
+	const auto &cfg = Window().Config();
 	const auto fbSize = Window().FramebufferSize();
-	
+
 	if (userSettings_.Benchmark && cfg.Fullscreen && (fbSize.width != cfg.Width || fbSize.height != cfg.Height))
 	{
 		std::ostringstream out;
@@ -357,7 +367,7 @@ void RayTracer::CheckFramebufferSize() const
 		out << cfg.Width << "x" << cfg.Height;
 		out << ", got: ";
 		out << fbSize.width << "x" << fbSize.height << ")";
-		
+
 		Throw(std::runtime_error(out.str()));
 	}
 }

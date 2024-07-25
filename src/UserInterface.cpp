@@ -31,20 +31,19 @@ namespace
 }
 
 UserInterface::UserInterface(
-	Vulkan::CommandPool& commandPool, 
-	const Vulkan::SwapChain& swapChain, 
-	const Vulkan::DepthBuffer& depthBuffer,
-	UserSettings& userSettings) :
-	userSettings_(userSettings)
+	Vulkan::CommandPool &commandPool,
+	const Vulkan::SwapChain &swapChain,
+	const Vulkan::DepthBuffer &depthBuffer,
+	UserSettings &userSettings) : userSettings_(userSettings)
 {
-	const auto& device = swapChain.Device();
-	const auto& window = device.Surface().Instance().Window();
+	const auto &device = swapChain.Device();
+	const auto &window = device.Surface().Instance().Window();
 
 	// Initialise descriptor pool and render pass for ImGui.
 	const std::vector<Vulkan::DescriptorBinding> descriptorBindings =
-	{
-		{0, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0},
-	};
+		{
+			{0, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0},
+		};
 	descriptorPool_.reset(new Vulkan::DescriptorPool(device, descriptorBindings, 1));
 	renderPass_.reset(new Vulkan::RenderPass(swapChain, depthBuffer, VK_ATTACHMENT_LOAD_OP_LOAD, VK_ATTACHMENT_LOAD_OP_LOAD));
 
@@ -77,7 +76,7 @@ UserInterface::UserInterface(
 		Throw(std::runtime_error("failed to initialise ImGui vulkan adapter"));
 	}
 
-	auto& io = ImGui::GetIO();
+	auto &io = ImGui::GetIO();
 
 	// No ini file.
 	io.IniFilename = nullptr;
@@ -95,13 +94,12 @@ UserInterface::UserInterface(
 		Throw(std::runtime_error("failed to load ImGui font"));
 	}
 
-	Vulkan::SingleTimeCommands::Submit(commandPool, [] (VkCommandBuffer commandBuffer)
-	{
+	Vulkan::SingleTimeCommands::Submit(commandPool, [](VkCommandBuffer commandBuffer)
+									   {
 		if (!ImGui_ImplVulkan_CreateFontsTexture(commandBuffer))
 		{
 			Throw(std::runtime_error("failed to create ImGui font textures"));
-		}
-	});
+		} });
 
 	ImGui_ImplVulkan_DestroyFontUploadObjects();
 }
@@ -113,7 +111,7 @@ UserInterface::~UserInterface()
 	ImGui::DestroyContext();
 }
 
-void UserInterface::Render(VkCommandBuffer commandBuffer, const Vulkan::FrameBuffer& frameBuffer, const Statistics& statistics)
+void UserInterface::Render(VkCommandBuffer commandBuffer, const Vulkan::FrameBuffer &frameBuffer, const Statistics &statistics)
 {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui_ImplVulkan_NewFrame();
@@ -121,14 +119,14 @@ void UserInterface::Render(VkCommandBuffer commandBuffer, const Vulkan::FrameBuf
 
 	DrawSettings();
 	DrawOverlay(statistics);
-	//ImGui::ShowStyleEditor();
+	// ImGui::ShowStyleEditor();
 	ImGui::Render();
 
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = renderPass_->Handle();
 	renderPassInfo.framebuffer = frameBuffer.Handle();
-	renderPassInfo.renderArea.offset = { 0, 0 };
+	renderPassInfo.renderArea.offset = {0, 0};
 	renderPassInfo.renderArea.extent = renderPass_->SwapChain().Extent();
 	renderPassInfo.clearValueCount = 0;
 	renderPassInfo.pClearValues = nullptr;
@@ -169,20 +167,20 @@ void UserInterface::DrawSettings()
 
 	if (ImGui::Begin("Settings", &Settings().ShowSettings, flags))
 	{
-		std::vector<const char*> scenes;
-		for (const auto& scene : SceneList::AllScenes)
+		std::vector<const char *> scenes;
+		for (const auto &scene : SceneList::AllScenes)
 		{
 			scenes.push_back(scene.first.c_str());
 		}
 
-		const auto& window = descriptorPool_->Device().Surface().Instance().Window();
+		const auto &window = descriptorPool_->Device().Surface().Instance().Window();
 
 		ImGui::Text("Help");
 		ImGui::Separator();
 		ImGui::BulletText("F1: toggle Settings.");
 		ImGui::BulletText("F2: toggle Statistics.");
 		ImGui::BulletText(
-			"%c%c%c%c/SHIFT/CTRL: move camera.", 
+			"%c%c%c%c/SHIFT/CTRL: move camera.",
 			std::toupper(window.GetKeyName(GLFW_KEY_W, 0)[0]),
 			std::toupper(window.GetKeyName(GLFW_KEY_A, 0)[0]),
 			std::toupper(window.GetKeyName(GLFW_KEY_S, 0)[0]),
@@ -223,14 +221,14 @@ void UserInterface::DrawSettings()
 	ImGui::End();
 }
 
-void UserInterface::DrawOverlay(const Statistics& statistics)
+void UserInterface::DrawOverlay(const Statistics &statistics)
 {
 	if (!Settings().ShowOverlay)
 	{
 		return;
 	}
 
-	const auto& io = ImGui::GetIO();
+	const auto &io = ImGui::GetIO();
 	const float distance = 10.0f;
 	const ImVec2 pos = ImVec2(io.DisplaySize.x - distance, distance);
 	const ImVec2 posPivot = ImVec2(1.0f, 0.0f);

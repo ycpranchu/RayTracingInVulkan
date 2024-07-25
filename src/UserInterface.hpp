@@ -25,29 +25,27 @@ struct Statistics final
 class UserInterface final
 {
 public:
-
 	VULKAN_NON_COPIABLE(UserInterface)
 
 	UserInterface(
-		Vulkan::CommandPool& commandPool, 
-		const Vulkan::SwapChain& swapChain, 
-		const Vulkan::DepthBuffer& depthBuffer,
-		UserSettings& userSettings);
+		Vulkan::CommandPool &commandPool,
+		const Vulkan::SwapChain &swapChain,
+		const Vulkan::DepthBuffer &depthBuffer,
+		UserSettings &userSettings);
 	~UserInterface();
 
-	void Render(VkCommandBuffer commandBuffer, const Vulkan::FrameBuffer& frameBuffer, const Statistics& statistics);
+	void Render(VkCommandBuffer commandBuffer, const Vulkan::FrameBuffer &frameBuffer, const Statistics &statistics);
 
 	bool WantsToCaptureKeyboard() const;
 	bool WantsToCaptureMouse() const;
 
-	UserSettings& Settings() { return userSettings_; }
+	UserSettings &Settings() { return userSettings_; }
 
 private:
-
 	void DrawSettings();
-	void DrawOverlay(const Statistics& statistics);
+	void DrawOverlay(const Statistics &statistics);
 
 	std::unique_ptr<Vulkan::DescriptorPool> descriptorPool_;
 	std::unique_ptr<Vulkan::RenderPass> renderPass_;
-	UserSettings& userSettings_;
+	UserSettings &userSettings_;
 };

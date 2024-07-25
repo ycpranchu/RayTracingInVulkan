@@ -7,14 +7,13 @@ namespace Vulkan
 	class ImageMemoryBarrier final
 	{
 	public:
-
 		static void Insert(
-			const VkCommandBuffer commandBuffer, 
-			const VkImage image, 
-			const VkImageSubresourceRange subresourceRange, 
+			const VkCommandBuffer commandBuffer,
+			const VkImage image,
+			const VkImageSubresourceRange subresourceRange,
 			const VkAccessFlags srcAccessMask,
-			const VkAccessFlags dstAccessMask, 
-			const VkImageLayout oldLayout, 
+			const VkAccessFlags dstAccessMask,
+			const VkImageLayout oldLayout,
 			const VkImageLayout newLayout)
 		{
 			VkImageMemoryBarrier barrier;
@@ -30,8 +29,8 @@ namespace Vulkan
 			barrier.subresourceRange = subresourceRange;
 
 			vkCmdPipelineBarrier(commandBuffer, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
-				VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1,
-				&barrier);
+								 VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, 0, nullptr, 0, nullptr, 1,
+								 &barrier);
 		}
 	};
 

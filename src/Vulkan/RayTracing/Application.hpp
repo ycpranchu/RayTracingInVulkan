@@ -17,28 +17,25 @@ namespace Vulkan::RayTracing
 	class Application : public Vulkan::Application
 	{
 	public:
-
 		VULKAN_NON_COPIABLE(Application);
 
 	protected:
-
-		Application(const WindowConfig& windowConfig, VkPresentModeKHR presentMode, bool enableValidationLayers);
+		Application(const WindowConfig &windowConfig, VkPresentModeKHR presentMode, bool enableValidationLayers);
 		~Application();
 
 		void SetPhysicalDevice(VkPhysicalDevice physicalDevice,
-			std::vector<const char*>& requiredExtensions,
-			VkPhysicalDeviceFeatures& deviceFeatures,
-			void* nextDeviceFeatures) override;
-		
+							   std::vector<const char *> &requiredExtensions,
+							   VkPhysicalDeviceFeatures &deviceFeatures,
+							   void *nextDeviceFeatures) override;
+
 		void OnDeviceSet() override;
 		void CreateAccelerationStructures();
 		void DeleteAccelerationStructures();
 		void CreateSwapChain() override;
 		void DeleteSwapChain() override;
 		void Render(VkCommandBuffer commandBuffer, uint32_t imageIndex) override;
-			   
-	private:
 
+	private:
 		void CreateBottomLevelStructures(VkCommandBuffer commandBuffer);
 		void CreateTopLevelStructures(VkCommandBuffer commandBuffer);
 		void CreateOutputImage();
@@ -66,7 +63,7 @@ namespace Vulkan::RayTracing
 		std::unique_ptr<Image> outputImage_;
 		std::unique_ptr<DeviceMemory> outputImageMemory_;
 		std::unique_ptr<ImageView> outputImageView_;
-		
+
 		std::unique_ptr<class RayTracingPipeline> rayTracingPipeline_;
 		std::unique_ptr<class ShaderBindingTable> shaderBindingTable_;
 	};

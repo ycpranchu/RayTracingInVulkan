@@ -14,30 +14,28 @@
 
 namespace
 {
-	UserSettings CreateUserSettings(const Options& options);
+	UserSettings CreateUserSettings(const Options &options);
 	void PrintVulkanSdkInformation();
-	void PrintVulkanInstanceInformation(const Vulkan::Application& application, bool benchmark);
-	void PrintVulkanLayersInformation(const Vulkan::Application& application, bool benchmark);
-	void PrintVulkanDevices(const Vulkan::Application& application);
-	void PrintVulkanSwapChainInformation(const Vulkan::Application& application, bool benchmark);
-	void SetVulkanDevice(Vulkan::Application& application);
+	void PrintVulkanInstanceInformation(const Vulkan::Application &application, bool benchmark);
+	void PrintVulkanLayersInformation(const Vulkan::Application &application, bool benchmark);
+	void PrintVulkanDevices(const Vulkan::Application &application);
+	void PrintVulkanSwapChainInformation(const Vulkan::Application &application, bool benchmark);
+	void SetVulkanDevice(Vulkan::Application &application);
 }
 
-int main(int argc, const char* argv[]) noexcept
+int main(int argc, const char *argv[]) noexcept
 {
 	try
 	{
 		const Options options(argc, argv);
 		const UserSettings userSettings = CreateUserSettings(options);
-		const Vulkan::WindowConfig windowConfig
-		{
+		const Vulkan::WindowConfig windowConfig{
 			"Vulkan Window",
 			options.Width,
 			options.Height,
 			options.Benchmark && options.Fullscreen,
 			options.Fullscreen,
-			!options.Fullscreen
-		};
+			!options.Fullscreen};
 
 		RayTracer application(userSettings, windowConfig, static_cast<VkPresentModeKHR>(options.PresentMode));
 
@@ -55,15 +53,15 @@ int main(int argc, const char* argv[]) noexcept
 		return EXIT_SUCCESS;
 	}
 
-	catch (const Options::Help&)
+	catch (const Options::Help &)
 	{
 		return EXIT_SUCCESS;
 	}
 
-	catch (const std::exception& exception)
+	catch (const std::exception &exception)
 	{
-		Utilities::Console::Write(Utilities::Severity::Fatal, [&exception]() 
-		{
+		Utilities::Console::Write(Utilities::Severity::Fatal, [&exception]()
+								  {
 			const auto stacktrace = boost::get_error_info<traced>(exception);
 
 			std::cerr << "FATAL: " << exception.what() << std::endl;
@@ -71,16 +69,13 @@ int main(int argc, const char* argv[]) noexcept
 			if (stacktrace)
 			{
 				std::cerr << '\n' << *stacktrace << '\n';
-			}
-		});
+			} });
 	}
 
 	catch (...)
 	{
 		Utilities::Console::Write(Utilities::Severity::Fatal, []()
-		{
-			std::cerr << "FATAL: caught unhandled exception" << std::endl;
-		});
+								  { std::cerr << "FATAL: caught unhandled exception" << std::endl; });
 	}
 
 	return EXIT_FAILURE;
@@ -89,14 +84,14 @@ int main(int argc, const char* argv[]) noexcept
 namespace
 {
 
-	UserSettings CreateUserSettings(const Options& options)
+	UserSettings CreateUserSettings(const Options &options)
 	{
 		UserSettings userSettings{};
 
 		userSettings.Benchmark = options.Benchmark;
 		userSettings.BenchmarkNextScenes = options.BenchmarkNextScenes;
 		userSettings.BenchmarkMaxTime = options.BenchmarkMaxTime;
-		
+
 		userSettings.SceneIndex = options.SceneIndex;
 
 		userSettings.Width = options.Width;
@@ -110,7 +105,7 @@ namespace
 		userSettings.MaxNumberOfSamples = options.MaxSamples;
 
 		userSettings.ShaderType = options.ShaderType;
-		
+
 		userSettings.ShowSettings = !options.Benchmark;
 		userSettings.ShowOverlay = true;
 
@@ -125,8 +120,8 @@ namespace
 		std::cout << "Vulkan SDK Header Version: " << VK_HEADER_VERSION << std::endl;
 		std::cout << std::endl;
 	}
-	
-	void PrintVulkanInstanceInformation(const Vulkan::Application& application, const bool benchmark)
+
+	void PrintVulkanInstanceInformation(const Vulkan::Application &application, const bool benchmark)
 	{
 		if (benchmark)
 		{
@@ -135,7 +130,7 @@ namespace
 
 		std::cout << "Vulkan Instance Extensions: " << std::endl;
 
-		for (const auto& extension : application.Extensions())
+		for (const auto &extension : application.Extensions())
 		{
 			std::cout << "- " << extension.extensionName << " (" << Vulkan::Version(extension.specVersion) << ")" << std::endl;
 		}
@@ -143,7 +138,7 @@ namespace
 		std::cout << std::endl;
 	}
 
-	void PrintVulkanLayersInformation(const Vulkan::Application& application, const bool benchmark)
+	void PrintVulkanLayersInformation(const Vulkan::Application &application, const bool benchmark)
 	{
 		if (benchmark)
 		{
@@ -152,7 +147,7 @@ namespace
 
 		std::cout << "Vulkan Instance Layers: " << std::endl;
 
-		for (const auto& layer : application.Layers())
+		for (const auto &layer : application.Layers())
 		{
 			std::cout
 				<< "- " << layer.layerName
@@ -162,26 +157,26 @@ namespace
 
 		std::cout << std::endl;
 	}
-	
-	void PrintVulkanDevices(const Vulkan::Application& application)
+
+	void PrintVulkanDevices(const Vulkan::Application &application)
 	{
 		std::cout << "Vulkan Devices: " << std::endl;
 
-		for (const auto& device : application.PhysicalDevices())
+		for (const auto &device : application.PhysicalDevices())
 		{
 			VkPhysicalDeviceDriverProperties driverProp{};
 			driverProp.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
-			
+
 			VkPhysicalDeviceProperties2 deviceProp{};
 			deviceProp.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
 			deviceProp.pNext = &driverProp;
-			
+
 			vkGetPhysicalDeviceProperties2(device, &deviceProp);
 
 			VkPhysicalDeviceFeatures features;
 			vkGetPhysicalDeviceFeatures(device, &features);
 
-			const auto& prop = deviceProp.properties;
+			const auto &prop = deviceProp.properties;
 
 			const Vulkan::Version vulkanVersion(prop.apiVersion);
 			const Vulkan::Version driverVersion(prop.driverVersion, prop.vendorID);
@@ -198,9 +193,9 @@ namespace
 		std::cout << std::endl;
 	}
 
-	void PrintVulkanSwapChainInformation(const Vulkan::Application& application, const bool benchmark)
+	void PrintVulkanSwapChainInformation(const Vulkan::Application &application, const bool benchmark)
 	{
-		const auto& swapChain = application.SwapChain();
+		const auto &swapChain = application.SwapChain();
 
 		std::cout << "Swap Chain: " << std::endl;
 		std::cout << "- image count: " << swapChain.Images().size() << std::endl;
@@ -208,11 +203,11 @@ namespace
 		std::cout << std::endl;
 	}
 
-	void SetVulkanDevice(Vulkan::Application& application)
+	void SetVulkanDevice(Vulkan::Application &application)
 	{
-		const auto& physicalDevices = application.PhysicalDevices();
-		const auto result = std::find_if(physicalDevices.begin(), physicalDevices.end(), [](const VkPhysicalDevice& device)
-		{
+		const auto &physicalDevices = application.PhysicalDevices();
+		const auto result = std::find_if(physicalDevices.begin(), physicalDevices.end(), [](const VkPhysicalDevice &device)
+										 {
 			// We want a device with geometry shader support.
 			VkPhysicalDeviceFeatures deviceFeatures;
 			vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
@@ -229,8 +224,7 @@ namespace
 				return queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT;
 			});
 
-			return hasGraphicsQueue != queueFamilies.end();
-		});
+			return hasGraphicsQueue != queueFamilies.end(); });
 
 		if (result == physicalDevices.end())
 		{

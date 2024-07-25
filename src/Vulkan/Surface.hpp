@@ -10,17 +10,15 @@ namespace Vulkan
 	class Surface final
 	{
 	public:
-
 		VULKAN_NON_COPIABLE(Surface)
 
-		explicit Surface(const Instance& instance);
+		explicit Surface(const Instance &instance);
 		~Surface();
 
-		const class Instance& Instance() const { return instance_; }
+		const class Instance &Instance() const { return instance_; }
 
 	private:
-
-		const class Instance& instance_;
+		const class Instance &instance_;
 
 		VULKAN_HANDLE(VkSurfaceKHR, surface_)
 	};

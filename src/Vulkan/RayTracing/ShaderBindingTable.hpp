@@ -18,11 +18,10 @@ namespace Vulkan::RayTracing
 	class DeviceProcedures;
 	class RayTracingPipeline;
 	class RayTracingProperties;
-	
+
 	class ShaderBindingTable final
 	{
 	public:
-
 		struct Entry
 		{
 			uint32_t GroupIndex;
@@ -32,16 +31,16 @@ namespace Vulkan::RayTracing
 		VULKAN_NON_COPIABLE(ShaderBindingTable)
 
 		ShaderBindingTable(
-			const DeviceProcedures& deviceProcedures,
-			const RayTracingPipeline& rayTracingPipeline,
-			const RayTracingProperties& rayTracingProperties,
-			const std::vector<Entry>& rayGenPrograms,
-			const std::vector<Entry>& missPrograms,
-			const std::vector<Entry>& hitGroups);
+			const DeviceProcedures &deviceProcedures,
+			const RayTracingPipeline &rayTracingPipeline,
+			const RayTracingProperties &rayTracingProperties,
+			const std::vector<Entry> &rayGenPrograms,
+			const std::vector<Entry> &missPrograms,
+			const std::vector<Entry> &hitGroups);
 
 		~ShaderBindingTable();
 
-		const class Buffer& Buffer() const { return *buffer_; }
+		const class Buffer &Buffer() const { return *buffer_; }
 
 		VkDeviceAddress RayGenDeviceAddress() const { return Buffer().GetDeviceAddress() + RayGenOffset(); }
 		VkDeviceAddress MissDeviceAddress() const { return Buffer().GetDeviceAddress() + MissOffset(); }
@@ -60,7 +59,6 @@ namespace Vulkan::RayTracing
 		size_t HitGroupEntrySize() const { return hitGroupEntrySize_; }
 
 	private:
-
 		const size_t rayGenEntrySize_;
 		const size_t missEntrySize_;
 		const size_t hitGroupEntrySize_;

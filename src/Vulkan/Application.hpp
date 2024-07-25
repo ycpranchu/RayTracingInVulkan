@@ -12,23 +12,22 @@ namespace Assets
 	class UniformBuffer;
 }
 
-namespace Vulkan 
+namespace Vulkan
 {
 	class Application
 	{
 	public:
-
 		VULKAN_NON_COPIABLE(Application)
 
 		virtual ~Application();
 
-		const std::vector<VkExtensionProperties>& Extensions() const;
-		const std::vector<VkLayerProperties>& Layers() const;
-		const std::vector<VkPhysicalDevice>& PhysicalDevices() const;
+		const std::vector<VkExtensionProperties> &Extensions() const;
+		const std::vector<VkLayerProperties> &Layers() const;
+		const std::vector<VkPhysicalDevice> &PhysicalDevices() const;
 
-		const class SwapChain& SwapChain() const { return *swapChain_; }
-		class Window& Window() { return *window_; }
-		const class Window& Window() const { return *window_; }
+		const class SwapChain &SwapChain() const { return *swapChain_; }
+		class Window &Window() { return *window_; }
+		const class Window &Window() const { return *window_; }
 
 		bool HasSwapChain() const { return swapChain_.operator bool(); }
 
@@ -36,46 +35,44 @@ namespace Vulkan
 		void Run();
 
 	protected:
+		Application(const WindowConfig &windowConfig, VkPresentModeKHR presentMode, bool enableValidationLayers);
 
-		Application(const WindowConfig& windowConfig, VkPresentModeKHR presentMode, bool enableValidationLayers);
+		const class Device &Device() const { return *device_; }
+		class CommandPool &CommandPool() { return *commandPool_; }
+		const class DepthBuffer &DepthBuffer() const { return *depthBuffer_; }
+		const std::vector<Assets::UniformBuffer> &UniformBuffers() const { return uniformBuffers_; }
+		const class GraphicsPipeline &GraphicsPipeline() const { return *graphicsPipeline_; }
+		const class FrameBuffer &SwapChainFrameBuffer(const size_t i) const { return swapChainFramebuffers_[i]; }
 
-		const class Device& Device() const { return *device_; }
-		class CommandPool& CommandPool() { return *commandPool_; }
-		const class DepthBuffer& DepthBuffer() const { return *depthBuffer_; }
-		const std::vector<Assets::UniformBuffer>& UniformBuffers() const { return uniformBuffers_; }
-		const class GraphicsPipeline& GraphicsPipeline() const { return *graphicsPipeline_; }
-		const class FrameBuffer& SwapChainFrameBuffer(const size_t i) const { return swapChainFramebuffers_[i]; }
-		
-		virtual const Assets::Scene& GetScene() const = 0;
+		virtual const Assets::Scene &GetScene() const = 0;
 		virtual const uint32_t GetShaderType() const = 0;
 		virtual Assets::UniformBufferObject GetUniformBufferObject(VkExtent2D extent) const = 0;
 
 		virtual void SetPhysicalDevice(
-			VkPhysicalDevice physicalDevice, 
-			std::vector<const char*>& requiredExtensions, 
-			VkPhysicalDeviceFeatures& deviceFeatures,
-			void* nextDeviceFeatures);
-		
+			VkPhysicalDevice physicalDevice,
+			std::vector<const char *> &requiredExtensions,
+			VkPhysicalDeviceFeatures &deviceFeatures,
+			void *nextDeviceFeatures);
+
 		virtual void OnDeviceSet();
 		virtual void CreateSwapChain();
 		virtual void DeleteSwapChain();
 		virtual void DrawFrame();
 		virtual void Render(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
-		virtual void OnKey(int key, int scancode, int action, int mods) { }
-		virtual void OnCursorPosition(double xpos, double ypos) { }
-		virtual void OnMouseButton(int button, int action, int mods) { }
-		virtual void OnScroll(double xoffset, double yoffset) { }
+		virtual void OnKey(int key, int scancode, int action, int mods) {}
+		virtual void OnCursorPosition(double xpos, double ypos) {}
+		virtual void OnMouseButton(int button, int action, int mods) {}
+		virtual void OnScroll(double xoffset, double yoffset) {}
 
 		bool isWireFrame_{};
 
 	private:
-
 		void UpdateUniformBuffer(uint32_t imageIndex);
 		void RecreateSwapChain();
 
 		const VkPresentModeKHR presentMode_;
-		
+
 		std::unique_ptr<class Window> window_;
 		std::unique_ptr<class Instance> instance_;
 		std::unique_ptr<class DebugUtilsMessenger> debugUtilsMessenger_;

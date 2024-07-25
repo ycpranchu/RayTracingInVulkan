@@ -2,26 +2,26 @@
 #include "Instance.hpp"
 #include "Window.hpp"
 
-namespace Vulkan {
-
-Surface::Surface(const class Instance& instance) :
-	instance_(instance)
+namespace Vulkan
 {
-	#ifndef OFFSCREEN_RENDERING
-	Check(glfwCreateWindowSurface(instance.Handle(), instance.Window().Handle(), nullptr, &surface_),
-		"create window surface");
-	#endif
-}
 
-Surface::~Surface()
-{
-	#ifndef OFFSCREEN_RENDERING
-	if (surface_ != nullptr)
+	Surface::Surface(const class Instance &instance) : instance_(instance)
 	{
-		vkDestroySurfaceKHR(instance_.Handle(), surface_, nullptr);
-		surface_ = nullptr;
+#ifndef OFFSCREEN_RENDERING
+		Check(glfwCreateWindowSurface(instance.Handle(), instance.Window().Handle(), nullptr, &surface_),
+			  "create window surface");
+#endif
 	}
-	#endif
-}
+
+	Surface::~Surface()
+	{
+#ifndef OFFSCREEN_RENDERING
+		if (surface_ != nullptr)
+		{
+			vkDestroySurfaceKHR(instance_.Handle(), surface_, nullptr);
+			surface_ = nullptr;
+		}
+#endif
+	}
 
 }

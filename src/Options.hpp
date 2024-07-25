@@ -6,21 +6,19 @@
 class Options final
 {
 public:
-
 	class Help : public std::exception
 	{
 	public:
-
 		Help() = default;
 		~Help() = default;
 	};
 
-	Options(int argc, const char* argv[]);
+	Options(int argc, const char *argv[]);
 	~Options() = default;
 
 	// Application options.
 	bool Benchmark{};
-	// 
+	//
 	// Benchmark options.
 	bool BenchmarkNextScenes{};
 	uint32_t BenchmarkMaxTime{};

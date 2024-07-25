@@ -28,17 +28,15 @@ namespace Vulkan
 	class Sampler final
 	{
 	public:
-
 		VULKAN_NON_COPIABLE(Sampler)
 
-		Sampler(const Device& device, const SamplerConfig& config);
+		Sampler(const Device &device, const SamplerConfig &config);
 		~Sampler();
 
-		const class Device& Device() const { return device_; }
+		const class Device &Device() const { return device_; }
 
 	private:
-
-		const class Device& device_;
+		const class Device &device_;
 
 		VULKAN_HANDLE(VkSampler, sampler_)
 	};

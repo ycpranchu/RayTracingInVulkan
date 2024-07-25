@@ -15,27 +15,25 @@ namespace Vulkan::RayTracing
 	class BottomLevelAccelerationStructure final : public AccelerationStructure
 	{
 	public:
-
-		BottomLevelAccelerationStructure(const BottomLevelAccelerationStructure&) = delete;
-		BottomLevelAccelerationStructure& operator = (const BottomLevelAccelerationStructure&) = delete;
-		BottomLevelAccelerationStructure& operator = (BottomLevelAccelerationStructure&&) = delete;
+		BottomLevelAccelerationStructure(const BottomLevelAccelerationStructure &) = delete;
+		BottomLevelAccelerationStructure &operator=(const BottomLevelAccelerationStructure &) = delete;
+		BottomLevelAccelerationStructure &operator=(BottomLevelAccelerationStructure &&) = delete;
 
 		BottomLevelAccelerationStructure(
-			const class DeviceProcedures& deviceProcedures, 
-			const class RayTracingProperties& rayTracingProperties, 
-			const BottomLevelGeometry& geometries);
-		BottomLevelAccelerationStructure(BottomLevelAccelerationStructure&& other) noexcept;
+			const class DeviceProcedures &deviceProcedures,
+			const class RayTracingProperties &rayTracingProperties,
+			const BottomLevelGeometry &geometries);
+		BottomLevelAccelerationStructure(BottomLevelAccelerationStructure &&other) noexcept;
 		~BottomLevelAccelerationStructure();
 
 		void Generate(
 			VkCommandBuffer commandBuffer,
-			Buffer& scratchBuffer,
+			Buffer &scratchBuffer,
 			VkDeviceSize scratchOffset,
-			Buffer& resultBuffer,
+			Buffer &resultBuffer,
 			VkDeviceSize resultOffset);
 
 	private:
-
 		BottomLevelGeometry geometries_;
 	};
 

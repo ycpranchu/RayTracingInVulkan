@@ -8,7 +8,7 @@ struct UserSettings final
 	// Benchmark
 	bool BenchmarkNextScenes{};
 	uint32_t BenchmarkMaxTime{};
-	
+
 	// Scene
 	int SceneIndex;
 
@@ -40,14 +40,13 @@ struct UserSettings final
 	inline const static float FieldOfViewMinValue = 10.0f;
 	inline const static float FieldOfViewMaxValue = 90.0f;
 
-	bool RequiresAccumulationReset(const UserSettings& prev) const
+	bool RequiresAccumulationReset(const UserSettings &prev) const
 	{
-		return
-			IsRayTraced != prev.IsRayTraced ||
-			AccumulateRays != prev.AccumulateRays ||
-			NumberOfBounces != prev.NumberOfBounces ||
-			FieldOfView != prev.FieldOfView ||
-			Aperture != prev.Aperture ||
-			FocusDistance != prev.FocusDistance;
+		return IsRayTraced != prev.IsRayTraced ||
+			   AccumulateRays != prev.AccumulateRays ||
+			   NumberOfBounces != prev.NumberOfBounces ||
+			   FieldOfView != prev.FieldOfView ||
+			   Aperture != prev.Aperture ||
+			   FocusDistance != prev.FocusDistance;
 	}
 };

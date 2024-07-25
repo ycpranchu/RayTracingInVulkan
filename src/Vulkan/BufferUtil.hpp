@@ -9,32 +9,30 @@
 #include <string>
 #include <vector>
 
-
 namespace Vulkan
 {
 	class BufferUtil final
 	{
 	public:
-
 		template <class T>
-		static void CopyFromStagingBuffer(CommandPool& commandPool, Buffer& dstBuffer, const std::vector<T>& content);
+		static void CopyFromStagingBuffer(CommandPool &commandPool, Buffer &dstBuffer, const std::vector<T> &content);
 
 		template <class T>
 		static void CreateDeviceBuffer(
-			CommandPool& commandPool,
-			const char* name,
+			CommandPool &commandPool,
+			const char *name,
 			VkBufferUsageFlags usage,
-			const std::vector<T>& content,
-			std::unique_ptr<Buffer>& buffer,
-			std::unique_ptr<DeviceMemory>& memory);
+			const std::vector<T> &content,
+			std::unique_ptr<Buffer> &buffer,
+			std::unique_ptr<DeviceMemory> &memory);
 	};
 
 	template <class T>
-	void BufferUtil::CopyFromStagingBuffer(CommandPool& commandPool, Buffer& dstBuffer, const std::vector<T>& content)
+	void BufferUtil::CopyFromStagingBuffer(CommandPool &commandPool, Buffer &dstBuffer, const std::vector<T> &content)
 	{
-		const auto& device = commandPool.Device();
+		const auto &device = commandPool.Device();
 		const auto contentSize = sizeof(content[0]) * content.size();
-		
+
 		// Create a temporary host-visible staging buffer.
 		auto stagingBuffer = std::make_unique<Buffer>(device, contentSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 		auto stagingBufferMemory = stagingBuffer->AllocateMemory(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
@@ -53,19 +51,19 @@ namespace Vulkan
 
 	template <class T>
 	void BufferUtil::CreateDeviceBuffer(
-		CommandPool& commandPool,
-		const char* const name,
-		const VkBufferUsageFlags usage, 
-		const std::vector<T>& content,
-		std::unique_ptr<Buffer>& buffer,
-		std::unique_ptr<DeviceMemory>& memory)
+		CommandPool &commandPool,
+		const char *const name,
+		const VkBufferUsageFlags usage,
+		const std::vector<T> &content,
+		std::unique_ptr<Buffer> &buffer,
+		std::unique_ptr<DeviceMemory> &memory)
 	{
-		const auto& device = commandPool.Device();
-		const auto& debugUtils = device.DebugUtils();
+		const auto &device = commandPool.Device();
+		const auto &debugUtils = device.DebugUtils();
 		const auto contentSize = sizeof(content[0]) * content.size();
 		const VkMemoryAllocateFlags allocateFlags = usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT
-			? VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT
-			: 0;
+														? VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT
+														: 0;
 
 		printf("RTV: Creating device buffer %s of size %ld\n", name, contentSize);
 		buffer.reset(new Buffer(device, contentSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage));

@@ -11,8 +11,7 @@ namespace Vulkan
 	class SingleTimeCommands final
 	{
 	public:
-
-		static void Submit(CommandPool& commandPool, const std::function<void(VkCommandBuffer)>& action)
+		static void Submit(CommandPool &commandPool, const std::function<void(VkCommandBuffer)> &action)
 		{
 			CommandBuffers commandBuffers(commandPool, 1);
 

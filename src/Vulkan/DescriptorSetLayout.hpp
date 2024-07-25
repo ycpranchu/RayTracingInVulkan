@@ -10,15 +10,13 @@ namespace Vulkan
 	class DescriptorSetLayout final
 	{
 	public:
-
 		VULKAN_NON_COPIABLE(DescriptorSetLayout)
 
-		DescriptorSetLayout(const Device& device, const std::vector<DescriptorBinding>& descriptorBindings);
+		DescriptorSetLayout(const Device &device, const std::vector<DescriptorBinding> &descriptorBindings);
 		~DescriptorSetLayout();
 
 	private:
-
-		const Device& device_;
+		const Device &device_;
 
 		VULKAN_HANDLE(VkDescriptorSetLayout, layout_)
 	};

@@ -5,8 +5,7 @@
 class ModelViewController final
 {
 public:
-
-	void Reset(const glm::mat4& modelView);
+	void Reset(const glm::mat4 &modelView);
 
 	glm::mat4 ModelView() const;
 
@@ -16,7 +15,6 @@ public:
 	bool UpdateCamera(double speed, double timeDelta);
 
 private:
-
 	void MoveForward(float d);
 	void MoveRight(float d);
 	void MoveUp(float d);
@@ -27,9 +25,9 @@ private:
 	glm::mat4 orientation_{};
 
 	glm::vec4 position_{};
-	glm::vec4 right_{ 1, 0, 0, 0 };
-	glm::vec4 up_{ 0, 1, 0, 0 };
-	glm::vec4 forward_{ 0, 0, -1, 0 };
+	glm::vec4 right_{1, 0, 0, 0};
+	glm::vec4 up_{0, 1, 0, 0};
+	glm::vec4 forward_{0, 0, -1, 0};
 
 	// Control states.
 	bool cameraMovingLeft_{};
@@ -43,10 +41,10 @@ private:
 	float cameraRotY_{};
 	float modelRotX_{};
 	float modelRotY_{};
-	
+
 	double mousePosX_{};
 	double mousePosY_{};
-	
+
 	bool mouseLeftPressed_{};
 	bool mouseRightPressed_{};
 };

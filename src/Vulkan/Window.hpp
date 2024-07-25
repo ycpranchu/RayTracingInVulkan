@@ -11,22 +11,21 @@ namespace Vulkan
 	class Window final
 	{
 	public:
-
 		VULKAN_NON_COPIABLE(Window)
 
-		explicit Window(const WindowConfig& config);
+		explicit Window(const WindowConfig &config);
 		~Window();
 
 		// Window instance properties.
-		const WindowConfig& Config() const { return config_; }
-		GLFWwindow* Handle() const { return window_; }
+		const WindowConfig &Config() const { return config_; }
+		GLFWwindow *Handle() const { return window_; }
 		float ContentScale() const;
 		VkExtent2D FramebufferSize() const;
 		VkExtent2D WindowSize() const;
 
 		// GLFW instance properties (i.e. not bound to a window handler).
-		const char* GetKeyName(int key, int scancode) const;
-		std::vector<const char*> GetRequiredInstanceExtensions() const;
+		const char *GetKeyName(int key, int scancode) const;
+		std::vector<const char *> GetRequiredInstanceExtensions() const;
 		double GetTime() const;
 
 		// Callbacks
@@ -43,9 +42,8 @@ namespace Vulkan
 		void WaitForEvents() const;
 
 	private:
-
 		const WindowConfig config_;
-		GLFWwindow* window_{};
+		GLFWwindow *window_{};
 	};
 
 }

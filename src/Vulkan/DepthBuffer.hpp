@@ -14,14 +14,13 @@ namespace Vulkan
 	class DepthBuffer final
 	{
 	public:
-
 		VULKAN_NON_COPIABLE(DepthBuffer)
 
-		DepthBuffer(CommandPool& commandPool, VkExtent2D extent);
+		DepthBuffer(CommandPool &commandPool, VkExtent2D extent);
 		~DepthBuffer();
 
 		VkFormat Format() const { return format_; }
-		const class ImageView& ImageView() const { return *imageView_; }
+		const class ImageView &ImageView() const { return *imageView_; }
 
 		static bool HasStencilComponent(const VkFormat format)
 		{
@@ -29,7 +28,6 @@ namespace Vulkan
 		}
 
 	private:
-
 		const VkFormat format_;
 		std::unique_ptr<Image> image_;
 		std::unique_ptr<DeviceMemory> imageMemory_;

@@ -1,13 +1,13 @@
 #include "ModelViewController.hpp"
 #include "Vulkan/Vulkan.hpp"
 
-void ModelViewController::Reset(const glm::mat4& modelView)
+void ModelViewController::Reset(const glm::mat4 &modelView)
 {
 	const auto inverse = glm::inverse(modelView);
 
 	position_ = inverse * glm::vec4(0, 0, 0, 1);
 	orientation_ = glm::mat4(glm::mat3(modelView));
-	
+
 	cameraRotX_ = 0;
 	cameraRotY_ = 0;
 	modelRotX_ = 0;
@@ -23,11 +23,11 @@ glm::mat4 ModelViewController::ModelView() const
 {
 	const auto cameraRotX = static_cast<float>(modelRotY_ / 300.0);
 	const auto cameraRotY = static_cast<float>(modelRotX_ / 300.0);
-	
+
 	const auto model =
 		glm::rotate(glm::mat4(1.0f), cameraRotY * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) *
 		glm::rotate(glm::mat4(1.0f), cameraRotX * glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	
+
 	const auto view = orientation_ * glm::translate(glm::mat4(1), -glm::vec3(position_));
 
 	return view * model;
@@ -37,13 +37,26 @@ bool ModelViewController::OnKey(const int key, const int scancode, const int act
 {
 	switch (key)
 	{
-	case GLFW_KEY_S: cameraMovingBackward_ = action != GLFW_RELEASE; return true;
-	case GLFW_KEY_W: cameraMovingForward_ = action != GLFW_RELEASE; return true;
-	case GLFW_KEY_A: cameraMovingLeft_ = action != GLFW_RELEASE; return true;
-	case GLFW_KEY_D: cameraMovingRight_ = action != GLFW_RELEASE; return true;
-	case GLFW_KEY_LEFT_CONTROL: cameraMovingDown_ = action != GLFW_RELEASE; return true;
-	case GLFW_KEY_LEFT_SHIFT: cameraMovingUp_ = action != GLFW_RELEASE; return true;
-	default: return false;
+	case GLFW_KEY_S:
+		cameraMovingBackward_ = action != GLFW_RELEASE;
+		return true;
+	case GLFW_KEY_W:
+		cameraMovingForward_ = action != GLFW_RELEASE;
+		return true;
+	case GLFW_KEY_A:
+		cameraMovingLeft_ = action != GLFW_RELEASE;
+		return true;
+	case GLFW_KEY_D:
+		cameraMovingRight_ = action != GLFW_RELEASE;
+		return true;
+	case GLFW_KEY_LEFT_CONTROL:
+		cameraMovingDown_ = action != GLFW_RELEASE;
+		return true;
+	case GLFW_KEY_LEFT_SHIFT:
+		cameraMovingUp_ = action != GLFW_RELEASE;
+		return true;
+	default:
+		return false;
 	}
 }
 
@@ -89,12 +102,18 @@ bool ModelViewController::UpdateCamera(const double speed, const double timeDelt
 {
 	const auto d = static_cast<float>(speed * timeDelta);
 
-	if (cameraMovingLeft_) MoveRight(-d);
-	if (cameraMovingRight_) MoveRight(d);
-	if (cameraMovingBackward_) MoveForward(-d);
-	if (cameraMovingForward_) MoveForward(d);
-	if (cameraMovingDown_) MoveUp(-d);
-	if (cameraMovingUp_) MoveUp(d);
+	if (cameraMovingLeft_)
+		MoveRight(-d);
+	if (cameraMovingRight_)
+		MoveRight(d);
+	if (cameraMovingBackward_)
+		MoveForward(-d);
+	if (cameraMovingForward_)
+		MoveForward(d);
+	if (cameraMovingDown_)
+		MoveUp(-d);
+	if (cameraMovingUp_)
+		MoveUp(d);
 
 	const float rotationDiv = 300;
 	Rotate(cameraRotX_ / rotationDiv, cameraRotY_ / rotationDiv);
@@ -144,7 +163,7 @@ void ModelViewController::UpdateVectors()
 {
 	// Given the ortientation matrix, find out the x,y,z vector orientation.
 	const auto inverse = glm::inverse(orientation_);
-	
+
 	right_ = inverse * glm::vec4(1, 0, 0, 0);
 	up_ = inverse * glm::vec4(0, 1, 0, 0);
 	forward_ = inverse * glm::vec4(0, 0, -1, 0);
