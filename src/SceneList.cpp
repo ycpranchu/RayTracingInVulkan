@@ -362,6 +362,34 @@ SceneAssets SceneList::Bunny(CameraInitialSate &camera)
 	return std::make_tuple(std::move(models), std::vector<Texture>());
 }
 
+SceneAssets SceneList::Kitchen(CameraInitialSate &camera)
+{
+	camera.ModelView = lookAt(vec3(278, 278, 800), vec3(278, 278, 0), vec3(0, 1, 0));
+	camera.FieldOfView = 40;
+	camera.Aperture = 0.0f;
+	camera.FocusDistance = 10.0f;
+	camera.ControlSpeed = 500.0f;
+	camera.GammaCorrection = true;
+	camera.HasSky = false;
+	camera.LightPosition = vec3(280, 500, 400);
+	camera.LightRadius = 10.0f;
+
+	// const auto i = mat4(1);
+
+	// auto bunny0 = Model::LoadModel("../assets/models/bunny.obj");
+	// bunny0.Transform(
+	// 	rotate(
+	// 		scale(
+	// 			translate(i, vec3(555 - 300 - 165 / 2, 5, -225 - 165 / 2)),
+	// 			vec3(200.0f)),
+	// 		radians(75.0f), vec3(0, 1, 0)));
+	// std::vector<Model> models;
+	// models.push_back(Model::CreateCornellBox(555));
+	// models.push_back(bunny0);
+
+	// return std::make_tuple(std::move(models), std::vector<Texture>());
+}
+
 SceneAssets SceneList::SimpleTest(CameraInitialSate &camera)
 {
 	camera.ModelView = lookAt(vec3(278, 278, 800), vec3(278, 278, 0), vec3(0, 1, 0));
