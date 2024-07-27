@@ -115,6 +115,7 @@ void RayTracer::DeleteSwapChain()
 	Application::DeleteSwapChain();
 }
 
+/* TODO: need to update */
 void RayTracer::DrawFrame()
 {
 	// Check if the scene has been changed by the user.

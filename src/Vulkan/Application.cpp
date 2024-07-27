@@ -84,6 +84,7 @@ namespace Vulkan
 		CreateSwapChain();
 	}
 
+	// Application start here
 	void Application::Run()
 	{
 		if (!device_)
@@ -163,6 +164,7 @@ namespace Vulkan
 		swapChain_.reset();
 	}
 
+	// 處理一幀渲染的完整過程
 	void Application::DrawFrame()
 	{
 		const auto noTimeout = std::numeric_limits<uint64_t>::max();

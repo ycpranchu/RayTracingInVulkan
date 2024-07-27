@@ -104,6 +104,7 @@ namespace Vulkan::RayTracing
 		rayTracingProperties_.reset(new RayTracingProperties(Device()));
 	}
 
+	/* TODO: need to update */
 	void Application::CreateAccelerationStructures()
 	{
 		const auto timer = std::chrono::high_resolution_clock::now();

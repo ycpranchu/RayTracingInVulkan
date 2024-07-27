@@ -48,6 +48,10 @@ public:
 	static SceneAssets TestScene(CameraInitialSate &camera);
 	static SceneAssets SimpleTest(CameraInitialSate &camera);
 	static SceneAssets Bunny(CameraInitialSate &camera);
+
+	/* Add by ycpin for demonstration */
+	static SceneAssets Kitchen(CameraInitialSate &camera);
+
 	static SceneAssets Carnival(CameraInitialSate &camera);
 	static SceneAssets Ship(CameraInitialSate &camera);
 	static SceneAssets Sponza(CameraInitialSate &camera);

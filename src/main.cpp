@@ -29,6 +29,7 @@ int main(int argc, const char *argv[]) noexcept
 	{
 		const Options options(argc, argv);
 		const UserSettings userSettings = CreateUserSettings(options);
+
 		const Vulkan::WindowConfig windowConfig{
 			"Vulkan Window",
 			options.Width,
@@ -37,6 +38,7 @@ int main(int argc, const char *argv[]) noexcept
 			options.Fullscreen,
 			!options.Fullscreen};
 
+		// 創建光線追蹤應用程式
 		RayTracer application(userSettings, windowConfig, static_cast<VkPresentModeKHR>(options.PresentMode));
 
 		PrintVulkanSdkInformation();
