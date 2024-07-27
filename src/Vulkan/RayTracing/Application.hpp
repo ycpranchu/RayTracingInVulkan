@@ -36,6 +36,7 @@ namespace Vulkan::RayTracing
 		void Render(VkCommandBuffer commandBuffer, uint32_t imageIndex) override;
 
 	private:
+		void CreateQuantizeStructures(VkCommandBuffer commandBuffer);
 		void CreateBottomLevelStructures(VkCommandBuffer commandBuffer);
 		void CreateTopLevelStructures(VkCommandBuffer commandBuffer);
 		void CreateOutputImage();

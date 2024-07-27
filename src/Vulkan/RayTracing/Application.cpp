@@ -110,6 +110,7 @@ namespace Vulkan::RayTracing
 
 		SingleTimeCommands::Submit(CommandPool(), [this](VkCommandBuffer commandBuffer)
 								   {
+		CreateQuantizeStructures(commandBuffer);
 		CreateBottomLevelStructures(commandBuffer);
 		CreateTopLevelStructures(commandBuffer); });
 
@@ -247,8 +248,15 @@ namespace Vulkan::RayTracing
 								   0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	}
 
+	void Application::CreateQuantizeStructures(VkCommandBuffer commandBuffer)
+	{
+		printf("ycpin: CreateQuantizeStructures here...\n");
+	}
+
 	void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 	{
+		printf("ycpin: CreateBottomLevelStructures here...\n");
+
 		const auto &scene = GetScene();
 		const auto &debugUtils = Device().DebugUtils();
 
@@ -263,6 +271,8 @@ namespace Vulkan::RayTracing
 			const auto vertexCount = static_cast<uint32_t>(model.NumberOfVertices());
 			const auto indexCount = static_cast<uint32_t>(model.NumberOfIndices());
 			BottomLevelGeometry geometries;
+
+			// 根據模型的類型，選擇適當的幾何體結構（例如三角形、AABB 等）。
 
 			if (model.Procedural())
 				geometries.AddGeometryAabb(scene, aabbOffset, 1, true);
@@ -322,6 +332,8 @@ namespace Vulkan::RayTracing
 
 	void Application::CreateTopLevelStructures(VkCommandBuffer commandBuffer)
 	{
+		printf("ycpin: CreateTopLevelStructures here...\n");
+
 		const auto &scene = GetScene();
 		const auto &debugUtils = Device().DebugUtils();
 

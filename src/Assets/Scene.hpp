@@ -21,38 +21,36 @@ namespace Assets
 	class Scene final
 	{
 	public:
+		Scene(const Scene &) = delete;
+		Scene(Scene &&) = delete;
+		Scene &operator=(const Scene &) = delete;
+		Scene &operator=(Scene &&) = delete;
 
-		Scene(const Scene&) = delete;
-		Scene(Scene&&) = delete;
-		Scene& operator = (const Scene&) = delete;
-		Scene& operator = (Scene&&) = delete;
-
-		Scene(Vulkan::CommandPool& commandPool, std::vector<Model>&& models, std::vector<Texture>&& textures);
+		Scene(Vulkan::CommandPool &commandPool, std::vector<Model> &&models, std::vector<Texture> &&textures);
 		~Scene();
 
-		const std::vector<Model>& Models() const { return models_; }
+		const std::vector<Model> &Models() const { return models_; }
 		bool HasProcedurals() const { return static_cast<bool>(proceduralBuffer_); }
 		bool HasProceduralCubes() const { return static_cast<bool>(proceduralCubeBuffer_); }
 		bool HasProceduralCylinder() const { return static_cast<bool>(proceduralCylinderBuffer_); }
 		// bool HasProceduralMandelbulb() const { return static_cast<bool>(proceduralMandelbulbBuffer_); }
 
-		const Vulkan::Buffer& VertexBuffer() const { return *vertexBuffer_; }
-		const Vulkan::Buffer& IndexBuffer() const { return *indexBuffer_; }
-		const Vulkan::Buffer& MaterialBuffer() const { return *materialBuffer_; }
-		const Vulkan::Buffer& OffsetsBuffer() const { return *offsetBuffer_; }
-		const Vulkan::Buffer& AabbBuffer() const { return *aabbBuffer_; }
-		const Vulkan::Buffer& AabbCubeBuffer() const { return *aabbCubeBuffer_; }
-		const Vulkan::Buffer& AabbCylinderBuffer() const { return *aabbCylinderBuffer_; }
+		const Vulkan::Buffer &VertexBuffer() const { return *vertexBuffer_; }
+		const Vulkan::Buffer &IndexBuffer() const { return *indexBuffer_; }
+		const Vulkan::Buffer &MaterialBuffer() const { return *materialBuffer_; }
+		const Vulkan::Buffer &OffsetsBuffer() const { return *offsetBuffer_; }
+		const Vulkan::Buffer &AabbBuffer() const { return *aabbBuffer_; }
+		const Vulkan::Buffer &AabbCubeBuffer() const { return *aabbCubeBuffer_; }
+		const Vulkan::Buffer &AabbCylinderBuffer() const { return *aabbCylinderBuffer_; }
 		// const Vulkan::Buffer& AabbMandelbulbBuffer() const { return *aabbMandelbulbBuffer_; }
-		const Vulkan::Buffer& ProceduralBuffer() const { return *proceduralBuffer_; }
-		const Vulkan::Buffer& ProceduralCubeBuffer() const { return *proceduralCubeBuffer_; }
-		const Vulkan::Buffer& ProceduralCylinderBuffer() const { return *proceduralCylinderBuffer_; }
+		const Vulkan::Buffer &ProceduralBuffer() const { return *proceduralBuffer_; }
+		const Vulkan::Buffer &ProceduralCubeBuffer() const { return *proceduralCubeBuffer_; }
+		const Vulkan::Buffer &ProceduralCylinderBuffer() const { return *proceduralCylinderBuffer_; }
 		// const Vulkan::Buffer& ProceduralMandelbulbBuffer() const { return *proceduralMandelbulbBuffer_; }
 		const std::vector<VkImageView> TextureImageViews() const { return textureImageViewHandles_; }
 		const std::vector<VkSampler> TextureSamplers() const { return textureSamplerHandles_; }
 
 	private:
-
 		const std::vector<Model> models_;
 		const std::vector<Texture> textures_;
 
