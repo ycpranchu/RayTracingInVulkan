@@ -27,9 +27,11 @@ int main(int argc, const char *argv[]) noexcept
 {
 	try
 	{
+		// 參數解析與設置
 		const Options options(argc, argv);
 		const UserSettings userSettings = CreateUserSettings(options);
 
+		// Vulkan 視窗配置
 		const Vulkan::WindowConfig windowConfig{
 			"Vulkan Window",
 			options.Width,
@@ -38,13 +40,50 @@ int main(int argc, const char *argv[]) noexcept
 			options.Fullscreen,
 			!options.Fullscreen};
 
-		// 創建光線追蹤應用程式
+		// 初始化
 		RayTracer application(userSettings, windowConfig, static_cast<VkPresentModeKHR>(options.PresentMode));
 
 		PrintVulkanSdkInformation();
+
+		// Vulkan SDK Header Version: 283
+
 		PrintVulkanInstanceInformation(application, options.Benchmark);
+
+		// Vulkan Instance Extensions:
+		// - VK_KHR_device_group_creation (0.0.1)
+		// - VK_KHR_external_fence_capabilities (0.0.1)
+		// - VK_KHR_external_memory_capabilities (0.0.1)
+		// - VK_KHR_external_semaphore_capabilities (0.0.1)
+		// - VK_KHR_get_physical_device_properties2 (0.0.2)
+		// - VK_KHR_get_surface_capabilities2 (0.0.1)
+		// - VK_KHR_surface (0.0.25)
+		// - VK_KHR_surface_protected_capabilities (0.0.1)
+		// - VK_KHR_xcb_surface (0.0.6)
+		// - VK_KHR_xlib_surface (0.0.6)
+		// - VK_EXT_debug_report (0.0.10)
+		// - VK_EXT_debug_utils (0.0.2)
+		// - VK_KHR_portability_enumeration (0.0.1)
+		// - VK_LUNARG_direct_driver_loading (0.0.1)
+
 		PrintVulkanLayersInformation(application, options.Benchmark);
+
+		// Vulkan Instance Layers:
+		// - VK_LAYER_MESA_device_select (1.2.73) : Linux device selection layer
+		// - VK_LAYER_NV_optimus (1.3.278) : NVIDIA Optimus layer
+		// - VK_LAYER_KHRONOS_synchronization2 (1.3.283) : Khronos Synchronization2 layer
+		// - VK_LAYER_MESA_overlay (1.1.73) : Mesa Overlay layer
+		// - VK_LAYER_KHRONOS_profiles (1.3.283) : Khronos Profiles layer
+		// - VK_LAYER_KHRONOS_shader_object (1.3.283) : Khronos Shader object layer
+		// - VK_LAYER_LUNARG_gfxreconstruct (1.3.283) : GFXReconstruct Capture Layer Version 1.0.4-unknown
+		// - VK_LAYER_LUNARG_monitor (1.3.283) : Execution Monitoring Layer
+		// - VK_LAYER_KHRONOS_validation (1.3.283) : Khronos Validation Layer
+		// - VK_LAYER_LUNARG_screenshot (1.3.283) : LunarG image capture layer
+		// - VK_LAYER_LUNARG_api_dump (1.3.283) : LunarG API dump layer
+
 		PrintVulkanDevices(application);
+
+		// Vulkan Devices:
+		// - [0] UnknownVendor 'llvmpipe (LLVM 10.0.0, 256 bits)' (CPU: vulkan 1.3.254, driver llvmpipe Mesa 23.2.0-devel (git-b8f3e3980e) (LLVM 10.0.0) - 0.0.1)
 
 		SetVulkanDevice(application);
 
@@ -237,9 +276,10 @@ namespace
 		deviceProp.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
 		vkGetPhysicalDeviceProperties2(*result, &deviceProp);
 
-		std::cout << "Setting Device [" << deviceProp.properties.deviceID << "]:" << std::endl;
+		std::cout << "Setting Device [" << deviceProp.properties.deviceID << "]: " << deviceProp.properties.deviceName << std::endl;
 
-		// Set up device (will fail here without the extensions)
+		// Setting Device [0]: llvmpipe (LLVM 10.0.0, 256 bits)
+
 		application.SetPhysicalDevice(*result);
 
 		std::cout << std::endl;

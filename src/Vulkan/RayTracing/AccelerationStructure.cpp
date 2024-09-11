@@ -70,6 +70,31 @@ namespace Vulkan::RayTracing
 		return sizeInfo;
 	}
 
+	VkAccelerationStructureBuildSizesInfoKHR AccelerationStructure::BVH_GetBuildSizes(bvh_t *bvh) const
+	{
+		// Query both the size of the finished acceleration structure and the amount of scratch memory needed.
+		VkAccelerationStructureBuildSizesInfoKHR sizeInfo = {};
+		sizeInfo.sType = VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR;
+
+		// deviceProcedures_.vkGetAccelerationStructureBuildSizesKHR(
+		// 	device_.Handle(),
+		// 	VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR,
+		// 	&buildGeometryInfo_,
+		// 	pMaxPrimitiveCounts,
+		// 	&sizeInfo);
+
+		sizeInfo.accelerationStructureSize = bvh->calculate_data_size();
+		printf("ycpin: (BVH) RTV: Original size of BVH structure %ld (0x%lx)\n", sizeInfo.accelerationStructureSize, sizeInfo.accelerationStructureSize);
+
+		// AccelerationStructure offset needs to be 256 bytes aligned (official Vulkan specs, don't ask me why).
+		const uint64_t AccelerationStructureAlignment = 256;
+		sizeInfo.accelerationStructureSize = RoundUp(sizeInfo.accelerationStructureSize, AccelerationStructureAlignment);
+
+		printf("ycpin: (BVH) RTV: Rounding size of BVH structure up to %ld (0x%lx)\n", sizeInfo.accelerationStructureSize, sizeInfo.accelerationStructureSize);
+
+		return sizeInfo;
+	}
+
 	void AccelerationStructure::CreateAccelerationStructure(Buffer &resultBuffer, const VkDeviceSize resultOffset)
 	{
 		VkAccelerationStructureCreateInfoKHR createInfo = {};

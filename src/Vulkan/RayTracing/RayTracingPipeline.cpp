@@ -1,6 +1,7 @@
 #include "RayTracingPipeline.hpp"
 #include "DeviceProcedures.hpp"
 #include "TopLevelAccelerationStructure.hpp"
+#include "BvhAccerationStructure.hpp"
 #include "Assets/Scene.hpp"
 #include "Assets/UniformBuffer.hpp"
 #include "Utilities/Exception.hpp"
@@ -21,12 +22,15 @@ namespace Vulkan::RayTracing
 		const DeviceProcedures &deviceProcedures,
 		const SwapChain &swapChain,
 		const TopLevelAccelerationStructure &accelerationStructure,
+		const BvhAccerationStructure &bvhAccelerationStructure,
 		const ImageView &accumulationImageView,
 		const ImageView &outputImageView,
 		const std::vector<Assets::UniformBuffer> &uniformBuffers,
 		const Assets::Scene &scene,
 		const uint32_t shaderType) : swapChain_(swapChain)
 	{
+		printf("ycpin: RayTracingPipeline::RayTracingPipeline()\n");
+
 		// Create descriptor pool/sets.
 		const auto &device = swapChain.Device();
 		const std::vector<DescriptorBinding> descriptorBindings =
@@ -58,6 +62,23 @@ namespace Vulkan::RayTracing
 
 				// Cylinder Procedural buffer.
 				{11, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR},
+
+				// Modified by ycpin
+				// -------------------------------------------------------------------------------------------------------------------------
+
+				// Trig buffer
+				{12, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR},
+
+				// bvh_nodes buffer
+				{13, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR},
+
+				// bvh_primitive_indices buffer
+				{14, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR},
+
+				// bvh_offsets buffer
+				{15, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_RAYGEN_BIT_KHR},
+
+				// -------------------------------------------------------------------------------------------------------------------------
 
 				// Mandelbulb Procedural buffer.
 				// {12, 1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR}
@@ -170,6 +191,35 @@ namespace Vulkan::RayTracing
 				descriptorWrites.push_back(descriptorSets.Bind(i, 11, proceduralCylinderBufferInfo));
 			}
 
+			// Modified by ycpin
+			// -------------------------------------------------------------------------------------------------------------------------
+
+			// Trig buffer
+			VkDescriptorBufferInfo trigBufferInfo = {};
+			trigBufferInfo.buffer = scene.TrigBuffer().Handle();
+			trigBufferInfo.range = VK_WHOLE_SIZE;
+			descriptorWrites.push_back(descriptorSets.Bind(i, 12, trigBufferInfo));
+
+			// bvh_nodes buffer
+			VkDescriptorBufferInfo bvhNodeBuffer = {};
+			bvhNodeBuffer.buffer = bvhAccelerationStructure.BVH_NodeBuffer().Handle();
+			bvhNodeBuffer.range = VK_WHOLE_SIZE;
+			descriptorWrites.push_back(descriptorSets.Bind(i, 13, bvhNodeBuffer));
+
+			// bvh_primitive_indices buffer
+			VkDescriptorBufferInfo bvhPrimitiveIndiceBuffer = {};
+			bvhPrimitiveIndiceBuffer.buffer = bvhAccelerationStructure.BVH_PrimitiveIndiceBuffer().Handle();
+			bvhPrimitiveIndiceBuffer.range = VK_WHOLE_SIZE;
+			descriptorWrites.push_back(descriptorSets.Bind(i, 14, bvhPrimitiveIndiceBuffer));
+
+			// bvh_offsets buffer
+			VkDescriptorBufferInfo bvhOffsetsBuffer = {};
+			bvhOffsetsBuffer.buffer = bvhAccelerationStructure.BVH_OffsetsBuffer().Handle();
+			bvhOffsetsBuffer.range = VK_WHOLE_SIZE;
+			descriptorWrites.push_back(descriptorSets.Bind(i, 15, bvhOffsetsBuffer));
+
+			// -------------------------------------------------------------------------------------------------------------------------
+
 			// Procedural Mandelbulb buffer (optional)
 			// VkDescriptorBufferInfo proceduralMandelbulbBufferInfo = {};
 
@@ -186,10 +236,15 @@ namespace Vulkan::RayTracing
 
 		pipelineLayout_.reset(new class PipelineLayout(device, descriptorSetManager_->DescriptorSetLayout()));
 
+		printf("ycpin: pipelineLayout_.reset()\n");
+
 		// Load shaders.
 		ShaderModule *rayGenShader;
 		ShaderModule *closestHitShader;
 		ShaderModule *anyhitShader = NULL;
+
+		printf("ycpin: shaderType == %d\n", shaderType);
+
 		switch (shaderType)
 		{
 		case 0:
@@ -238,6 +293,8 @@ namespace Vulkan::RayTracing
 // const ShaderModule proceduralMandelbulbClosestHitShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rchit.spv");
 // const ShaderModule proceduralMandelbulbIntersectionShader(device, "../assets/shaders/RayTracing.ProceduralMandelbulb.rint.spv");
 #endif
+
+		printf("ycpin: Load shaders\n");
 
 		std::vector<VkPipelineShaderStageCreateInfo> shaderStages =
 			{

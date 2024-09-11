@@ -14,13 +14,12 @@ namespace Assets
 		glm::vec2 TexCoord;
 		int32_t MaterialIndex;
 
-		bool operator==(const Vertex& other) const
+		bool operator==(const Vertex &other) const
 		{
-			return 
-				Position == other.Position &&
-				Normal == other.Normal &&
-				TexCoord == other.TexCoord &&
-				MaterialIndex == other.MaterialIndex;
+			return Position == other.Position &&
+				   Normal == other.Normal &&
+				   TexCoord == other.TexCoord &&
+				   MaterialIndex == other.MaterialIndex;
 		}
 
 		static VkVertexInputBindingDescription GetBindingDescription()

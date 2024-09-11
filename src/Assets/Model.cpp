@@ -41,7 +41,6 @@ namespace std
 
 namespace Assets
 {
-	/* TODO: check this function */
 	Model Model::LoadModel(const std::string &filename)
 	{
 		std::cout << "- loading '" << filename << "'... " << std::flush;
@@ -90,12 +89,55 @@ namespace Assets
 
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
+		std::vector<trig_t> trigs;
 		std::unordered_map<Vertex, uint32_t> uniqueVertices(objAttrib.vertices.size());
 
 		for (const auto &shape : objReader.GetShapes())
 		{
 			size_t faceId = 0;
 			const auto &mesh = shape.mesh;
+
+			size_t index_offset = 0;
+			for (size_t f = 0; f < mesh.num_face_vertices.size(); ++f)
+			{
+				std::vector<float> trig;
+				size_t fv = mesh.num_face_vertices[f];
+
+				// Ensure it's a triangle
+				if (fv != 3)
+				{
+					std::cerr << "Error: Non-triangular face found!" << std::endl;
+					index_offset += fv;
+					continue;
+				}
+
+				for (size_t v = 0; v < fv; ++v)
+				{
+					tinyobj::index_t idx = mesh.indices[index_offset + v];
+
+					float vx = objAttrib.vertices[3 * idx.vertex_index + 0];
+					float vy = objAttrib.vertices[3 * idx.vertex_index + 1];
+					float vz = objAttrib.vertices[3 * idx.vertex_index + 2];
+
+					trig.emplace_back(vx);
+					trig.emplace_back(vy);
+					trig.emplace_back(vz);
+				}
+
+				trigs.emplace_back(
+					vector_t((float)trig[0], (float)trig[1], (float)trig[2]),
+					vector_t((float)trig[3], (float)trig[4], (float)trig[5]),
+					vector_t((float)trig[6], (float)trig[7], (float)trig[8]));
+
+				// std::cout
+				//     << (float)trig[0] << (float)trig[1] << (float)trig[2] << "\n"
+				//     << (float)trig[3] << (float)trig[4] << (float)trig[5] << "\n"
+				//     << (float)trig[6] << (float)trig[7] << (float)trig[8] << "\n"
+				//     << "---" << std::endl;
+
+				index_offset += fv;
+			}
+
 			for (const auto &index : mesh.indices)
 			{
 				Vertex vertex = {};
@@ -168,7 +210,8 @@ namespace Assets
 		std::cout << "(" << objAttrib.vertices.size() << " vertices, " << uniqueVertices.size() << " unique vertices, " << materials.size() << " materials) ";
 		std::cout << elapsed << "s" << std::endl;
 
-		return Model(std::move(vertices), std::move(indices), std::move(materials), nullptr);
+		// return Model(std::move(vertices), std::move(indices), std::move(materials), nullptr);
+		return Model(std::move(vertices), std::move(indices), std::move(materials), std::move(trigs), nullptr);
 	}
 
 	Model Model::LoadModel(const std::string &filename, std::vector<Texture> &sceneTextures, std::vector<CustomMaterial> &customMaterials)
@@ -236,6 +279,7 @@ namespace Assets
 		// Geometry
 		const auto &objAttrib = objReader.GetAttrib();
 
+		std::vector<trig_t> trigs;
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 		std::unordered_map<Vertex, uint32_t> uniqueVertices(objAttrib.vertices.size());
@@ -244,6 +288,48 @@ namespace Assets
 		{
 			size_t faceId = 0;
 			const auto &mesh = shape.mesh;
+
+			size_t index_offset = 0;
+			for (size_t f = 0; f < mesh.num_face_vertices.size(); ++f)
+			{
+				std::vector<float> trig;
+				size_t fv = mesh.num_face_vertices[f];
+
+				// Ensure it's a triangle
+				if (fv != 3)
+				{
+					std::cerr << "Error: Non-triangular face found!" << std::endl;
+					index_offset += fv;
+					continue;
+				}
+
+				for (size_t v = 0; v < fv; ++v)
+				{
+					tinyobj::index_t idx = mesh.indices[index_offset + v];
+
+					float vx = objAttrib.vertices[3 * idx.vertex_index + 0];
+					float vy = objAttrib.vertices[3 * idx.vertex_index + 1];
+					float vz = objAttrib.vertices[3 * idx.vertex_index + 2];
+
+					trig.emplace_back(vx);
+					trig.emplace_back(vy);
+					trig.emplace_back(vz);
+				}
+
+				trigs.emplace_back(
+					vector_t((float)trig[0], (float)trig[1], (float)trig[2]),
+					vector_t((float)trig[3], (float)trig[4], (float)trig[5]),
+					vector_t((float)trig[6], (float)trig[7], (float)trig[8]));
+
+				// std::cout
+				//     << (float)trig[0] << (float)trig[1] << (float)trig[2] << "\n"
+				//     << (float)trig[3] << (float)trig[4] << (float)trig[5] << "\n"
+				//     << (float)trig[6] << (float)trig[7] << (float)trig[8] << "\n"
+				//     << "---" << std::endl;
+
+				index_offset += fv;
+			}
+
 			for (const auto &index : mesh.indices)
 			{
 				Vertex vertex = {};
@@ -316,7 +402,8 @@ namespace Assets
 		std::cout << "(" << objAttrib.vertices.size() << " vertices, " << uniqueVertices.size() << " unique vertices, " << materials.size() << " materials) ";
 		std::cout << elapsed << "s" << std::endl;
 
-		return Model(std::move(vertices), std::move(indices), std::move(materials), nullptr);
+		// return Model(std::move(vertices), std::move(indices), std::move(materials), nullptr);
+		return Model(std::move(vertices), std::move(indices), std::move(materials), std::move(trigs), nullptr);
 	}
 
 	Model Model::CreateCornellBox(const float scale)
@@ -811,6 +898,14 @@ namespace Assets
 																																																																							 proceduralCube_(proceduralCube),
 																																																																							 proceduralCylinder_(proceduralCylinder),
 																																																																							 proceduralMandelbulb_(proceduralMandelbulb)
+	{
+	}
+
+	Model::Model(std::vector<Vertex> &&vertices, std::vector<uint32_t> &&indices, std::vector<Material> &&materials, std::vector<trig_t> &&trigs, const class Procedural *procedural) : vertices_(std::move(vertices)),
+																																														indices_(std::move(indices)),
+																																														materials_(std::move(materials)),
+																																														trigs_(std::move(trigs)),
+																																														procedural_(procedural)
 	{
 	}
 

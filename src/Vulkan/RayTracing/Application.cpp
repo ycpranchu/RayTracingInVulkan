@@ -19,6 +19,8 @@
 #include <iostream>
 #include <numeric>
 
+#include "BvhAccerationStructure.hpp"
+
 namespace Vulkan::RayTracing
 {
 
@@ -104,16 +106,15 @@ namespace Vulkan::RayTracing
 		rayTracingProperties_.reset(new RayTracingProperties(Device()));
 	}
 
-	/* TODO: need to update */
 	void Application::CreateAccelerationStructures()
 	{
 		const auto timer = std::chrono::high_resolution_clock::now();
 
 		SingleTimeCommands::Submit(CommandPool(), [this](VkCommandBuffer commandBuffer)
 								   {
-		CreateQuantizeStructures(commandBuffer);
 		CreateBottomLevelStructures(commandBuffer);
-		CreateTopLevelStructures(commandBuffer); });
+		CreateTopLevelStructures(commandBuffer); 
+		CreateQuantizeStructures(commandBuffer); });
 
 		topScratchBuffer_.reset();
 		topScratchBufferMemory_.reset();
@@ -139,6 +140,8 @@ namespace Vulkan::RayTracing
 		bottomScratchBufferMemory_.reset();
 		bottomBuffer_.reset();
 		bottomBufferMemory_.reset();
+
+		bvhAs_.clear();
 	}
 
 	void Application::CreateSwapChain()
@@ -147,15 +150,24 @@ namespace Vulkan::RayTracing
 
 		CreateOutputImage();
 
-		rayTracingPipeline_.reset(new RayTracingPipeline(*deviceProcedures_, SwapChain(), topAs_[0], *accumulationImageView_, *outputImageView_, UniformBuffers(), GetScene(), GetShaderType()));
+		printf("ycpin: rayTracingPipeline_.reset\n");
+		rayTracingPipeline_.reset(new RayTracingPipeline(*deviceProcedures_, SwapChain(), topAs_[0], bvhAs_[0], *accumulationImageView_, *outputImageView_, UniformBuffers(), GetScene(), GetShaderType()));
 
+		printf("ycpin: rayGenPrograms\n");
 		const std::vector<ShaderBindingTable::Entry> rayGenPrograms = {{rayTracingPipeline_->RayGenShaderIndex(), {}}};
+
+		printf("ycpin: missPrograms\n");
 		const std::vector<ShaderBindingTable::Entry> missPrograms = {{rayTracingPipeline_->MissShaderIndex(), {}}};
+
 #ifdef USE_PROCEDURALS
+		printf("ycpin: hitGroups\n");
 		const std::vector<ShaderBindingTable::Entry> hitGroups = {{rayTracingPipeline_->TriangleHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCubeHitGroupIndex(), {}}, {rayTracingPipeline_->ProceduralCylinderHitGroupIndex(), {}} /*, {rayTracingPipeline_->ProceduralMandelbulbHitGroupIndex(), {}}*/};
 #else
+		printf("ycpin: hitGroups\n");
 		const std::vector<ShaderBindingTable::Entry> hitGroups = {{rayTracingPipeline_->TriangleHitGroupIndex(), {}}};
 #endif
+
+		printf("ycpin: shaderBindingTable_.reset\n");
 		shaderBindingTable_.reset(new ShaderBindingTable(*deviceProcedures_, *rayTracingPipeline_, *rayTracingProperties_, rayGenPrograms, missPrograms, hitGroups));
 	}
 
@@ -175,6 +187,8 @@ namespace Vulkan::RayTracing
 
 	void Application::Render(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
 	{
+		printf("ycpin: Application::Render 2\n");
+
 		const auto extent = SwapChain().Extent();
 
 		VkDescriptorSet descriptorSets[] = {rayTracingPipeline_->DescriptorSet(imageIndex)};
@@ -219,6 +233,8 @@ namespace Vulkan::RayTracing
 
 		// Execute ray tracing shaders.
 		printf("RTV: Trace ray...\n");
+
+		// The ray tracing procedure starts form here.
 		deviceProcedures_->vkCmdTraceRaysKHR(commandBuffer,
 											 &raygenShaderBindingTable, &missShaderBindingTable, &hitShaderBindingTable, &callableShaderBindingTable,
 											 extent.width, extent.height, 1);
@@ -249,15 +265,60 @@ namespace Vulkan::RayTracing
 								   0, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	}
 
+	/* TODO: ycpin need to revise this function */
 	void Application::CreateQuantizeStructures(VkCommandBuffer commandBuffer)
 	{
-		printf("ycpin: CreateQuantizeStructures here...\n");
+		printf("ycpin: CreateQuantizeStructures start\n");
+
+		const auto &scene = GetScene();
+		// const auto &debugUtils = Device().DebugUtils();
+
+		for (const auto &model : scene.Models())
+		{
+			bvhAs_.emplace_back(*deviceProcedures_, *rayTracingProperties_, model.Trigs());
+		}
+
+		// Allocate the structures memory.
+
+		std::vector<bvh_t::Node> nodes_;
+		std::vector<size_t> primitive_indices_;
+		std::vector<glm::uvec3> offsets; // {node_count, nodes_offset, primitive_indices_offset}
+
+		for (size_t i = 0; i != bvhAs_.size(); ++i)
+		{
+			printf("ycpin: (BVH) RTV: Creating BVH %ld...\n", i);
+
+			// Extracting raw pointers and node count
+			const auto node_count = bvhAs_[i].bvh_.node_count;
+			const auto nodes_ptr = bvhAs_[i].bvh_.nodes.get();
+			const auto primitive_indices_ptr = bvhAs_[i].bvh_.primitive_indices.get();
+
+			// Converting unique_ptr arrays to vectors
+			std::vector<bvh_t::Node> nodes(nodes_ptr, nodes_ptr + node_count);
+			std::vector<size_t> primitive_indices(primitive_indices_ptr, primitive_indices_ptr + node_count);
+
+			printf("ycpin: (BVH) Node count: %zu, Nodes size: %lu, Primitive indices size: %lu\n",
+				   node_count, nodes.size() * sizeof(bvh_t::Node), primitive_indices.size() * sizeof(size_t));
+
+			const auto nodes_offset = static_cast<uint32_t>(nodes_.size());
+			const auto primitive_indices_offset = static_cast<uint32_t>(primitive_indices_.size());
+			offsets.emplace_back(node_count, nodes_offset, primitive_indices_offset);
+
+			nodes_.insert(nodes_.end(), nodes.begin(), nodes.end());
+			primitive_indices_.insert(primitive_indices_.end(), primitive_indices.begin(), primitive_indices.end());
+		}
+
+		printf("ycpin: Nodes buffer size: %lu, Primitive indices buffer size: %lu, Offset buffer size: %lu\n",
+			   nodes_.size() * sizeof(bvh_t::Node), primitive_indices_.size() * sizeof(size_t), offsets.size() * sizeof(glm::uvec3));
+
+		Vulkan::CommandPool &commandPool = CommandPool();
+		bvhAs_[0].Generate(commandPool, nodes_, primitive_indices_, offsets);
+
+		printf("ycpin: CreateQuantizeStructures finish\n");
 	}
 
 	void Application::CreateBottomLevelStructures(VkCommandBuffer commandBuffer)
 	{
-		printf("ycpin: CreateBottomLevelStructures here...\n");
-
 		const auto &scene = GetScene();
 		const auto &debugUtils = Device().DebugUtils();
 
@@ -272,8 +333,6 @@ namespace Vulkan::RayTracing
 			const auto vertexCount = static_cast<uint32_t>(model.NumberOfVertices());
 			const auto indexCount = static_cast<uint32_t>(model.NumberOfIndices());
 			BottomLevelGeometry geometries;
-
-			// 根據模型的類型，選擇適當的幾何體結構（例如三角形、AABB 等）。
 
 			if (model.Procedural())
 				geometries.AddGeometryAabb(scene, aabbOffset, 1, true);
@@ -333,8 +392,6 @@ namespace Vulkan::RayTracing
 
 	void Application::CreateTopLevelStructures(VkCommandBuffer commandBuffer)
 	{
-		printf("ycpin: CreateTopLevelStructures here...\n");
-
 		const auto &scene = GetScene();
 		const auto &debugUtils = Device().DebugUtils();
 

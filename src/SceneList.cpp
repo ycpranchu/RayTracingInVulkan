@@ -85,7 +85,8 @@ const std::vector<std::pair<std::string, std::function<SceneAssets(SceneList::Ca
 		{"blender_3_2 White Lands", blender_3_2},		  // LANDS
 		{"TestScene", TestScene},
 		{"Simple Test", SimpleTest},
-		{"Bunny", Bunny},		// BUNNY
+		{"Bunny", Bunny}, // BUNNY
+		{"Kitchen", Kitchen},
 		{"Carnival", Carnival}, // CRNVL
 		{"Ship", Ship},			// SHIP
 		{"Sponza", Sponza},		// SPNZA
@@ -100,7 +101,7 @@ const std::vector<std::pair<std::string, std::function<SceneAssets(SceneList::Ca
 		{"Reflection Cornell Box & Lucy", ReflectiveCornellBoxLucy}, // REF
 		{"Bathroom", Bathroom},										 // BATH
 		{"Chestnut", Chestnut},										 // CHSNT
-		{"Kitchen", Kitchen}};
+};
 
 SceneAssets SceneList::CubeAndSpheres(CameraInitialSate &camera)
 {
@@ -374,20 +375,20 @@ SceneAssets SceneList::Kitchen(CameraInitialSate &camera)
 	camera.LightPosition = vec3(280, 500, 400);
 	camera.LightRadius = 10.0f;
 
-	// const auto i = mat4(1);
+	const auto i = mat4(1);
 
-	// auto bunny0 = Model::LoadModel("../assets/models/bunny.obj");
-	// bunny0.Transform(
-	// 	rotate(
-	// 		scale(
-	// 			translate(i, vec3(555 - 300 - 165 / 2, 5, -225 - 165 / 2)),
-	// 			vec3(200.0f)),
-	// 		radians(75.0f), vec3(0, 1, 0)));
-	// std::vector<Model> models;
-	// models.push_back(Model::CreateCornellBox(555));
-	// models.push_back(bunny0);
+	auto kitchen0 = Model::LoadModel("../assets/models/kitchen.obj");
+	kitchen0.Transform(
+		rotate(
+			scale(
+				translate(i, vec3(555 - 300 - 165 / 2, 5, -225 - 165 / 2)),
+				vec3(200.0f)),
+			radians(75.0f), vec3(0, 1, 0)));
+	std::vector<Model> models;
+	models.push_back(Model::CreateCornellBox(555));
+	models.push_back(kitchen0);
 
-	// return std::make_tuple(std::move(models), std::vector<Texture>());
+	return std::make_tuple(std::move(models), std::vector<Texture>());
 }
 
 SceneAssets SceneList::SimpleTest(CameraInitialSate &camera)

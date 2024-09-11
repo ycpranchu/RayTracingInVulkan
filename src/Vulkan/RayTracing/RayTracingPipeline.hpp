@@ -24,6 +24,7 @@ namespace Vulkan::RayTracing
 {
 	class DeviceProcedures;
 	class TopLevelAccelerationStructure;
+	class BvhAccerationStructure;
 
 	class RayTracingPipeline final
 	{
@@ -34,6 +35,7 @@ namespace Vulkan::RayTracing
 			const DeviceProcedures &deviceProcedures,
 			const SwapChain &swapChain,
 			const TopLevelAccelerationStructure &accelerationStructure,
+			const BvhAccerationStructure &bvhAccelerationStructure,
 			const ImageView &accumulationImageView,
 			const ImageView &outputImageView,
 			const std::vector<Assets::UniformBuffer> &uniformBuffers,

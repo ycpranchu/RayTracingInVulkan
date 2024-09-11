@@ -89,10 +89,17 @@ void RayTracer::SetPhysicalDevice(
 
 void RayTracer::OnDeviceSet()
 {
+	printf("ycpin: Application::OnDeviceSet() start\n");
 	Application::OnDeviceSet();
+	printf("ycpin: Application::OnDeviceSet() finish\n");
 
+	printf("ycpin: LoadScene() start\n");
 	LoadScene(userSettings_.SceneIndex);
+	printf("ycpin: LoadScene() finish\n");
+
+	printf("ycpin: CreateAccelerationStructures() start\n");
 	CreateAccelerationStructures();
+	printf("ycpin: CreateAccelerationStructures() finish\n");
 }
 
 void RayTracer::CreateSwapChain()

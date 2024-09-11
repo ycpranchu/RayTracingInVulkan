@@ -81,7 +81,9 @@ namespace Vulkan
 		OnDeviceSet();
 
 		// Create swap chain and command buffers.
+		printf("ycpin: CreateSwapChain() start\n");
 		CreateSwapChain();
+		printf("ycpin: CreateSwapChain() finish\n");
 	}
 
 	// Application start here
@@ -124,14 +126,20 @@ namespace Vulkan
 
 	void Application::CreateSwapChain()
 	{
+		printf("ycpin: Application::CreateSwapChain() start\n");
+
 		// Wait until the window is visible.
 		while (window_->IsMinimized())
 		{
 			window_->WaitForEvents();
 		}
 
+		printf("ycpin: Application::CreateSwapChain() stage 1\n");
+
 		swapChain_.reset(new class SwapChain(*device_, presentMode_));
 		depthBuffer_.reset(new class DepthBuffer(*commandPool_, swapChain_->Extent()));
+
+		printf("ycpin: Application::CreateSwapChain() stage 2\n");
 
 		for (size_t i = 0; i != swapChain_->ImageViews().size(); ++i)
 		{
@@ -141,14 +149,22 @@ namespace Vulkan
 			uniformBuffers_.emplace_back(*device_);
 		}
 
+		printf("ycpin: Application::CreateSwapChain() stage 3\n");
+
 		graphicsPipeline_.reset(new class GraphicsPipeline(*swapChain_, *depthBuffer_, uniformBuffers_, GetScene(), isWireFrame_));
+
+		printf("ycpin: Application::CreateSwapChain() stage 4\n");
 
 		for (const auto &imageView : swapChain_->ImageViews())
 		{
 			swapChainFramebuffers_.emplace_back(*imageView, graphicsPipeline_->RenderPass());
 		}
 
+		printf("ycpin: Application::CreateSwapChain() stage 5\n");
+
 		commandBuffers_.reset(new CommandBuffers(*commandPool_, static_cast<uint32_t>(swapChainFramebuffers_.size())));
+
+		printf("ycpin: Application::CreateSwapChain() finish\n");
 	}
 
 	void Application::DeleteSwapChain()
@@ -164,7 +180,6 @@ namespace Vulkan
 		swapChain_.reset();
 	}
 
-	// 處理一幀渲染的完整過程
 	void Application::DrawFrame()
 	{
 		const auto noTimeout = std::numeric_limits<uint64_t>::max();
@@ -259,6 +274,8 @@ namespace Vulkan
 
 	void Application::Render(VkCommandBuffer commandBuffer, const uint32_t imageIndex)
 	{
+		printf("ycpin: Application::Render 1\n");
+
 		std::array<VkClearValue, 2> clearValues = {};
 		clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
 		clearValues[1].depthStencil = {1.0f, 0};

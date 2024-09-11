@@ -3,6 +3,9 @@
 #include "Vulkan/Application.hpp"
 #include "RayTracingProperties.hpp"
 
+#include <bvh/triangle.hpp>
+#include <bvh/sweep_sah_builder.hpp>
+
 namespace Vulkan
 {
 	class CommandBuffers;
@@ -36,9 +39,10 @@ namespace Vulkan::RayTracing
 		void Render(VkCommandBuffer commandBuffer, uint32_t imageIndex) override;
 
 	private:
-		void CreateQuantizeStructures(VkCommandBuffer commandBuffer);
 		void CreateBottomLevelStructures(VkCommandBuffer commandBuffer);
 		void CreateTopLevelStructures(VkCommandBuffer commandBuffer);
+		void CreateQuantizeStructures(VkCommandBuffer commandBuffer);
+
 		void CreateOutputImage();
 
 		std::unique_ptr<class DeviceProcedures> deviceProcedures_;
@@ -56,6 +60,8 @@ namespace Vulkan::RayTracing
 		std::unique_ptr<DeviceMemory> topScratchBufferMemory_;
 		std::unique_ptr<Buffer> instancesBuffer_;
 		std::unique_ptr<DeviceMemory> instancesBufferMemory_;
+
+		std::vector<class BvhAccerationStructure> bvhAs_;
 
 		std::unique_ptr<Image> accumulationImage_;
 		std::unique_ptr<DeviceMemory> accumulationImageMemory_;

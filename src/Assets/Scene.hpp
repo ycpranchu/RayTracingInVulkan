@@ -37,6 +37,10 @@ namespace Assets
 
 		const Vulkan::Buffer &VertexBuffer() const { return *vertexBuffer_; }
 		const Vulkan::Buffer &IndexBuffer() const { return *indexBuffer_; }
+
+		// Append by ycpin for quantized BVH
+		const Vulkan::Buffer &TrigBuffer() const { return *trigBuffer_; }
+
 		const Vulkan::Buffer &MaterialBuffer() const { return *materialBuffer_; }
 		const Vulkan::Buffer &OffsetsBuffer() const { return *offsetBuffer_; }
 		const Vulkan::Buffer &AabbBuffer() const { return *aabbBuffer_; }
@@ -59,6 +63,9 @@ namespace Assets
 
 		std::unique_ptr<Vulkan::Buffer> indexBuffer_;
 		std::unique_ptr<Vulkan::DeviceMemory> indexBufferMemory_;
+
+		std::unique_ptr<Vulkan::Buffer> trigBuffer_;
+		std::unique_ptr<Vulkan::DeviceMemory> trigBufferMemory_;
 
 		std::unique_ptr<Vulkan::Buffer> materialBuffer_;
 		std::unique_ptr<Vulkan::DeviceMemory> materialBufferMemory_;
